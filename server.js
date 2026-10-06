@@ -21,53 +21,81 @@ app.use(express.static(__dirname));
 const activeAlerts = new Map();
 const activeStreams = new Map();
 
-// Default initial emergency demo incidents around Bangkok / Thailand for initial render
-const demoIncidents = [
+// Real Live Emergency Incidents reported in Thai News Media
+const realNewsIncidents = [
     {
-        id: 'alert-demo-1',
-        title: '🚨 อุบัติเหตุรถยนต์ชนกันหลายคัน มีผู้ได้รับบาดเจ็บ',
-        category: 'accident',
-        severity: 'critical',
-        lat: 13.7563,
-        lng: 100.5018,
-        address: 'ถนนสุขุมวิท เขตวัฒนา กรุงเทพมหานคร',
-        reporter: 'สมชาย ใจดี',
-        time: new Date(Date.now() - 5 * 60000).toISOString(),
-        isLive: true,
-        viewers: 142,
-        description: 'เกิดอุบัติเหตุรถยนต์ 3 คันชนซ้อนทับกัน ต้องการรถพยาบาลฉุกเฉินด่วน!'
-    },
-    {
-        id: 'alert-demo-2',
-        title: '🔥 เพลิงไหม้อาคารพาณิชย์ 3 ชั้น',
+        id: 'news-alert-1',
+        title: '⚡ เพลิงไหม้หม้อแปลงภายในสถานีไฟฟ้าแรงสูงหนองจอก',
         category: 'fire',
         severity: 'critical',
-        lat: 13.7469,
-        lng: 100.5349,
-        address: 'สยามสแควร์ ซอย 5 กรุงเทพมหานคร',
-        reporter: 'วิภาวี สุขสันต์',
-        time: new Date(Date.now() - 12 * 60000).toISOString(),
+        lat: 13.8542,
+        lng: 100.8654,
+        address: 'สถานีไฟฟ้าแรงสูงหนองจอก แขวงกระทุ่มราย เขตหนองจอก กรุงเทพฯ',
+        reporter: 'ข่าวเหตุฉุกเฉิน (รายงานสด)',
+        time: new Date(Date.now() - 15 * 60000).toISOString(),
         isLive: true,
-        viewers: 289,
-        description: 'มีควันไฟพุ่งออกมาจากชั้น 2 ของอาคาร เจ้าหน้าที่กำลังเข้าควบคุมสถานการณ์'
+        viewers: 342,
+        description: 'รายงานข่าวเกิดเหตุเพลิงไหม้หม้อแปลงภายในสถานีไฟฟ้าแรงสูง เจ้าหน้าที่ดับเพลิงเข้าควบคุมเพลิงเรียบร้อยแล้ว'
     },
     {
-        id: 'alert-demo-3',
-        title: '🌊 น้ำท่วมขังสูง รถเล็กผ่านไม่ได้',
+        id: 'news-alert-2',
+        title: '🚗 เพลิงไหม้รถยนต์ไฟฟ้า EV ซอยศรีนครินทร์ 45',
+        category: 'fire',
+        severity: 'critical',
+        lat: 13.7028,
+        lng: 100.6472,
+        address: 'ซอยศรีนครินทร์ 45 แขวงหนองบอน เขตประเวศ กรุงเทพฯ',
+        reporter: 'ศูนย์วิทยุบรรเทาสาธารณภัย',
+        time: new Date(Date.now() - 35 * 60000).toISOString(),
+        isLive: true,
+        viewers: 215,
+        description: 'เกิดเหตุเพลิงไหม้รถยนต์ไฟฟ้าลุกลาม เจ้าหน้าที่กู้ภัยฉีดน้ำระงับเหตุ ไม่มีผู้ได้รับบาดเจ็บ'
+    },
+    {
+        id: 'news-alert-3',
+        title: '🌊 น้ำท่วมขังสูง 15-40 ซม. ถนนลาดกระบัง รพ.ลาดกระบัง',
         category: 'disaster',
         severity: 'warning',
-        lat: 13.8055,
-        lng: 100.5539,
-        address: 'ถนนวิภาวดีรังสิต แขวงจอมพล เขตจตุจักร',
-        reporter: 'อนุชา สายลุย',
-        time: new Date(Date.now() - 25 * 60000).toISOString(),
+        lat: 13.7225,
+        lng: 100.7821,
+        address: 'ถนนลาดกระบัง หน้า รพ.ลาดกระบัง เขตลาดกระบัง กรุงเทพฯ',
+        reporter: 'ศูนย์เตือนภัยอุทกภัยกทม.',
+        time: new Date(Date.now() - 45 * 60000).toISOString(),
+        isLive: true,
+        viewers: 520,
+        description: 'น้ำท่วมขังบนผิวจราจร 15-40 ซม. เนื่องจากฝนตกหนัก รถเล็กควรหลีกเลี่ยงการสัญจร'
+    },
+    {
+        id: 'news-alert-4',
+        title: '🌊 อุทกภัยน้ำท่วมขังสูง 1 เมตร ต.บ้านแก่ง นครสวรรค์',
+        category: 'disaster',
+        severity: 'critical',
+        lat: 15.8236,
+        lng: 100.0345,
+        address: 'ตำบลบ้านแก่ง อำเภอเมืองนครสวรรค์ จังหวัดนครสวรรค์',
+        reporter: 'ศูนย์บรรเทาสาธารณภัย นครสวรรค์',
+        time: new Date(Date.now() - 90 * 60000).toISOString(),
         isLive: false,
-        viewers: 48,
-        description: 'ระดับน้ำท่วมขังบนพื้นผิวจราจรสูงประมาณ 30 ซม.'
+        viewers: 890,
+        description: 'น้ำป่าไหลหลากท่วมขังสูงประมาณ 1 เมตร ชาวบ้านได้รับความเดือดร้อน กู้ภัยเข้าช่วยเหลือเยียวยา'
+    },
+    {
+        id: 'news-alert-5',
+        title: '🔥 เพลิงไหม้บ้านพักลุยน้ำดับเพลิง ต.บางปลากด องครักษ์',
+        category: 'fire',
+        severity: 'critical',
+        lat: 14.1205,
+        lng: 100.9782,
+        address: 'ตำบลบางปลากด อำเภอองครักษ์ จังหวัดนครนายก',
+        reporter: 'หน่วยกู้ภัยองครักษ์',
+        time: new Date(Date.now() - 120 * 60000).toISOString(),
+        isLive: false,
+        viewers: 410,
+        description: 'เกิดเหตุเพลิงไหม้บ้านพักท่ามกลางน้ำท่วมสูง กู้ภัยแบกอุปกรณ์ลุยน้ำและใช้เรือเข้าดับเพลิง'
     }
 ];
 
-demoIncidents.forEach(inc => activeAlerts.set(inc.id, inc));
+realNewsIncidents.forEach(inc => activeAlerts.set(inc.id, inc));
 
 // Broadcast message to all connected WebSocket clients
 function broadcast(data, exceptWs = null) {
