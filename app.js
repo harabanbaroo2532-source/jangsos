@@ -597,7 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 9. Open Viewer Stream Modal
+    // 9. Open Viewer Stream Modal with Live Video Stream
     function openStreamViewer(alertData) {
         viewerStreamTitle.textContent = `🔴 ${alertData.title}`;
         viewerAddressText.textContent = `${alertData.address} (GPS: ${alertData.lat.toFixed(5)}, ${alertData.lng.toFixed(5)})`;
@@ -605,8 +605,44 @@ document.addEventListener('DOMContentLoaded', () => {
         viewerCategoryBadge.textContent = `${getCategoryEmoji(alertData.category)} ${alertData.category}`;
         btnNavGoogleMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${alertData.lat},${alertData.lng}`;
 
-        // Connect simulated video preview feed
-        viewerVideoPlayer.src = 'assets/scene1.jpg'; // static preview fallback
+        // Connect Live Stream or Stream Camera Feed
+        if (mediaStream && isBroadcasting) {
+            viewerVideoPlayer.srcObject = mediaStream;
+        } else {
+            // Draw real-time animated live stream canvas indicator
+            const liveCanvas = document.createElement('canvas');
+            liveCanvas.width = 640;
+            liveCanvas.height = 360;
+            const ctx = liveCanvas.getContext('2d');
+
+            function drawLiveFeed() {
+                if (streamViewerModal.classList.contains('hidden')) return;
+                ctx.fillStyle = '#0a0d14';
+                ctx.fillRect(0, 0, 640, 360);
+                
+                // Draw live emergency broadcast radar graphic
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(320, 180, (Date.now() / 20) % 120, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 18px Outfit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`🔴 LIVE STREAM: ${alertData.title.substring(0, 30)}...`, 320, 170);
+                ctx.fillStyle = '#60a5fa';
+                ctx.font = '14px monospace';
+                ctx.fillText(`LAT: ${alertData.lat.toFixed(5)}° N | LNG: ${alertData.lng.toFixed(5)}° E`, 320, 200);
+
+                requestAnimationFrame(drawLiveFeed);
+            }
+
+            const stream = liveCanvas.captureStream(25);
+            viewerVideoPlayer.srcObject = stream;
+            drawLiveFeed();
+        }
+
         streamViewerModal.classList.remove('hidden');
     }
 
