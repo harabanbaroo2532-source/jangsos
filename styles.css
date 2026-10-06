@@ -114,13 +114,23 @@ body {
     color: var(--text-muted);
 }
 
-.gps-status-badge {
+.header-center {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gps-status-badge, .weather-header-badge {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 6px 14px;
     font-size: 12px;
     border-radius: var(--radius-sm);
+}
+
+.icon-weather {
+    font-size: 18px;
 }
 
 .gps-text {

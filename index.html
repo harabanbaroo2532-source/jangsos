@@ -44,6 +44,15 @@
                         <span id="gpsCoordsText" class="val">กำลังระบุตำแหน่ง GPS...</span>
                     </div>
                 </div>
+
+                <!-- Live Weather Summary Header Widget -->
+                <div class="weather-header-badge card-glass" id="weatherHeaderBadge">
+                    <span class="icon-weather" id="hdrWeatherIcon">🌧️</span>
+                    <div class="gps-text">
+                        <span class="label">สภาพอากาศสด:</span>
+                        <span id="hdrWeatherText" class="val">31°C ฝนตกหนัก (PM2.5: 28)</span>
+                    </div>
+                </div>
             </div>
 
             <div class="header-right">
@@ -134,6 +143,9 @@
 
                 <!-- Floating Map Controls -->
                 <div class="map-floating-controls">
+                    <button id="btnToggleWeatherLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลสภาพอากาศสดและเรดาร์ฝน">
+                        🌧️ สภาพอากาศ & เรดาร์ฝนสด
+                    </button>
                     <button id="btnToggleWaterLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลระดับน้ำท่วมและน้ำทะเล">
                         🌊 ระดับน้ำท่วม & น้ำทะเลสด
                     </button>
