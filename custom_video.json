@@ -1,0 +1,22 @@
+{
+  "outputFile": "my_custom_video.mp4",
+  "resolution": "1920x1080",
+  "fps": 30,
+  "defaultLang": "th",
+  "scenes": [
+    {
+      "image": "assets/scene1.jpg",
+      "duration": 5,
+      "title": "หัวข้อฉากที่ 1",
+      "subtitle": "คำบรรยายซับไตเติล",
+      "script": "สวัสดีครับ ยินดีต้อนรับสู่วิดีโอของฉัน"
+    },
+    {
+      "image": "assets/scene2.jpg",
+      "duration": 5,
+      "title": "หัวข้อฉากที่ 2",
+      "subtitle": "ข้อความอธิบายเพิ่มเติม",
+      "script": "นี่คือฉากที่สองที่มีเสียงพากย์ภาษาไทยอัตโนมัติ"
+    }
+  ]
+}

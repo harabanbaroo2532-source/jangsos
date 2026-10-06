@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GUARDIAN LIVE - แอปพลิเคชันเตือนภัยและแชร์วิดีโอไลฟ์สดระบุพิกัดฉุกเฉิน</title>
+    
+    <!-- PWA & Mobile Meta Tags (100% Free Mobile App Ready) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ef4444">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GuardianLive">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2560/2560548.png">
+
+    <!-- Google Fonts & Leaflet Maps CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="guardian-app">
+        <!-- Top Navigation Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="logo-shield">
+                    <span class="shield-icon">🛡️</span>
+                    <span class="pulse-beacon"></span>
+                </div>
+                <div class="brand-info">
+                    <h1>GUARDIAN <span class="badge-live">LIVE SOS</span></h1>
+                    <p>ระบบเตือนภัยและแชร์ไลฟ์สดระบุพิกัดฉุกเฉินเรียลไทม์</p>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <div class="gps-status-badge card-glass" id="userGpsStatus">
+                    <span class="icon-gps">📍</span>
+                    <div class="gps-text">
+                        <span class="label">พิกัดปัจจุบันของคุณ:</span>
+                        <span id="gpsCoordsText" class="val">กำลังระบุตำแหน่ง GPS...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button id="btnToggleSiren" class="btn btn-warning">
+                    <span class="icon">🔊</span> เปิดไซเรนเตือนภัย
+                </button>
+                <button id="btnStartBroadcasting" class="btn btn-danger btn-pulse">
+                    <span class="icon">🎥</span> 🔴 ถ่ายทอดสดเตือนภัย
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Emergency Dashboard -->
+        <main class="dashboard-grid">
+            <!-- Left Side Control Panel & Alert Feed -->
+            <aside class="left-panel sidebar-glass">
+                <!-- SOS Big Trigger Button -->
+                <div class="sos-trigger-card card-glass">
+                    <button id="btnSosTrigger" class="btn-sos-pulse">
+                        <div class="sos-inner">
+                            <span class="sos-icon">🚨</span>
+                            <span class="sos-text">กดขอความช่วยเหลือ</span>
+                            <span class="sos-sub">EMERGENCY SOS</span>
+                        </div>
+                    </button>
+                    <p class="sos-help-note">กดปุ่ม SOS ค้างไว้ 1.5 วินาที เพื่อกระจายพิกัดและสัญญาณฉุกเฉินไปยังผู้ใช้รอบข้าง</p>
+                </div>
+
+                <!-- Emergency Hotlines Quick Dial Bar -->
+                <div class="hotlines-section card-glass">
+                    <h3>📞 สายด่วนฉุกเฉินไทย (Quick Hotlines)</h3>
+                    <div class="hotline-grid">
+                        <a href="tel:191" class="hotline-btn police">
+                            <span class="num">191</span>
+                            <span class="txt">เหตุด่วนเหตุร้าย</span>
+                        </a>
+                        <a href="tel:1669" class="hotline-btn medical">
+                            <span class="num">1669</span>
+                            <span class="txt">การแพทย์ฉุกเฉิน</span>
+                        </a>
+                        <a href="tel:199" class="hotline-btn fire">
+                            <span class="num">199</span>
+                            <span class="txt">ดับเพลิงกู้ภัย</span>
+                        </a>
+                        <a href="tel:1554" class="hotline-btn rescue">
+                            <span class="num">1554</span>
+                            <span class="txt">ศูนย์กู้ชีพ</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Flood & Sea Level Water Gauge Stations Section -->
+                <div class="water-stations-section card-glass">
+                    <div class="water-section-header">
+                        <h3>🌊 ระดับน้ำท่วม & ระดับน้ำทะเลสด (Water Levels)</h3>
+                        <span class="badge-live-sm">LIVE GAUGE</span>
+                    </div>
+                    <div id="waterStationsList" class="water-stations-list">
+                        <!-- Rendered dynamically via app.js -->
+                    </div>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="filter-section">
+                    <h3>📌 กรองประเภทเหตุการณ์ฉุกเฉิน</h3>
+                    <div class="category-pills">
+                        <button class="pill active" data-cat="all">ทั้งหมด (All)</button>
+                        <button class="pill" data-cat="accident">🚗 อุบัติเหตุ</button>
+                        <button class="pill" data-cat="fire">🔥 อัคคีภัย</button>
+                        <button class="pill" data-cat="crime">🚨 อาชญากรรม</button>
+                        <button class="pill" data-cat="disaster">🌊 ภัยธรรมชาติ</button>
+                        <button class="pill" data-cat="medical">🚑 แพทย์ฉุกเฉิน</button>
+                    </div>
+                </div>
+
+                <!-- Active Alert Incident Cards Stream -->
+                <div class="incidents-feed-header">
+                    <h3>📡 เหตุการณ์ฉุกเฉินสดในพื้นที่ (<span id="alertCountLabel">0</span>)</h3>
+                </div>
+                <div id="incidentsFeed" class="incidents-feed-list">
+                    <!-- Dynamic Alert Cards rendered via app.js -->
+                </div>
+            </aside>
+
+            <!-- Center Interactive Map Center -->
+            <section class="map-container-section card-glass">
+                <div id="map" class="map-viewport"></div>
+
+                <!-- Floating Map Controls -->
+                <div class="map-floating-controls">
+                    <button id="btnToggleWaterLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลระดับน้ำท่วมและน้ำทะเล">
+                        🌊 ระดับน้ำท่วม & น้ำทะเลสด
+                    </button>
+                    <button id="btnRecenterGps" class="map-btn" title="กลับมาที่ตำแหน่งของฉัน">
+                        🎯 ตำแหน่งของฉัน
+                    </button>
+                    <button id="btnReportIncident" class="map-btn btn-primary-glass" title="แจ้งเหตุฉุกเฉินใหม่">
+                        ➕ แจ้งเหตุฉุกเฉินใหม่
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Live Camera Broadcaster Studio Modal -->
+        <div id="broadcasterModal" class="modal-overlay hidden">
+            <div class="modal-content live-studio-card card-glass">
+                <div class="studio-header">
+                    <div class="live-indicator">
+                        <span class="dot-live"></span>
+                        <h2>🔴 ถ่ายทอดสดเตือนภัย (LIVE BROADCAST STUDIO)</h2>
+                    </div>
+                    <button id="btnCloseStudio" class="btn-close">&times;</button>
+                </div>
+
+                <div class="video-preview-wrapper">
+                    <!-- Live Camera Feed -->
+                    <video id="liveCameraVideo" autoplay playsinline muted></video>
+
+                    <!-- Burned-in Real-time GPS & HUD Overlay -->
+                    <div class="video-hud-overlay">
+                        <div class="hud-top">
+                            <span class="hud-tag">📹 GUARDIAN LIVE CAMERA HUD</span>
+                            <span id="hudTimestamp" class="hud-time">--:--:--</span>
+                        </div>
+                        <div class="hud-bottom">
+                            <div class="hud-stat">
+                                <span class="lbl">LAT / LNG:</span>
+                                <span id="hudCoords" class="val">13.7563° N, 100.5018° E</span>
+                            </div>
+                            <div class="hud-stat">
+                                <span class="lbl">ACCURACY:</span>
+                                <span id="hudAccuracy" class="val">±5.0m</span>
+                            </div>
+                            <div class="hud-stat">
+                                <span class="lbl">SPEED:</span>
+                                <span id="hudSpeed" class="val">0 km/h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="studio-controls-bar">
+                    <button id="btnFlipCamera" class="btn btn-secondary">
+                        🔄 สลับกล้อง (Front/Back)
+                    </button>
+                    <button id="btnToggleFlashlight" class="btn btn-secondary">
+                        💡 ไฟฉายฉุกเฉิน
+                    </button>
+                    <button id="btnToggleMic" class="btn btn-secondary">
+                        🎙️ ไมโครโฟน: เปิด
+                    </button>
+                    <button id="btnStopBroadcasting" class="btn btn-danger">
+                        ⏹️ ยุติการถ่ายทอดสด
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Stream Viewer Modal -->
+        <div id="streamViewerModal" class="modal-overlay hidden">
+            <div class="modal-content stream-viewer-card card-glass">
+                <div class="studio-header">
+                    <div class="live-indicator">
+                        <span class="dot-live"></span>
+                        <h2 id="viewerStreamTitle">🔴 รับชมไลฟ์สดเหตุการณ์ฉุกเฉิน</h2>
+                    </div>
+                    <button id="btnCloseViewer" class="btn-close">&times;</button>
+                </div>
+
+                <div class="viewer-main-grid">
+                    <div class="viewer-video-container">
+                        <video id="viewerVideoPlayer" autoplay playsinline></video>
+                        <div class="viewer-badge-bar">
+                            <span class="badge-tag" id="viewerCategoryBadge">🚗 อุบัติเหตุ</span>
+                            <span class="badge-tag viewers" id="viewerCountBadge">👁️ 142 ผู้ชมสด</span>
+                        </div>
+                    </div>
+
+                    <div class="viewer-side-info card-glass">
+                        <div class="info-group">
+                            <label>📍 ตำแหน่งที่เกิดเหตุ (GPS Coordinates):</label>
+                            <p id="viewerAddressText" class="info-val">กำลังโหลด...</p>
+                            <a id="btnNavGoogleMaps" href="#" target="_blank" class="btn btn-primary w-100" style="margin-top:8px;">
+                                🗺️ นำทางไปยังจุดเกิดเหตุด้วย Google Maps
+                            </a>
+                        </div>
+
+                        <div class="chat-box">
+                            <h4>💬 แชตสดรายงานสถานการณ์</h4>
+                            <div id="chatMessagesList" class="chat-messages">
+                                <div class="chat-msg system">
+                                    <span class="user">ระบบ:</span> ยินดีต้อนรับสู่ห้องถ่ายทอดสดเหตุการณ์ฉุกเฉิน
+                                </div>
+                            </div>
+                            <div class="chat-input-bar">
+                                <input type="text" id="chatInputText" placeholder="พิมพ์ข้อความรายงานสถานการณ์..." class="text-input">
+                                <button id="btnSendChat" class="btn btn-primary btn-sm">ส่ง</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Citizen Incident Reporting & Live Stream Modal -->
+        <div id="citizenReportModal" class="modal-overlay hidden">
+            <div class="modal-content citizen-report-card card-glass" style="max-width: 600px;">
+                <div class="studio-header">
+                    <div class="live-indicator">
+                        <span class="shield-icon">📢</span>
+                        <h2>ประชาชนแจ้งเหตุฉุกเฉิน & ไลฟ์สดสถานการณ์</h2>
+                    </div>
+                    <button id="btnCloseCitizenReport" class="btn-close">&times;</button>
+                </div>
+
+                <form id="citizenReportForm" class="citizen-form">
+                    <div class="form-group">
+                        <label>📌 เลือกประเภทเหตุการณ์ฉุกเฉิน:</label>
+                        <div class="report-cat-grid">
+                            <label class="cat-option">
+                                <input type="radio" name="reportCat" value="accident" checked>
+                                <span class="cat-box">🚗 อุบัติเหตุจราจร</span>
+                            </label>
+                            <label class="cat-option">
+                                <input type="radio" name="reportCat" value="fire">
+                                <span class="cat-box">🔥 อัคคีภัย/เพลิงไหม้</span>
+                            </label>
+                            <label class="cat-option">
+                                <input type="radio" name="reportCat" value="crime">
+                                <span class="cat-box">🚨 อาชญากรรม/ปล้น</span>
+                            </label>
+                            <label class="cat-option">
+                                <input type="radio" name="reportCat" value="disaster">
+                                <span class="cat-box">🌊 ภัยธรรมชาติ/น้ำท่วม</span>
+                            </label>
+                            <label class="cat-option">
+                                <input type="radio" name="reportCat" value="medical">
+                                <span class="cat-box">🚑 เจ็บป่วยฉุกเฉิน</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reportTitleInput">💬 หัวข้อเหตุการณ์ฉุกเฉิน:</label>
+                        <input type="text" id="reportTitleInput" placeholder="ตัวอย่าง: เพลิงไหม้อาคารพาณิชย์ หรือ เกิดอุบัติเหตุชนซ้อนทับ..." class="text-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reportDescInput">📝 รายละเอียดเหตุการณ์เพิ่มเติม:</label>
+                        <textarea id="reportDescInput" rows="3" placeholder="ระบุรายละเอียด เช่น มีผู้บาดเจ็บ ควันไฟหนาแน่น ต้องการความช่วยเหลือด่วน..." class="text-input" style="resize:vertical;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📍 ตำแหน่งพิกัด GPS อัตโนมัติ:</label>
+                        <div class="gps-location-preview">
+                            <span class="icon">🛰️</span>
+                            <span id="reportGpsText" class="gps-val">กำลังดึงพิกัดละติจูด/ลองจิจูด...</span>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons-group">
+                        <button type="button" id="btnSubmitAndLive" class="btn btn-danger btn-pulse flex-1">
+                            🎥 🔴 ส่งแจ้งเหตุ + เริ่มไลฟ์สดทันที
+                        </button>
+                        <button type="submit" id="btnSubmitReportOnly" class="btn btn-primary flex-1">
+                            📌 ปักหมุดแจ้งเหตุฉุกเฉิน
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS Library -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="app.js"></script>
+</body>
+</html>
