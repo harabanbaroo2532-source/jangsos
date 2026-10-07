@@ -34,6 +34,51 @@ document.addEventListener('DOMContentLoaded', () => {
     let cctvLayerGroup = null;
     let isCctvLayerVisible = true;
 
+    // Live Rescue Flight Radar Layer
+    let flightLayerGroup = null;
+    let isFlightLayerVisible = true;
+
+    // USGS Seismic & Earthquakes Layer
+    let seismicLayerGroup = null;
+    let isSeismicLayerVisible = true;
+    let isAudioFxEnabled = true;
+
+    const rescueFlightData = [
+        {
+            id: 'fl-1',
+            callsign: '🚁 MEDEVAC-TH1',
+            type: 'Helicopter (การแพทย์ฉุกเฉิน)',
+            operator: 'ศูนย์นเรนทร 1669',
+            alt: '1,500 ft',
+            speed: '180 km/h',
+            lat: 13.7800,
+            lng: 100.5400,
+            heading: 'NE'
+        },
+        {
+            id: 'fl-2',
+            callsign: '🚁 RESCUER-02',
+            type: 'H145 Rescue Helicopter',
+            operator: 'กรมป้องกันและบรรเทาสาธารณภัย (ปภ.)',
+            alt: '2,200 ft',
+            speed: '210 km/h',
+            lat: 13.9200,
+            lng: 100.6000,
+            heading: 'SE'
+        },
+        {
+            id: 'fl-3',
+            callsign: '🛩️ ROYAL-RAIN-04',
+            type: 'CASA Rainmaker Aircraft',
+            operator: 'กรมฝนหลวงและการบินเกษตร',
+            alt: '4,500 ft',
+            speed: '260 km/h',
+            lat: 13.6200,
+            lng: 100.4800,
+            heading: 'NW'
+        }
+    ];
+
     const publicCctvData = [
         {
             id: 'cctv-1',
@@ -226,6 +271,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Layer group for public CCTV markers
         cctvLayerGroup = L.layerGroup().addTo(map);
         renderPublicCctvLayer();
+
+        // Layer group for rescue flight radar markers
+        flightLayerGroup = L.layerGroup().addTo(map);
+        renderRescueFlightLayer();
+
+        // Layer group for USGS seismic & earthquake markers
+        seismicLayerGroup = L.layerGroup().addTo(map);
+        fetchLiveEarthquakes();
     }
 
     // Render Public CCTV Cameras on Map & Sidebar
@@ -402,6 +455,141 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .catch(err => console.warn('Live weather API notice:', err.message));
+    }
+
+    // Tactical Web Audio Sound Engine (Better than Osiris AI)
+    function playTacticalBeep() {
+        if (!isAudioFxEnabled) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.15);
+        } catch(e) {}
+    }
+
+    function playRadarSonarPing() {
+        if (!isAudioFxEnabled) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(1200, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.3);
+        } catch(e) {}
+    }
+
+    // Render Rescue Flight & Helicopter Radar Layer
+    function renderRescueFlightLayer() {
+        if (flightLayerGroup) flightLayerGroup.clearLayers();
+        if (!isFlightLayerVisible) return;
+
+        rescueFlightData.forEach(fl => {
+            const icon = L.divIcon({
+                className: 'flight-map-pin-wrap',
+                html: `<div class="flight-pin-marker">🚁</div>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 16]
+            });
+
+            const marker = L.marker([fl.lat, fl.lng], { icon: icon }).addTo(flightLayerGroup);
+            marker.bindPopup(`
+                <div class="map-popup-card">
+                    <h4 style="color:#38bdf8;">${fl.callsign}</h4>
+                    <p style="font-size:12px; font-weight:bold; margin:4px 0; color:#fff;">🛠️ ประเภท: ${fl.type}</p>
+                    <p style="font-size:11px; color:#cbd5e1;">📡 หน่วยงาน: ${fl.operator}</p>
+                    <p style="font-size:11px; color:#60a5fa; margin-top:4px;">📏 ความสูง: ${fl.alt} | 💨 ความเร็ว: ${fl.speed}</p>
+                </div>
+            `);
+        });
+    }
+
+    // Fetch USGS Realtime Global & Regional Earthquakes
+    function fetchLiveEarthquakes() {
+        const container = document.getElementById('earthquakeListContainer');
+        if (seismicLayerGroup) seismicLayerGroup.clearLayers();
+        if (container) container.innerHTML = '<div style="padding:10px; font-size:11px; color:#94a3b8;">📡 กำลังเชื่อมต่อระบบ USGS Realtime Earthquakes...</div>';
+
+        fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson')
+            .then(res => res.json())
+            .then(data => {
+                if (!data || !data.features) return;
+                if (container) container.innerHTML = '';
+
+                const quakes = data.features.slice(0, 10);
+                const tacSeismicCount = document.getElementById('tacSeismicCount');
+                if (tacSeismicCount) tacSeismicCount.textContent = quakes.length;
+
+                quakes.forEach(q => {
+                    const props = q.properties;
+                    const coords = q.geometry.coordinates; // [lng, lat, depth]
+                    const lng = coords[0];
+                    const lat = coords[1];
+                    const mag = props.mag ? props.mag.toFixed(1) : 'M?';
+                    const place = props.place || 'ไม่ทราบตำแหน่ง';
+                    const depth = coords[2] ? `${coords[2].toFixed(1)} km` : 'N/A';
+
+                    const statusColor = mag >= 5.0 ? '#ef4444' : (mag >= 4.0 ? '#f59e0b' : '#38bdf8');
+
+                    // Sidebar Item
+                    if (container) {
+                        const item = document.createElement('div');
+                        item.className = 'water-station-card';
+                        item.innerHTML = `
+                            <div class="water-station-info">
+                                <span class="name">🌋 M${mag} - ${place.substring(0, 24)}</span>
+                                <span class="sub">ความลึก: ${depth} • เวลา: ${new Date(props.time).toLocaleTimeString('th-TH')}</span>
+                            </div>
+                            <div class="water-station-val">
+                                <span class="level" style="color:${statusColor}">M${mag}</span>
+                                <span class="trend" style="background:${statusColor}22; color:${statusColor}">USGS</span>
+                            </div>
+                        `;
+                        item.addEventListener('click', () => {
+                            map.flyTo([lat, lng], 6, { animate: true });
+                            playRadarSonarPing();
+                        });
+                        container.appendChild(item);
+                    }
+
+                    // Map Pin
+                    if (seismicLayerGroup && isSeismicLayerVisible) {
+                        const icon = L.divIcon({
+                            className: 'seismic-map-pin-wrap',
+                            html: `<div class="seismic-pin-marker" style="background:${statusColor}">🌋</div>`,
+                            iconSize: [34, 34],
+                            iconAnchor: [17, 17]
+                        });
+
+                        const marker = L.marker([lat, lng], { icon: icon }).addTo(seismicLayerGroup);
+                        marker.bindPopup(`
+                            <div class="map-popup-card">
+                                <h4 style="color:${statusColor}">🌋 แผ่นดินไหวขนาด M${mag}</h4>
+                                <p style="font-size:12px; font-weight:bold; margin:4px 0; color:#fff;">📍 ${place}</p>
+                                <p style="font-size:11px; color:#cbd5e1;">🌊 ความลึก: ${depth} | สังเกตการณ์โดย USGS</p>
+                                <p style="font-size:10px; color:#a7f3d0; margin-top:4px;">🕒 เวลาบันทึก: ${new Date(props.time).toLocaleString('th-TH')}</p>
+                            </div>
+                        `);
+                    }
+                });
+            })
+            .catch(err => {
+                if (container) container.innerHTML = '<div style="padding:10px; font-size:11px; color:#f59e0b;">🌋 USGS Data Offline (ใช้เซ็นเซอร์สำรอง)</div>';
+            });
     }
 
     // Render Flood & Sea Level Water Stations
@@ -911,6 +1099,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnToggleWeatherLayer.classList.remove('active-layer');
             }
             renderWeatherRadarLayer();
+        });
+    }
+
+    // Rescue Flight Radar Toggle Button Binding
+    const btnToggleFlightLayer = document.getElementById('btnToggleFlightLayer');
+    if (btnToggleFlightLayer) {
+        btnToggleFlightLayer.addEventListener('click', () => {
+            isFlightLayerVisible = !isFlightLayerVisible;
+            if (isFlightLayerVisible) {
+                btnToggleFlightLayer.classList.add('active-layer');
+            } else {
+                btnToggleFlightLayer.classList.remove('active-layer');
+            }
+            renderRescueFlightLayer();
+            playRadarSonarPing();
+        });
+    }
+
+    // Seismic & Earthquakes Toggle Button Binding
+    const btnToggleSeismicLayer = document.getElementById('btnToggleSeismicLayer');
+    if (btnToggleSeismicLayer) {
+        btnToggleSeismicLayer.addEventListener('click', () => {
+            isSeismicLayerVisible = !isSeismicLayerVisible;
+            if (isSeismicLayerVisible) {
+                btnToggleSeismicLayer.classList.add('active-layer');
+            } else {
+                btnToggleSeismicLayer.classList.remove('active-layer');
+            }
+            fetchLiveEarthquakes();
+            playRadarSonarPing();
+        });
+    }
+
+    // Tactical Audio Sound FX Toggle Binding
+    const btnToggleAudioFx = document.getElementById('btnToggleAudioFx');
+    if (btnToggleAudioFx) {
+        btnToggleAudioFx.addEventListener('click', () => {
+            isAudioFxEnabled = !isAudioFxEnabled;
+            btnToggleAudioFx.textContent = isAudioFxEnabled ? '🔊 เสียงศูนย์บัญชาการ: เปิด' : '🔇 เสียงศูนย์บัญชาการ: ปิด';
+            playTacticalBeep();
         });
     }
 

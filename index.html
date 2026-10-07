@@ -56,14 +56,52 @@
             </div>
 
             <div class="header-right">
+                <button id="btnToggleAudioFx" class="btn btn-secondary" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+                    <span class="icon">🔊</span> เสียงศูนย์บัญชาการ
+                </button>
                 <button id="btnToggleSiren" class="btn btn-warning">
-                    <span class="icon">🔊</span> เปิดไซเรนเตือนภัย
+                    <span class="icon">🚨</span> ไซเรนเตือนภัย
                 </button>
                 <button id="btnStartBroadcasting" class="btn btn-danger btn-pulse">
                     <span class="icon">🎥</span> 🔴 ถ่ายทอดสดเตือนภัย
                 </button>
             </div>
         </header>
+
+        <!-- Tactical Command Stats & AI Threat Level Meter (Better than Osiris AI) -->
+        <div class="command-tactical-bar card-glass">
+            <div class="threat-meter-box">
+                <span class="threat-label">🛡️ AI DANGER INDEX:</span>
+                <span class="threat-badge defcon-3" id="aiThreatBadge">DEFCON 3 • ELEVATED (68/100)</span>
+            </div>
+            <div class="tactical-stats-grid">
+                <div class="tac-stat-item">
+                    <span class="tac-icon">🚨</span>
+                    <span class="tac-val" id="tacAlertsCount">5</span>
+                    <span class="tac-lbl">เหตุฉุกเฉินสด</span>
+                </div>
+                <div class="tac-stat-item">
+                    <span class="tac-icon">📹</span>
+                    <span class="tac-val" id="tacCctvCount">6</span>
+                    <span class="tac-lbl">กล้อง CCTV</span>
+                </div>
+                <div class="tac-stat-item">
+                    <span class="tac-icon">🚁</span>
+                    <span class="tac-val" id="tacFlightCount">3</span>
+                    <span class="tac-lbl">เรดาร์การบินกู้ภัย</span>
+                </div>
+                <div class="tac-stat-item">
+                    <span class="tac-icon">🌋</span>
+                    <span class="tac-val" id="tacSeismicCount">LIVE</span>
+                    <span class="tac-lbl">แผ่นดินไหว USGS</span>
+                </div>
+                <div class="tac-stat-item">
+                    <span class="tac-icon">🌊</span>
+                    <span class="tac-val" id="tacWaterCount">4</span>
+                    <span class="tac-lbl">สถานีน้ำท่วม</span>
+                </div>
+            </div>
+        </div>
 
         <!-- Main Emergency Dashboard -->
         <main class="dashboard-grid">
@@ -126,6 +164,17 @@
                     </div>
                 </div>
 
+                <!-- Global Seismic & Earthquake Radar Panel (USGS Live Feed) -->
+                <div class="water-stations-section card-glass">
+                    <div class="water-section-header">
+                        <h3>🌋 แผ่นดินไหวสดทั่วโลก (USGS Earthquakes)</h3>
+                        <span class="badge-live-sm" style="background:rgba(239, 68, 68, 0.25); color:#ef4444; border-color:rgba(239, 68, 68, 0.4);">USGS LIVE</span>
+                    </div>
+                    <div id="earthquakeListContainer" class="water-stations-list">
+                        <!-- Rendered dynamically via app.js -->
+                    </div>
+                </div>
+
                 <!-- Category Filters -->
                 <div class="filter-section">
                     <h3>📌 กรองประเภทเหตุการณ์ฉุกเฉิน</h3>
@@ -154,14 +203,20 @@
 
                 <!-- Floating Map Controls -->
                 <div class="map-floating-controls">
+                    <button id="btnToggleFlightLayer" class="map-btn active-layer" title="เปิด/ปิด เรดาร์การบินและเฮลิคอปเตอร์กู้ภัยสด">
+                        🚁 เรดาร์การบินกู้ภัยสด
+                    </button>
+                    <button id="btnToggleSeismicLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลแผ่นดินไหว USGS & จุดความร้อนไฟป่า">
+                        🌋 เรดาร์แผ่นดินไหว USGS
+                    </button>
                     <button id="btnToggleCctvLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลกล้องวงจรปิดสาธารณะสด">
                         📹 กล้องสาธารณะสด
                     </button>
                     <button id="btnToggleWeatherLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลสภาพอากาศสดและเรดาร์ฝน">
-                        🌧️ สภาพอากาศ & เรดาร์ฝนสด
+                        🌧️ สภาพอากาศสด
                     </button>
                     <button id="btnToggleWaterLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลระดับน้ำท่วมและน้ำทะเล">
-                        🌊 ระดับน้ำท่วม & น้ำทะเลสด
+                        🌊 ระดับน้ำท่วมสด
                     </button>
                     <button id="btnRecenterGps" class="map-btn" title="กลับมาที่ตำแหน่งของฉัน">
                         🎯 ตำแหน่งของฉัน
