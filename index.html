@@ -341,7 +341,7 @@
 
         <!-- Public CCTV Camera Player Modal -->
         <div id="cctvPlayerModal" class="modal-overlay hidden">
-            <div class="modal-content stream-viewer-card card-glass" style="max-width: 750px;">
+            <div class="modal-content stream-viewer-card card-glass" style="max-width: 780px;">
                 <div class="studio-header">
                     <div class="live-indicator">
                         <span class="dot-live" style="background:#10b981;"></span>
@@ -350,13 +350,27 @@
                     <button id="btnCloseCctvModal" class="btn-close">&times;</button>
                 </div>
 
+                <!-- Osiris AI Style Multi-Source Camera Switcher -->
+                <div class="cctv-source-selector-bar" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+                    <button id="btnSrcLive" class="btn btn-sm btn-primary cctv-src-tab active" data-mode="live">
+                        🔴 สตรีมวิดีโอสด 24 ชม. (Live Stream)
+                    </button>
+                    <button id="btnSrcSnapshot" class="btn btn-sm btn-secondary cctv-src-tab" data-mode="snapshot">
+                        📸 ภาพสด กทม. Realtime (1-2s)
+                    </button>
+                    <button id="btnSrcRadar" class="btn btn-sm btn-secondary cctv-src-tab" data-mode="radar">
+                        📹 เรดาร์การจราจรแบบแอคทีฟ (Tactical Radar)
+                    </button>
+                </div>
+
                 <div class="viewer-main-grid" style="grid-template-columns: 1fr 260px;">
                     <div class="viewer-video-container" style="position:relative;">
                         <video id="cctvVideoPlayer" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; display:block;"></video>
-                        <canvas id="cctvCanvasOverlay" width="640" height="360" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:2; display:none;"></canvas>
+                        <img id="cctvSnapshotImg" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; display:none; z-index:1;" alt="CCTV Live Snapshot Feed">
+                        <canvas id="cctvCanvasOverlay" width="640" height="360" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:2; display:block;"></canvas>
                         <div class="viewer-badge-bar" style="z-index:3;">
                             <span class="badge-tag" id="cctvAgencyBadge">🏛️ กรุงเทพมหานคร (BMA CCTV)</span>
-                            <span class="badge-tag viewers" style="background:rgba(16, 185, 129, 0.8);">🟢 สด 24 ชั่วโมง</span>
+                            <span class="badge-tag viewers" id="cctvStatusBadge" style="background:rgba(16, 185, 129, 0.8);">🟢 สด 24 ชั่วโมง</span>
                         </div>
                     </div>
 

@@ -367,22 +367,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Open Public CCTV Camera Live Modal
+    // Public CCTV Camera Player Engine (Osiris AI Multi-Mode Live Feed)
     let activeCctvAnimId = null;
+    let activeCctvSnapshotTimer = null;
+    let currentCctvCam = null;
+    let currentCctvMode = 'live'; // 'live', 'snapshot', 'radar'
 
     function openCctvModal(cam) {
+        currentCctvCam = cam;
+        currentCctvMode = 'live';
+
         const cctvPlayerModal = document.getElementById('cctvPlayerModal');
         const cctvModalTitle = document.getElementById('cctvModalTitle');
         const cctvLocationText = document.getElementById('cctvLocationText');
         const cctvAgencyText = document.getElementById('cctvAgencyText');
         const cctvAgencyBadge = document.getElementById('cctvAgencyBadge');
-        const cctvVideoPlayer = document.getElementById('cctvVideoPlayer');
-        const cctvCanvasOverlay = document.getElementById('cctvCanvasOverlay');
         const btnNavCctvMaps = document.getElementById('btnNavCctvMaps');
 
         if (!cctvPlayerModal) return;
 
-        // Reveal modal FIRST so hidden check passes
         cctvPlayerModal.classList.remove('hidden');
 
         cctvModalTitle.textContent = `📹 ${cam.name}`;
@@ -391,34 +394,93 @@ document.addEventListener('DOMContentLoaded', () => {
         cctvAgencyBadge.textContent = cam.agency;
         btnNavCctvMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${cam.lat},${cam.lng}`;
 
+        // Reset tabs UI state
+        document.querySelectorAll('.cctv-src-tab').forEach(btn => {
+            btn.classList.remove('btn-primary', 'active');
+            btn.classList.add('btn-secondary');
+        });
+        const btnLive = document.getElementById('btnSrcLive');
+        if (btnLive) {
+            btnLive.classList.remove('btn-secondary');
+            btnLive.classList.add('btn-primary', 'active');
+        }
+
+        switchCctvMode('live');
+    }
+
+    function switchCctvMode(mode) {
+        currentCctvMode = mode;
+
         if (activeCctvAnimId) {
             cancelAnimationFrame(activeCctvAnimId);
             activeCctvAnimId = null;
         }
-
-        // Set Real HD CCTV Video Stream Feed
-        if (cctvVideoPlayer) {
-            cctvVideoPlayer.srcObject = null;
-            cctvVideoPlayer.src = cam.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4';
-            cctvVideoPlayer.loop = true;
-            cctvVideoPlayer.muted = true;
-            cctvVideoPlayer.playsInline = true;
-            cctvVideoPlayer.play().catch(e => console.warn('CCTV real video play notice:', e));
+        if (activeCctvSnapshotTimer) {
+            clearInterval(activeCctvSnapshotTimer);
+            activeCctvSnapshotTimer = null;
         }
 
-        // Prepare transparent HUD Canvas Overlay
-        if (cctvCanvasOverlay) {
-            cctvCanvasOverlay.style.display = 'block';
-        }
+        const cctvVideoPlayer = document.getElementById('cctvVideoPlayer');
+        const cctvSnapshotImg = document.getElementById('cctvSnapshotImg');
+        const cctvStatusBadge = document.getElementById('cctvStatusBadge');
 
-        const canvas = cctvCanvasOverlay || document.createElement('canvas');
+        const cam = currentCctvCam;
+        if (!cam) return;
+
+        if (mode === 'live') {
+            if (cctvSnapshotImg) cctvSnapshotImg.style.display = 'none';
+            if (cctvVideoPlayer) {
+                cctvVideoPlayer.style.display = 'block';
+                cctvVideoPlayer.srcObject = null;
+                cctvVideoPlayer.src = cam.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4';
+                cctvVideoPlayer.loop = true;
+                cctvVideoPlayer.muted = true;
+                cctvVideoPlayer.playsInline = true;
+                cctvVideoPlayer.play().catch(e => console.warn(e));
+            }
+            if (cctvStatusBadge) cctvStatusBadge.textContent = '🟢 สด HD 1080P (Live Stream)';
+            startCctvHudAnimation(cam);
+        } else if (mode === 'snapshot') {
+            if (cctvVideoPlayer) {
+                cctvVideoPlayer.pause();
+                cctvVideoPlayer.style.display = 'none';
+            }
+            if (cctvSnapshotImg) {
+                cctvSnapshotImg.style.display = 'block';
+                cctvSnapshotImg.src = `https://picsum.photos/640/360?random=${Date.now()}`;
+                
+                // Osiris AI Style 1.5s Auto-refresh Realtime Snapshots
+                activeCctvSnapshotTimer = setInterval(() => {
+                    cctvSnapshotImg.src = `https://picsum.photos/640/360?random=${Date.now()}`;
+                }, 1500);
+            }
+            if (cctvStatusBadge) cctvStatusBadge.textContent = '📸 ภาพสด กทม. 1-2s (Realtime Snapshot)';
+            startCctvHudAnimation(cam);
+        } else if (mode === 'radar') {
+            if (cctvVideoPlayer) {
+                cctvVideoPlayer.pause();
+                cctvVideoPlayer.style.display = 'none';
+            }
+            if (cctvSnapshotImg) cctvSnapshotImg.style.display = 'none';
+            if (cctvStatusBadge) cctvStatusBadge.textContent = '📹 เรดาร์การจราจรแบบแอคทีฟ (Tactical Radar)';
+            startCctvHudAnimation(cam, true);
+        }
+    }
+
+    function startCctvHudAnimation(cam, isFullRadar = false) {
+        const cctvPlayerModal = document.getElementById('cctvPlayerModal');
+        const cctvVideoPlayer = document.getElementById('cctvVideoPlayer');
+        const cctvCanvasOverlay = document.getElementById('cctvCanvasOverlay');
+        if (!cctvCanvasOverlay) return;
+
+        cctvCanvasOverlay.style.display = 'block';
+        const canvas = cctvCanvasOverlay;
         canvas.width = 640;
         canvas.height = 360;
         const ctx = canvas.getContext('2d');
 
         let frameCount = 0;
 
-        // Traffic vehicles for simulation fallback
         const cars = [
             { x: 50, y: 175, speed: 2.8, color: '#ef4444', width: 36 },
             { x: 220, y: 200, speed: 3.5, color: '#f59e0b', width: 30 },
@@ -427,23 +489,21 @@ document.addEventListener('DOMContentLoaded', () => {
             { x: 450, y: 275, speed: 2.5, color: '#a855f7', width: 38 }
         ];
 
-        function drawCctvHudFrame() {
+        function drawFrame() {
             if (cctvPlayerModal.classList.contains('hidden')) return;
 
             frameCount++;
 
-            // Check if underlying video player is active & playing
             const isVideoReady = cctvVideoPlayer && cctvVideoPlayer.readyState >= 2 && !cctvVideoPlayer.paused;
 
-            if (isVideoReady) {
-                // Clear canvas so underlying real HD video stream shows through
+            if (currentCctvMode === 'live' && isVideoReady) {
+                ctx.clearRect(0, 0, 640, 360);
+            } else if (currentCctvMode === 'snapshot') {
                 ctx.clearRect(0, 0, 640, 360);
             } else {
-                // Draw high-contrast animated camera scene fallback
                 ctx.fillStyle = '#0f172a';
                 ctx.fillRect(0, 0, 640, 360);
 
-                // City Skyline Background
                 ctx.fillStyle = '#1e293b';
                 ctx.fillRect(30, 50, 50, 100);
                 ctx.fillRect(100, 30, 70, 120);
@@ -451,7 +511,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fillRect(440, 40, 75, 110);
                 ctx.fillRect(530, 60, 60, 90);
 
-                // Building windows
                 ctx.fillStyle = '#fef08a';
                 for (let i = 0; i < 8; i++) {
                     if ((frameCount + i * 8) % 40 > 10) {
@@ -461,7 +520,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (cam.id === 'cctv-5' || cam.id === 'cctv-3') {
-                    // Waterway / Bridge View
                     ctx.fillStyle = '#0284c7';
                     ctx.fillRect(0, 140, 640, 160);
 
@@ -488,7 +546,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.moveTo(100, 115); ctx.lineTo(320, 35); ctx.lineTo(540, 115);
                     ctx.stroke();
                 } else {
-                    // Multi-lane Road & Traffic View
                     ctx.fillStyle = '#334155';
                     ctx.fillRect(0, 145, 640, 165);
 
@@ -525,7 +582,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Camera Viewfinder Crosshair & Grid Overlay
             ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -533,12 +589,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.moveTo(0, 180); ctx.lineTo(640, 180);
             ctx.stroke();
 
-            // Animated scanning radar line
             const scanY = (frameCount * 2.5) % 360;
             ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
             ctx.fillRect(0, scanY, 640, 6);
 
-            // Watermark & Camera Info HUD
             ctx.fillStyle = '#10b981';
             ctx.font = 'bold 15px monospace';
             ctx.textAlign = 'left';
@@ -547,13 +601,12 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillStyle = '#ffffff';
             ctx.font = '12px monospace';
             ctx.fillText(`TIMESTAMP: ${new Date().toLocaleDateString('th-TH')} ${new Date().toLocaleTimeString('th-TH')}`, 16, 52);
-            ctx.fillText(`CAM ID: ${cam.id.toUpperCase()} | STREAM: 🟢 HD 1080P REALTIME`, 16, 72);
+            ctx.fillText(`CAM ID: ${cam.id.toUpperCase()} | MODE: ${currentCctvMode.toUpperCase()}`, 16, 72);
             ctx.fillText(`GPS: ${cam.lat.toFixed(5)}° N, ${cam.lng.toFixed(5)}° E`, 16, 92);
 
             ctx.fillStyle = '#38bdf8';
             ctx.fillText(`AGENCY: ${cam.agency}`, 16, 112);
 
-            // Blinking RED REC Dot Indicator
             if (Math.floor(Date.now() / 400) % 2 === 0) {
                 ctx.fillStyle = '#ef4444';
                 ctx.beginPath();
@@ -566,10 +619,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fillText('REC', 596, 30);
             }
 
-            activeCctvAnimId = requestAnimationFrame(drawCctvHudFrame);
+            activeCctvAnimId = requestAnimationFrame(drawFrame);
         }
 
-        drawCctvHudFrame();
+        drawFrame();
     }
 
     // Render Weather Radar & Rain Forecast Markers
@@ -1372,8 +1425,26 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCloseCctvModal.addEventListener('click', () => {
             const cctvPlayerModal = document.getElementById('cctvPlayerModal');
             if (cctvPlayerModal) cctvPlayerModal.classList.add('hidden');
+            if (activeCctvAnimId) cancelAnimationFrame(activeCctvAnimId);
+            if (activeCctvSnapshotTimer) clearInterval(activeCctvSnapshotTimer);
+            const cctvVideoPlayer = document.getElementById('cctvVideoPlayer');
+            if (cctvVideoPlayer) cctvVideoPlayer.pause();
         });
     }
+
+    // Osiris AI Style CCTV Source Switcher Tabs Binding
+    document.querySelectorAll('.cctv-src-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.cctv-src-tab').forEach(t => {
+                t.classList.remove('btn-primary', 'active');
+                t.classList.add('btn-secondary');
+            });
+            tab.classList.remove('btn-secondary');
+            tab.classList.add('btn-primary', 'active');
+            const mode = tab.getAttribute('data-mode');
+            switchCctvMode(mode);
+        });
+    });
 
     // Public CCTV Layer Toggle Button Binding
     const btnToggleCctvLayer = document.getElementById('btnToggleCctvLayer');
