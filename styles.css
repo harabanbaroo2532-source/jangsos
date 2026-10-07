@@ -346,11 +346,25 @@ body {
     50% { transform: scale(1.15); }
 }
 
-.map-btn.active-layer {
-    background: rgba(59, 130, 246, 0.3);
-    border-color: #60a5fa;
-    color: #60a5fa;
-    box-shadow: 0 0 14px rgba(59, 130, 246, 0.4);
+/* Public CCTV Camera Pin Marker */
+.cctv-pin-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: #10b981;
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
+    color: #fff;
+    font-size: 16px;
+    animation: cctvBlink 2.5s infinite ease-in-out;
+}
+
+@keyframes cctvBlink {
+    0%, 100% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+    50% { box-shadow: 0 0 20px rgba(16, 185, 129, 1); }
 }
 
 .hotline-grid {

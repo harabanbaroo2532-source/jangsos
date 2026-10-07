@@ -30,6 +30,67 @@ document.addEventListener('DOMContentLoaded', () => {
     let weatherLayerGroup = null;
     let isWeatherLayerVisible = true;
 
+    // Public CCTV Camera Layer
+    let cctvLayerGroup = null;
+    let isCctvLayerVisible = true;
+
+    const publicCctvData = [
+        {
+            id: 'cctv-1',
+            name: '📹 CCTV แยกสยามปทุมวัน (กทม.)',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7462,
+            lng: 100.5305,
+            address: 'ทางแยกสยามปทุมวัน ถนนพระราม 1 เขตปทุมวัน กรุงเทพฯ'
+        },
+        {
+            id: 'cctv-2',
+            name: '📹 CCTV อนุสาวรีย์ชัยสมรภูมิ',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7649,
+            lng: 100.5383,
+            address: 'วงเวียนอนุสาวรีย์ชัยสมรภูมิ เขตพญาไท กรุงเทพฯ'
+        },
+        {
+            id: 'cctv-3',
+            name: '📹 CCTV แยกประตูน้ำ / คลองแสนแสบ',
+            agency: '🌊 สำนักการระบายน้ำ กทม.',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7495,
+            lng: 100.5412,
+            address: 'สะพานเฉลิมโลก ถนนราชดำริ เขตปทุมวัน กรุงเทพฯ'
+        },
+        {
+            id: 'cctv-4',
+            name: '📹 CCTV ห้าแยกลาดพร้าว',
+            agency: '🚦 กรมทางหลวง / กทม.',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.8135,
+            lng: 100.5606,
+            address: 'ห้าแยกลาดพร้าว ถนนพหลโยธิน เขตจตุจักร กรุงเทพฯ'
+        },
+        {
+            id: 'cctv-5',
+            name: '📹 CCTV สะพานพระราม 8 (แม่น้ำเจ้าพระยา)',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7689,
+            lng: 100.4965,
+            address: 'สะพานพระราม 8 ข้ามแม่น้ำเจ้าพระยา เขตบางพลัด กรุงเทพฯ'
+        },
+        {
+            id: 'cctv-6',
+            name: '📹 CCTV ทางด่วนบางนา-ตราด (กม.1)',
+            agency: '🚗 การทางพิเศษแห่งประเทศไทย (EXAT)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.6685,
+            lng: 100.6042,
+            address: 'ทางพิเศษสายบางนา-อาจณรงค์ เขตบางนา กรุงเทพฯ'
+        }
+    ];
+
     const weatherRadarData = [
         { id: 'w-1', city: 'กรุงเทพมหานคร', temp: '31°C', condition: '🌧️ ฝนตกหนักมาก', rainChance: '90%', wind: '14 km/h SW', pm25: 24, lat: 13.7563, lng: 100.5018 },
         { id: 'w-2', city: 'สมุทรปราการ', temp: '30°C', condition: '⛈️ พายุฝนฟ้าคะนอง', rainChance: '85%', wind: '18 km/h S', pm25: 28, lat: 13.5992, lng: 100.5967 },
@@ -161,6 +222,141 @@ document.addEventListener('DOMContentLoaded', () => {
         // Layer group for weather & rain radar markers
         weatherLayerGroup = L.layerGroup().addTo(map);
         renderWeatherRadarLayer();
+
+        // Layer group for public CCTV markers
+        cctvLayerGroup = L.layerGroup().addTo(map);
+        renderPublicCctvLayer();
+    }
+
+    // Render Public CCTV Cameras on Map & Sidebar
+    function renderPublicCctvLayer() {
+        const cctvListContainer = document.getElementById('cctvListContainer');
+        if (cctvLayerGroup) cctvLayerGroup.clearLayers();
+
+        if (cctvListContainer) cctvListContainer.innerHTML = '';
+
+        publicCctvData.forEach(cam => {
+            // Sidebar Item
+            if (cctvListContainer) {
+                const item = document.createElement('div');
+                item.className = 'water-station-card';
+                item.innerHTML = `
+                    <div class="water-station-info">
+                        <span class="name">${cam.name}</span>
+                        <span class="sub">${cam.agency}</span>
+                    </div>
+                    <div class="water-station-val">
+                        <span class="level" style="color:#10b981;">🟢 สด</span>
+                        <span class="trend" style="background:#10b98122; color:#10b981;">24 ชั่วโมง</span>
+                    </div>
+                `;
+                item.addEventListener('click', () => {
+                    map.flyTo([cam.lat, cam.lng], 16, { animate: true });
+                    openCctvModal(cam);
+                });
+                cctvListContainer.appendChild(item);
+            }
+
+            // Leaflet Map Marker
+            if (cctvLayerGroup && isCctvLayerVisible) {
+                const icon = L.divIcon({
+                    className: 'cctv-map-pin-wrap',
+                    html: `<div class="cctv-pin-marker">📹</div>`,
+                    iconSize: [34, 34],
+                    iconAnchor: [17, 17]
+                });
+
+                const marker = L.marker([cam.lat, cam.lng], { icon: icon }).addTo(cctvLayerGroup);
+                marker.bindPopup(`
+                    <div class="map-popup-card">
+                        <h4 style="color:#10b981;">${cam.name}</h4>
+                        <p style="font-size:11px; color:#cbd5e1; margin:4px 0;">📍 ${cam.address}</p>
+                        <p style="font-size:11px; color:#60a5fa;">📡 หน่วยงาน: ${cam.agency}</p>
+                        <button class="btn btn-primary btn-sm w-100 btn-open-cctv" style="margin-top:6px; background:#10b981; border:none;">📹 รับชมสัญญาณกล้องสด</button>
+                    </div>
+                `);
+
+                marker.on('popupopen', () => {
+                    const btn = document.querySelector('.btn-open-cctv');
+                    if (btn) {
+                        btn.onclick = () => openCctvModal(cam);
+                    }
+                });
+            }
+        });
+    }
+
+    // Open Public CCTV Camera Live Modal
+    function openCctvModal(cam) {
+        const cctvPlayerModal = document.getElementById('cctvPlayerModal');
+        const cctvModalTitle = document.getElementById('cctvModalTitle');
+        const cctvLocationText = document.getElementById('cctvLocationText');
+        const cctvAgencyText = document.getElementById('cctvAgencyText');
+        const cctvAgencyBadge = document.getElementById('cctvAgencyBadge');
+        const cctvVideoPlayer = document.getElementById('cctvVideoPlayer');
+        const btnNavCctvMaps = document.getElementById('btnNavCctvMaps');
+
+        if (!cctvPlayerModal) return;
+
+        cctvModalTitle.textContent = `📹 ${cam.name}`;
+        cctvLocationText.textContent = `${cam.address} (GPS: ${cam.lat.toFixed(5)}, ${cam.lng.toFixed(5)})`;
+        cctvAgencyText.textContent = cam.agency;
+        cctvAgencyBadge.textContent = cam.agency;
+        btnNavCctvMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${cam.lat},${cam.lng}`;
+
+        // Create Real-Time Animated CCTV Camera Stream on HTML5 Canvas
+        const cctvCanvas = document.createElement('canvas');
+        cctvCanvas.width = 640;
+        cctvCanvas.height = 360;
+        const ctx = cctvCanvas.getContext('2d');
+
+        function drawCctvFrame() {
+            if (cctvPlayerModal.classList.contains('hidden')) return;
+
+            // Draw CCTV Camera background with grid lines
+            ctx.fillStyle = '#06090e';
+            ctx.fillRect(0, 0, 640, 360);
+
+            // Draw Camera Viewfinder Crosshair & Grid
+            ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(320, 0); ctx.lineTo(320, 360);
+            ctx.moveTo(0, 180); ctx.lineTo(640, 180);
+            ctx.stroke();
+
+            // Animated scanning radar line
+            const scanY = (Date.now() / 15) % 360;
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+            ctx.fillRect(0, scanY, 640, 4);
+
+            // Draw Camera HUD Watermark Header
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 15px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`🔴 LIVE CCTV | ${cam.name.substring(0, 25)}`, 16, 30);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '12px monospace';
+            ctx.fillText(`TIME: ${new Date().toLocaleTimeString('th-TH')} | CAM ID: ${cam.id.toUpperCase()}`, 16, 50);
+            ctx.fillText(`GPS: ${cam.lat.toFixed(5)}° N, ${cam.lng.toFixed(5)}° E`, 16, 70);
+
+            // REC Dot
+            if (Math.floor(Date.now() / 500) % 2 === 0) {
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(610, 26, 6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            requestAnimationFrame(drawCctvFrame);
+        }
+
+        const stream = cctvCanvas.captureStream(25);
+        cctvVideoPlayer.srcObject = stream;
+        drawCctvFrame();
+
+        cctvPlayerModal.classList.remove('hidden');
     }
 
     // Render Weather Radar & Rain Forecast Markers
@@ -680,6 +876,29 @@ document.addEventListener('DOMContentLoaded', () => {
     btnStopBroadcasting.addEventListener('click', stopCameraBroadcast);
     btnCloseStudio.addEventListener('click', stopCameraBroadcast);
     btnCloseViewer.addEventListener('click', () => streamViewerModal.classList.add('hidden'));
+
+    // Public CCTV Modal Close Button Binding
+    const btnCloseCctvModal = document.getElementById('btnCloseCctvModal');
+    if (btnCloseCctvModal) {
+        btnCloseCctvModal.addEventListener('click', () => {
+            const cctvPlayerModal = document.getElementById('cctvPlayerModal');
+            if (cctvPlayerModal) cctvPlayerModal.classList.add('hidden');
+        });
+    }
+
+    // Public CCTV Layer Toggle Button Binding
+    const btnToggleCctvLayer = document.getElementById('btnToggleCctvLayer');
+    if (btnToggleCctvLayer) {
+        btnToggleCctvLayer.addEventListener('click', () => {
+            isCctvLayerVisible = !isCctvLayerVisible;
+            if (isCctvLayerVisible) {
+                btnToggleCctvLayer.classList.add('active-layer');
+            } else {
+                btnToggleCctvLayer.classList.remove('active-layer');
+            }
+            renderPublicCctvLayer();
+        });
+    }
 
     // Weather Layer Toggle Button Binding
     const btnToggleWeatherLayer = document.getElementById('btnToggleWeatherLayer');

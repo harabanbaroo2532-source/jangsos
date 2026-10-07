@@ -104,6 +104,17 @@
                     </div>
                 </div>
 
+                <!-- Public CCTV Cameras Panel -->
+                <div class="cctv-panel-section card-glass">
+                    <div class="water-section-header">
+                        <h3>📹 กล้องวงจรปิดสาธารณะสด (Public CCTV Cams)</h3>
+                        <span class="badge-live-sm" style="background:rgba(16, 185, 129, 0.25); color:#10b981; border-color:rgba(16, 185, 129, 0.4);">LIVE CCTV</span>
+                    </div>
+                    <div id="cctvListContainer" class="water-stations-list">
+                        <!-- Rendered dynamically via app.js -->
+                    </div>
+                </div>
+
                 <!-- Flood & Sea Level Water Gauge Stations Section -->
                 <div class="water-stations-section card-glass">
                     <div class="water-section-header">
@@ -143,6 +154,9 @@
 
                 <!-- Floating Map Controls -->
                 <div class="map-floating-controls">
+                    <button id="btnToggleCctvLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลกล้องวงจรปิดสาธารณะสด">
+                        📹 กล้องสาธารณะสด
+                    </button>
                     <button id="btnToggleWeatherLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลสภาพอากาศสดและเรดาร์ฝน">
                         🌧️ สภาพอากาศ & เรดาร์ฝนสด
                     </button>
@@ -254,6 +268,44 @@
                                 <input type="text" id="chatInputText" placeholder="พิมพ์ข้อความรายงานสถานการณ์..." class="text-input">
                                 <button id="btnSendChat" class="btn btn-primary btn-sm">ส่ง</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Public CCTV Camera Player Modal -->
+        <div id="cctvPlayerModal" class="modal-overlay hidden">
+            <div class="modal-content stream-viewer-card card-glass" style="max-width: 750px;">
+                <div class="studio-header">
+                    <div class="live-indicator">
+                        <span class="dot-live" style="background:#10b981;"></span>
+                        <h2 id="cctvModalTitle">📹 รับชมกล้องวงจรปิดสาธารณะสด 24 ชม.</h2>
+                    </div>
+                    <button id="btnCloseCctvModal" class="btn-close">&times;</button>
+                </div>
+
+                <div class="viewer-main-grid" style="grid-template-columns: 1fr 260px;">
+                    <div class="viewer-video-container">
+                        <video id="cctvVideoPlayer" autoplay playsinline muted></video>
+                        <div class="viewer-badge-bar">
+                            <span class="badge-tag" id="cctvAgencyBadge">🏛️ กรุงเทพมหานคร (BMA CCTV)</span>
+                            <span class="badge-tag viewers" style="background:rgba(16, 185, 129, 0.8);">🟢 สด 24 ชั่วโมง</span>
+                        </div>
+                    </div>
+
+                    <div class="viewer-side-info card-glass" style="display:flex; flex-direction:column; justify:space-between;">
+                        <div class="info-group">
+                            <label>📍 ตำแหน่งกล้องวงจรปิด (Location):</label>
+                            <p id="cctvLocationText" class="info-val" style="margin-bottom:8px;">กำลังโหลด...</p>
+                            <label>📡 หน่วยงานดูแลรับผิดชอบ:</label>
+                            <p id="cctvAgencyText" class="info-val" style="color:#60a5fa; margin-bottom:12px;">กรุงเทพมหานคร (BMA)</p>
+                            <a id="btnNavCctvMaps" href="#" target="_blank" class="btn btn-primary w-100">
+                                🗺️ นำทางไปยังตำแหน่งกล้อง
+                            </a>
+                        </div>
+                        <div style="font-size:10px; color:#94a3b8; text-align:center; padding-top:8px; border-top:1px solid var(--border-color);">
+                            📹 สตรีมสัญญาณกล้องจราจรและสาธารณะเพื่อความปลอดภัย
                         </div>
                     </div>
                 </div>
