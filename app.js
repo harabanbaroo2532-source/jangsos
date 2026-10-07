@@ -418,13 +418,112 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let frameCount = 0;
 
+        // Traffic vehicles for simulation fallback
+        const cars = [
+            { x: 50, y: 175, speed: 2.8, color: '#ef4444', width: 36 },
+            { x: 220, y: 200, speed: 3.5, color: '#f59e0b', width: 30 },
+            { x: 380, y: 225, speed: 2.2, color: '#38bdf8', width: 42 },
+            { x: 120, y: 250, speed: 3.0, color: '#10b981', width: 32 },
+            { x: 450, y: 275, speed: 2.5, color: '#a855f7', width: 38 }
+        ];
+
         function drawCctvHudFrame() {
             if (cctvPlayerModal.classList.contains('hidden')) return;
 
             frameCount++;
 
-            // Clear canvas so the underlying REAL HD video stream shows through
-            ctx.clearRect(0, 0, 640, 360);
+            // Check if underlying video player is active & playing
+            const isVideoReady = cctvVideoPlayer && cctvVideoPlayer.readyState >= 2 && !cctvVideoPlayer.paused;
+
+            if (isVideoReady) {
+                // Clear canvas so underlying real HD video stream shows through
+                ctx.clearRect(0, 0, 640, 360);
+            } else {
+                // Draw high-contrast animated camera scene fallback
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, 640, 360);
+
+                // City Skyline Background
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(30, 50, 50, 100);
+                ctx.fillRect(100, 30, 70, 120);
+                ctx.fillRect(190, 70, 45, 80);
+                ctx.fillRect(440, 40, 75, 110);
+                ctx.fillRect(530, 60, 60, 90);
+
+                // Building windows
+                ctx.fillStyle = '#fef08a';
+                for (let i = 0; i < 8; i++) {
+                    if ((frameCount + i * 8) % 40 > 10) {
+                        ctx.fillRect(112 + (i % 2) * 22, 45 + Math.floor(i / 2) * 22, 12, 12);
+                        ctx.fillRect(455 + (i % 2) * 22, 55 + Math.floor(i / 2) * 22, 12, 12);
+                    }
+                }
+
+                if (cam.id === 'cctv-5' || cam.id === 'cctv-3') {
+                    // Waterway / Bridge View
+                    ctx.fillStyle = '#0284c7';
+                    ctx.fillRect(0, 140, 640, 160);
+
+                    ctx.strokeStyle = '#38bdf8';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    for (let x = 0; x < 640; x += 15) {
+                        const waveY = 185 + Math.sin((x + frameCount * 4) * 0.04) * 6;
+                        if (x === 0) ctx.moveTo(x, waveY); else ctx.lineTo(x, waveY);
+                    }
+                    ctx.stroke();
+
+                    const boatX = (frameCount * 2.2) % 720 - 60;
+                    ctx.fillStyle = '#f8fafc';
+                    ctx.fillRect(boatX, 180, 52, 16);
+                    ctx.fillStyle = '#ef4444'; ctx.fillRect(boatX + 46, 182, 6, 6);
+                    ctx.fillStyle = '#10b981'; ctx.fillRect(boatX, 182, 6, 6);
+
+                    ctx.fillStyle = 'rgba(51, 65, 85, 0.9)';
+                    ctx.fillRect(0, 115, 640, 25);
+                    ctx.strokeStyle = '#94a3b8';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(100, 115); ctx.lineTo(320, 35); ctx.lineTo(540, 115);
+                    ctx.stroke();
+                } else {
+                    // Multi-lane Road & Traffic View
+                    ctx.fillStyle = '#334155';
+                    ctx.fillRect(0, 145, 640, 165);
+
+                    ctx.strokeStyle = '#f59e0b';
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([16, 16]);
+                    ctx.beginPath();
+                    ctx.moveTo(0, 225); ctx.lineTo(640, 225);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    ctx.strokeStyle = '#cbd5e1';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 145); ctx.lineTo(640, 145);
+                    ctx.moveTo(0, 310); ctx.lineTo(640, 310);
+                    ctx.stroke();
+
+                    cars.forEach(car => {
+                        car.x += car.speed;
+                        if (car.x > 670) car.x = -60;
+
+                        ctx.fillStyle = car.color;
+                        ctx.fillRect(car.x, car.y, car.width, 18);
+
+                        ctx.fillStyle = '#fef08a';
+                        ctx.fillRect(car.x + car.width, car.y + 2, 5, 5);
+                        ctx.fillRect(car.x + car.width, car.y + 11, 5, 5);
+
+                        ctx.fillStyle = '#ef4444';
+                        ctx.fillRect(car.x - 4, car.y + 2, 4, 5);
+                        ctx.fillRect(car.x - 4, car.y + 11, 4, 5);
+                    });
+                }
+            }
 
             // Camera Viewfinder Crosshair & Grid Overlay
             ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
