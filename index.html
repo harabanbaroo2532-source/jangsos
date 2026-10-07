@@ -358,6 +358,9 @@
                     <button id="btnSrcSnapshot" class="btn btn-sm btn-secondary cctv-src-tab" data-mode="snapshot">
                         📸 ภาพสด กทม. Realtime (1-2s)
                     </button>
+                    <button id="btnSrcBackup" class="btn btn-sm btn-secondary cctv-src-tab" data-mode="backup">
+                        🔄 สตรีมวิดีโอสำรอง (Google CDN)
+                    </button>
                     <button id="btnSrcRadar" class="btn btn-sm btn-secondary cctv-src-tab" data-mode="radar">
                         📹 เรดาร์การจราจรแบบแอคทีฟ (Tactical Radar)
                     </button>
@@ -365,7 +368,7 @@
 
                 <div class="viewer-main-grid" style="grid-template-columns: 1fr 260px;">
                     <div class="viewer-video-container" style="position:relative;">
-                        <video id="cctvVideoPlayer" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; display:block;"></video>
+                        <video id="cctvVideoPlayer" autoplay playsinline muted loop webkit-playsinline crossorigin="anonymous" style="width:100%; height:100%; object-fit:cover; display:block;"></video>
                         <img id="cctvSnapshotImg" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; display:none; z-index:1;" alt="CCTV Live Snapshot Feed">
                         <canvas id="cctvCanvasOverlay" width="640" height="360" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:2; display:block;"></canvas>
                         <div class="viewer-badge-bar" style="z-index:3;">

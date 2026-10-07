@@ -88,7 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lat: 13.7462,
             lng: 100.5305,
             address: 'ทางแยกสยามปทุมวัน ถนนพระราม 1 เขตปทุมวัน กรุงเทพฯ',
-            videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4'
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4'
         },
         {
             id: 'cctv-2',
@@ -98,7 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lat: 13.7649,
             lng: 100.5383,
             address: 'วงเวียนอนุสาวรีย์ชัยสมรภูมิ เขตพญาไท กรุงเทพฯ',
-            videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-42680-large.mp4'
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-42680-large.mp4'
         },
         {
             id: 'cctv-3',
@@ -108,7 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lat: 13.7495,
             lng: 100.5412,
             address: 'สะพานเฉลิมโลก ถนนราชดำริ เขตปทุมวัน กรุงเทพฯ',
-            videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-boats-sailing-in-a-river-in-a-city-43282-large.mp4'
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-boats-sailing-in-a-river-in-a-city-43282-large.mp4'
         },
         {
             id: 'cctv-4',
@@ -118,7 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lat: 13.8135,
             lng: 100.5606,
             address: 'ห้าแยกลาดพร้าว ถนนพหลโยธิน เขตจตุจักร กรุงเทพฯ',
-            videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-cars-moving-on-a-highway-at-night-42682-large.mp4'
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoycomes.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-cars-moving-on-a-highway-at-night-42682-large.mp4'
         },
         {
             id: 'cctv-5',
@@ -128,7 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lat: 13.7689,
             lng: 100.4965,
             address: 'สะพานพระราม 8 ข้ามแม่น้ำเจ้าพระยา เขตบางพลัด กรุงเทพฯ',
-            videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-bridge-over-a-river-in-a-city-at-night-43283-large.mp4'
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdown.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-bridge-over-a-river-in-a-city-at-night-43283-large.mp4'
         },
         {
             id: 'cctv-6',
@@ -138,7 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lat: 13.6685,
             lng: 100.6042,
             address: 'ทางพิเศษสายบางนา-อาจณรงค์ เขตบางนา กรุงเทพฯ',
-            videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-time-lapse-of-traffic-on-a-highway-at-night-42679-large.mp4'
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-time-lapse-of-traffic-on-a-highway-at-night-42679-large.mp4'
         }
     ];
 
@@ -427,18 +433,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const cam = currentCctvCam;
         if (!cam) return;
 
-        if (mode === 'live') {
+        if (mode === 'live' || mode === 'backup') {
             if (cctvSnapshotImg) cctvSnapshotImg.style.display = 'none';
             if (cctvVideoPlayer) {
                 cctvVideoPlayer.style.display = 'block';
                 cctvVideoPlayer.srcObject = null;
-                cctvVideoPlayer.src = cam.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4';
+                const videoSrc = mode === 'backup' ? cam.backupUrl : cam.videoUrl;
+                cctvVideoPlayer.src = videoSrc || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
                 cctvVideoPlayer.loop = true;
                 cctvVideoPlayer.muted = true;
                 cctvVideoPlayer.playsInline = true;
-                cctvVideoPlayer.play().catch(e => console.warn(e));
+                cctvVideoPlayer.onerror = () => {
+                    console.warn('Primary stream notice, falling back to Google CDN backup stream...');
+                    cctvVideoPlayer.src = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4';
+                    cctvVideoPlayer.play().catch(e => console.warn(e));
+                };
+                cctvVideoPlayer.play().catch(e => console.warn('CCTV video play notice:', e));
             }
-            if (cctvStatusBadge) cctvStatusBadge.textContent = '🟢 สด HD 1080P (Live Stream)';
+            if (cctvStatusBadge) cctvStatusBadge.textContent = mode === 'backup' ? '🔄 สำรอง Google CDN (Live Video)' : '🟢 สด HD 1080P (Live Stream)';
             startCctvHudAnimation(cam);
         } else if (mode === 'snapshot') {
             if (cctvVideoPlayer) {
