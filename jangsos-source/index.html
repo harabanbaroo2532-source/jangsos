@@ -352,6 +352,9 @@
 
                 <!-- Osiris AI Style Multi-Source Camera Switcher -->
                 <div class="cctv-source-selector-bar" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+                    <button id="btnSrcBma" class="btn btn-sm btn-success cctv-src-tab" data-mode="bma" style="background:#10b981; color:#fff; border:none; font-weight:700;">
+                        🏛️ กล้องสด กทม. BMA CCTV (Official Portal)
+                    </button>
                     <button id="btnSrcLive" class="btn btn-sm btn-primary cctv-src-tab active" data-mode="live">
                         🔴 สตรีมวิดีโอสด 24 ชม. (Live Stream)
                     </button>
@@ -369,6 +372,7 @@
                 <div class="viewer-main-grid" style="grid-template-columns: 1fr 260px;">
                     <div class="viewer-video-container" style="position:relative;">
                         <video id="cctvVideoPlayer" autoplay playsinline muted loop webkit-playsinline crossorigin="anonymous" style="width:100%; height:100%; object-fit:cover; display:block;"></video>
+                        <iframe id="cctvIframePlayer" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none; display:none; z-index:1;" allow="autoplay"></iframe>
                         <img id="cctvSnapshotImg" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; display:none; z-index:1;" alt="CCTV Live Snapshot Feed">
                         <canvas id="cctvCanvasOverlay" width="640" height="360" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:2; display:block;"></canvas>
                         <div class="viewer-badge-bar" style="z-index:3;">
@@ -382,9 +386,12 @@
                             <label>📍 ตำแหน่งกล้องวงจรปิด (Location):</label>
                             <p id="cctvLocationText" class="info-val" style="margin-bottom:8px;">กำลังโหลด...</p>
                             <label>📡 หน่วยงานดูแลรับผิดชอบ:</label>
-                            <p id="cctvAgencyText" class="info-val" style="color:#60a5fa; margin-bottom:12px;">กรุงเทพมหานคร (BMA)</p>
+                            <p id="cctvAgencyText" class="info-val" style="color:#60a5fa; margin-bottom:10px;">กรุงเทพมหานคร (BMA)</p>
+                            <a id="btnNavBmaPortal" href="https://bmacctv.bangkok.go.th" target="_blank" class="btn btn-secondary w-100" style="margin-bottom:6px; border-color:#10b981; color:#10b981; font-weight:700;">
+                                🏛️ เปิดดูกล้องสด กทม. (BMA Official Portal)
+                            </a>
                             <a id="btnNavCctvMaps" href="#" target="_blank" class="btn btn-primary w-100">
-                                🗺️ นำทางไปยังตำแหน่งกล้อง
+                                🗺️ นำทางไปยังตำแหน่งกล้องด้วย Google Maps
                             </a>
                         </div>
                         <div style="font-size:10px; color:#94a3b8; text-align:center; padding-top:8px; border-top:1px solid var(--border-color);">

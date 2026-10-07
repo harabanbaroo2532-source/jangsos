@@ -89,7 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5305,
             address: 'ทางแยกสยามปทุมวัน ถนนพระราม 1 เขตปทุมวัน กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4'
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4',
+            bmaPortalUrl: 'https://bmacctv.bangkok.go.th/'
         },
         {
             id: 'cctv-2',
@@ -100,7 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5383,
             address: 'วงเวียนอนุสาวรีย์ชัยสมรภูมิ เขตพญาไท กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-42680-large.mp4'
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-42680-large.mp4',
+            bmaPortalUrl: 'https://bmacctv.bangkok.go.th/'
         },
         {
             id: 'cctv-3',
@@ -111,7 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5412,
             address: 'สะพานเฉลิมโลก ถนนราชดำริ เขตปทุมวัน กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-boats-sailing-in-a-river-in-a-city-43282-large.mp4'
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-boats-sailing-in-a-river-in-a-city-43282-large.mp4',
+            bmaPortalUrl: 'http://dds.bangkok.go.th/'
         },
         {
             id: 'cctv-4',
@@ -122,7 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5606,
             address: 'ห้าแยกลาดพร้าว ถนนพหลโยธิน เขตจตุจักร กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoycomes.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-cars-moving-on-a-highway-at-night-42682-large.mp4'
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-cars-moving-on-a-highway-at-night-42682-large.mp4',
+            bmaPortalUrl: 'https://traffic.doh.go.th/'
         },
         {
             id: 'cctv-5',
@@ -133,7 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.4965,
             address: 'สะพานพระราม 8 ข้ามแม่น้ำเจ้าพระยา เขตบางพลัด กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdown.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-bridge-over-a-river-in-a-city-at-night-43283-large.mp4'
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-bridge-over-a-river-in-a-city-at-night-43283-large.mp4',
+            bmaPortalUrl: 'https://bmacctv.bangkok.go.th/'
         },
         {
             id: 'cctv-6',
@@ -144,7 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.6042,
             address: 'ทางพิเศษสายบางนา-อาจณรงค์ เขตบางนา กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-time-lapse-of-traffic-on-a-highway-at-night-42679-large.mp4'
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-time-lapse-of-traffic-on-a-highway-at-night-42679-large.mp4',
+            bmaPortalUrl: 'https://www.exat.co.th/'
         }
     ];
 
@@ -381,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openCctvModal(cam) {
         currentCctvCam = cam;
-        currentCctvMode = 'live';
+        currentCctvMode = 'bma';
 
         const cctvPlayerModal = document.getElementById('cctvPlayerModal');
         const cctvModalTitle = document.getElementById('cctvModalTitle');
@@ -389,6 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const cctvAgencyText = document.getElementById('cctvAgencyText');
         const cctvAgencyBadge = document.getElementById('cctvAgencyBadge');
         const btnNavCctvMaps = document.getElementById('btnNavCctvMaps');
+        const btnNavBmaPortal = document.getElementById('btnNavBmaPortal');
 
         if (!cctvPlayerModal) return;
 
@@ -399,19 +406,22 @@ document.addEventListener('DOMContentLoaded', () => {
         cctvAgencyText.textContent = cam.agency;
         cctvAgencyBadge.textContent = cam.agency;
         btnNavCctvMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${cam.lat},${cam.lng}`;
+        if (btnNavBmaPortal) {
+            btnNavBmaPortal.href = cam.bmaPortalUrl || 'https://bmacctv.bangkok.go.th/';
+        }
 
         // Reset tabs UI state
         document.querySelectorAll('.cctv-src-tab').forEach(btn => {
-            btn.classList.remove('btn-primary', 'active');
+            btn.classList.remove('btn-primary', 'btn-success', 'active');
             btn.classList.add('btn-secondary');
         });
-        const btnLive = document.getElementById('btnSrcLive');
-        if (btnLive) {
-            btnLive.classList.remove('btn-secondary');
-            btnLive.classList.add('btn-primary', 'active');
+        const btnBma = document.getElementById('btnSrcBma');
+        if (btnBma) {
+            btnBma.classList.remove('btn-secondary');
+            btnBma.classList.add('btn-success', 'active');
         }
 
-        switchCctvMode('live');
+        switchCctvMode('bma');
     }
 
     function switchCctvMode(mode) {
@@ -427,13 +437,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const cctvVideoPlayer = document.getElementById('cctvVideoPlayer');
+        const cctvIframePlayer = document.getElementById('cctvIframePlayer');
         const cctvSnapshotImg = document.getElementById('cctvSnapshotImg');
         const cctvStatusBadge = document.getElementById('cctvStatusBadge');
 
         const cam = currentCctvCam;
         if (!cam) return;
 
-        if (mode === 'live' || mode === 'backup') {
+        if (mode === 'bma') {
+            if (cctvVideoPlayer) {
+                cctvVideoPlayer.pause();
+                cctvVideoPlayer.style.display = 'none';
+            }
+            if (cctvSnapshotImg) cctvSnapshotImg.style.display = 'none';
+            if (cctvIframePlayer) {
+                cctvIframePlayer.style.display = 'block';
+                cctvIframePlayer.src = cam.bmaPortalUrl || 'https://bmacctv.bangkok.go.th/';
+            }
+            if (cctvStatusBadge) cctvStatusBadge.textContent = '🏛️ กล้องสด กทม. BMA CCTV (Official Portal)';
+            startCctvHudAnimation(cam);
+        } else if (mode === 'live' || mode === 'backup') {
+            if (cctvIframePlayer) cctvIframePlayer.style.display = 'none';
             if (cctvSnapshotImg) cctvSnapshotImg.style.display = 'none';
             if (cctvVideoPlayer) {
                 cctvVideoPlayer.style.display = 'block';
@@ -453,6 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cctvStatusBadge) cctvStatusBadge.textContent = mode === 'backup' ? '🔄 สำรอง Google CDN (Live Video)' : '🟢 สด HD 1080P (Live Stream)';
             startCctvHudAnimation(cam);
         } else if (mode === 'snapshot') {
+            if (cctvIframePlayer) cctvIframePlayer.style.display = 'none';
             if (cctvVideoPlayer) {
                 cctvVideoPlayer.pause();
                 cctvVideoPlayer.style.display = 'none';
@@ -469,6 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cctvStatusBadge) cctvStatusBadge.textContent = '📸 ภาพสด กทม. 1-2s (Realtime Snapshot)';
             startCctvHudAnimation(cam);
         } else if (mode === 'radar') {
+            if (cctvIframePlayer) cctvIframePlayer.style.display = 'none';
             if (cctvVideoPlayer) {
                 cctvVideoPlayer.pause();
                 cctvVideoPlayer.style.display = 'none';
