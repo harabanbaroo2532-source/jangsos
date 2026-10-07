@@ -362,6 +362,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Open Public CCTV Camera Live Modal
+    let activeCctvAnimId = null;
+
     function openCctvModal(cam) {
         const cctvPlayerModal = document.getElementById('cctvPlayerModal');
         const cctvModalTitle = document.getElementById('cctvModalTitle');
@@ -369,6 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const cctvAgencyText = document.getElementById('cctvAgencyText');
         const cctvAgencyBadge = document.getElementById('cctvAgencyBadge');
         const cctvVideoPlayer = document.getElementById('cctvVideoPlayer');
+        const cctvCanvasOverlay = document.getElementById('cctvCanvasOverlay');
         const btnNavCctvMaps = document.getElementById('btnNavCctvMaps');
 
         if (!cctvPlayerModal) return;
@@ -379,58 +382,168 @@ document.addEventListener('DOMContentLoaded', () => {
         cctvAgencyBadge.textContent = cam.agency;
         btnNavCctvMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${cam.lat},${cam.lng}`;
 
-        // Create Real-Time Animated CCTV Camera Stream on HTML5 Canvas
-        const cctvCanvas = document.createElement('canvas');
-        cctvCanvas.width = 640;
-        cctvCanvas.height = 360;
-        const ctx = cctvCanvas.getContext('2d');
+        if (activeCctvAnimId) {
+            cancelAnimationFrame(activeCctvAnimId);
+            activeCctvAnimId = null;
+        }
+
+        if (cctvCanvasOverlay) {
+            cctvCanvasOverlay.style.display = 'block';
+        }
+
+        const canvas = cctvCanvasOverlay || document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 360;
+        const ctx = canvas.getContext('2d');
+
+        // Traffic vehicles for simulation
+        const cars = [
+            { x: 50, y: 175, speed: 2.8, color: '#ef4444', width: 34 },
+            { x: 220, y: 200, speed: 3.5, color: '#f59e0b', width: 28 },
+            { x: 380, y: 225, speed: 2.2, color: '#38bdf8', width: 40 },
+            { x: 120, y: 250, speed: 3.0, color: '#10b981', width: 30 },
+            { x: 450, y: 275, speed: 2.5, color: '#a855f7', width: 36 }
+        ];
+
+        let frameCount = 0;
 
         function drawCctvFrame() {
             if (cctvPlayerModal.classList.contains('hidden')) return;
 
-            // Draw CCTV Camera background with grid lines
-            ctx.fillStyle = '#06090e';
+            frameCount++;
+
+            // Dark CCTV background
+            ctx.fillStyle = '#060a12';
             ctx.fillRect(0, 0, 640, 360);
 
-            // Draw Camera Viewfinder Crosshair & Grid
-            ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+            if (cam.id === 'cctv-5' || cam.id === 'cctv-3') {
+                // Waterway / Bridge View
+                ctx.fillStyle = '#0c1a29';
+                ctx.fillRect(0, 120, 640, 170);
+
+                // River Waves
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let x = 0; x < 640; x += 15) {
+                    const waveY = 190 + Math.sin((x + frameCount * 4) * 0.04) * 6;
+                    if (x === 0) ctx.moveTo(x, waveY); else ctx.lineTo(x, waveY);
+                }
+                ctx.stroke();
+
+                // Boat / Patrol Vessel
+                const boatX = (frameCount * 2.2) % 720 - 60;
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(boatX, 185, 48, 14);
+                ctx.fillStyle = '#ef4444'; ctx.fillRect(boatX + 44, 187, 4, 4);
+                ctx.fillStyle = '#10b981'; ctx.fillRect(boatX, 187, 4, 4);
+
+                // Bridge structure overlay
+                ctx.fillStyle = 'rgba(30, 41, 59, 0.85)';
+                ctx.fillRect(0, 100, 640, 20);
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(100, 100); ctx.lineTo(320, 30); ctx.lineTo(540, 100);
+                ctx.stroke();
+            } else {
+                // Road & Traffic View
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(0, 140, 640, 170);
+
+                // Yellow Center Line
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([16, 16]);
+                ctx.beginPath();
+                ctx.moveTo(0, 225); ctx.lineTo(640, 225);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Road Borders
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(0, 140); ctx.lineTo(640, 140);
+                ctx.moveTo(0, 310); ctx.lineTo(640, 310);
+                ctx.stroke();
+
+                // Vehicles moving
+                cars.forEach(car => {
+                    car.x += car.speed;
+                    if (car.x > 670) car.x = -60;
+
+                    // Car Body
+                    ctx.fillStyle = car.color;
+                    ctx.fillRect(car.x, car.y, car.width, 16);
+
+                    // Headlights & Taillights
+                    ctx.fillStyle = '#fef08a';
+                    ctx.fillRect(car.x + car.width, car.y + 2, 4, 4);
+                    ctx.fillRect(car.x + car.width, car.y + 10, 4, 4);
+
+                    ctx.fillStyle = '#ef4444';
+                    ctx.fillRect(car.x - 3, car.y + 2, 3, 4);
+                    ctx.fillRect(car.x - 3, car.y + 10, 3, 4);
+                });
+            }
+
+            // Crosshair / Grid overlay
+            ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(320, 0); ctx.lineTo(320, 360);
             ctx.moveTo(0, 180); ctx.lineTo(640, 180);
             ctx.stroke();
 
-            // Animated scanning radar line
-            const scanY = (Date.now() / 15) % 360;
+            // Scanline animation
+            const scanY = (frameCount * 2) % 360;
             ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
-            ctx.fillRect(0, scanY, 640, 4);
+            ctx.fillRect(0, scanY, 640, 6);
 
-            // Draw Camera HUD Watermark Header
+            // Watermark HUD Details
             ctx.fillStyle = '#10b981';
-            ctx.font = 'bold 15px monospace';
+            ctx.font = 'bold 14px monospace';
             ctx.textAlign = 'left';
-            ctx.fillText(`🔴 LIVE CCTV | ${cam.name.substring(0, 25)}`, 16, 30);
-            
+            ctx.fillText(`🔴 LIVE CCTV | ${cam.name}`, 16, 28);
+
             ctx.fillStyle = '#ffffff';
             ctx.font = '12px monospace';
-            ctx.fillText(`TIME: ${new Date().toLocaleTimeString('th-TH')} | CAM ID: ${cam.id.toUpperCase()}`, 16, 50);
-            ctx.fillText(`GPS: ${cam.lat.toFixed(5)}° N, ${cam.lng.toFixed(5)}° E`, 16, 70);
+            ctx.fillText(`TIMESTAMP: ${new Date().toLocaleDateString('th-TH')} ${new Date().toLocaleTimeString('th-TH')}`, 16, 48);
+            ctx.fillText(`CAM ID: ${cam.id.toUpperCase()} | STREAM: 1080P 60FPS`, 16, 66);
+            ctx.fillText(`GPS: ${cam.lat.toFixed(5)}° N, ${cam.lng.toFixed(5)}° E`, 16, 84);
 
-            // REC Dot
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText(`AGENCY: ${cam.agency}`, 16, 102);
+
+            // Blinking REC Indicator
             if (Math.floor(Date.now() / 500) % 2 === 0) {
                 ctx.fillStyle = '#ef4444';
                 ctx.beginPath();
-                ctx.arc(610, 26, 6, 0, Math.PI * 2);
+                ctx.arc(612, 24, 7, 0, Math.PI * 2);
                 ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px monospace';
+                ctx.textAlign = 'right';
+                ctx.fillText('REC', 598, 28);
             }
 
-            requestAnimationFrame(drawCctvFrame);
+            activeCctvAnimId = requestAnimationFrame(drawCctvFrame);
         }
 
-        const stream = cctvCanvas.captureStream(25);
-        cctvVideoPlayer.srcObject = stream;
-        drawCctvFrame();
+        // Try setting srcObject with play()
+        try {
+            if (canvas.captureStream && cctvVideoPlayer) {
+                const stream = canvas.captureStream(25);
+                cctvVideoPlayer.srcObject = stream;
+                cctvVideoPlayer.play().catch(e => console.warn('CCTV play notice:', e));
+            }
+        } catch (e) {
+            console.warn('CCTV captureStream error:', e);
+        }
 
+        drawCctvFrame();
         cctvPlayerModal.classList.remove('hidden');
     }
 
@@ -1011,15 +1124,21 @@ document.addEventListener('DOMContentLoaded', () => {
         viewerCategoryBadge.textContent = `${getCategoryEmoji(alertData.category)} ${alertData.category}`;
         btnNavGoogleMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${alertData.lat},${alertData.lng}`;
 
+        const viewerCanvasOverlay = document.getElementById('viewerCanvasOverlay');
+
         // Connect Live Stream or Stream Camera Feed
         if (mediaStream && isBroadcasting) {
-            viewerVideoPlayer.srcObject = mediaStream;
+            if (viewerCanvasOverlay) viewerCanvasOverlay.style.display = 'none';
+            if (viewerVideoPlayer) {
+                viewerVideoPlayer.srcObject = mediaStream;
+                viewerVideoPlayer.play().catch(e => console.warn(e));
+            }
         } else {
-            // Draw real-time animated live stream canvas indicator
-            const liveCanvas = document.createElement('canvas');
-            liveCanvas.width = 640;
-            liveCanvas.height = 360;
-            const ctx = liveCanvas.getContext('2d');
+            if (viewerCanvasOverlay) viewerCanvasOverlay.style.display = 'block';
+            const canvas = viewerCanvasOverlay || document.createElement('canvas');
+            canvas.width = 640;
+            canvas.height = 360;
+            const ctx = canvas.getContext('2d');
 
             function drawLiveFeed() {
                 if (streamViewerModal.classList.contains('hidden')) return;
@@ -1044,8 +1163,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 requestAnimationFrame(drawLiveFeed);
             }
 
-            const stream = liveCanvas.captureStream(25);
-            viewerVideoPlayer.srcObject = stream;
+            try {
+                if (canvas.captureStream && viewerVideoPlayer) {
+                    const stream = canvas.captureStream(25);
+                    viewerVideoPlayer.srcObject = stream;
+                    viewerVideoPlayer.play().catch(e => console.warn(e));
+                }
+            } catch(e) {}
+
             drawLiveFeed();
         }
 
