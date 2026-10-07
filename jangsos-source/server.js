@@ -31,38 +31,44 @@ const realNewsIncidents = [
         lat: 13.9125,
         lng: 100.6010,
         address: 'ถนนวิภาวดีรังสิต ขาเข้า/ขาออก หน้าสนามบินดอนเมือง เขตดอนเมือง กรุงเทพฯ',
-        reporter: 'Google Maps Flood Alerts & ศูนย์เตือนภัยกทม.',
+        reporter: 'ประชาชนในพื้นที่ (ภาพสด)',
         time: new Date(Date.now() - 10 * 60000).toISOString(),
         isLive: true,
         viewers: 680,
+        mediaUrl: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?q=80&w=1200&auto=format&fit=crop',
+        mediaType: 'photo',
         description: 'รายงานน้ำท่วมขังบนผิวจราจร 25-35 ซม. ช่องทางขนาน รถเล็กผ่านลำบาก แนะนำเลี่ยงไปใช้ทางยกระดับดอนเมืองโทลล์เวย์'
     },
     {
         id: 'flood-alert-2',
-        title: '🌊 น้ำท่วมขังผิวจราจร ซอยสุขุมวิท 105 - 107 (แบริ่ง - ลาซาล)',
-        category: 'disaster',
+        title: '🚗 สภาพการจราจรติดขัดสะสม แยกอโศก-สุขุมวิท',
+        category: 'traffic',
         severity: 'critical',
-        lat: 13.6580,
-        lng: 100.6015,
-        address: 'ซอยสุขุมวิท 105 (ลาซาล) - ซอยสุขุมวิท 107 (แบริ่ง) เขตบางนา กรุงเทพฯ',
-        reporter: 'Google Maps Traffic Alerts',
-        time: new Date(Date.now() - 20 * 60000).toISOString(),
+        lat: 13.7372,
+        lng: 100.5604,
+        address: 'ทางแยกอโศก-สุขุมวิท เขตคลองเตย กรุงเทพฯ',
+        reporter: 'ผู้ขับขี่จราจรสด (คลิปวิดีโอ 30s)',
+        time: new Date(Date.now() - 15 * 60000).toISOString(),
         isLive: true,
-        viewers: 412,
-        description: 'ฝนตกหนักต่อเนื่องส่งผลให้น้ำท่วมขังรอการระบายสูง 20-30 ซม. ตลอดแนวซอย จราจรชะลอตัวติดขัดสะสม'
+        viewers: 512,
+        mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        mediaType: 'video',
+        description: 'สภาพการจราจรหนาแน่น ท้ายแถวสะสมยาวถึงแยกพระราม 4 แนะนำเลี่ยงเส้นทาง'
     },
     {
         id: 'flood-alert-3',
-        title: '🌊 น้ำท่วมขังขอบทาง ถนนแจ้งวัฒนะ (หน้าศาลปกครอง - วงเวียนหลักสี่)',
+        title: '🌊 น้ำท่วมขังขอบทาง ถนนแจ้งวัฒนะ (หน้าศาลปกครอง)',
         category: 'disaster',
         severity: 'warning',
         lat: 13.8910,
         lng: 100.5650,
-        address: 'ถนนแจ้งวัฒนะ ขาออก หน้าศาลปกครองสงฆ์ เขตหลักสี่ กรุงเทพฯ',
-        reporter: 'Google Maps Flood & Traffic Service',
-        time: new Date(Date.now() - 30 * 60000).toISOString(),
+        address: 'ถนนแจ้งวัฒนะ ขาออก หน้าศาลปกครอง เขตหลักสี่ กรุงเทพฯ',
+        reporter: 'กู้ภัยหลักสี่ (คลิปวิดีโอ 45s)',
+        time: new Date(Date.now() - 25 * 60000).toISOString(),
         isLive: true,
         viewers: 320,
+        mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+        mediaType: 'video',
         description: 'มีน้ำท่วมขังช่องทางซ้ายสุด 15-25 ซม. ความยาว 300 เมตร เร่งเดินเครื่องสูบน้ำระบายลงคลองเปรมประชากร'
     },
     {
@@ -170,18 +176,20 @@ wss.on('connection', (ws) => {
             switch (data.type) {
                 case 'SOS_ALERT':
                     const newSos = {
-                        id: 'sos-' + Date.now(),
+                        id: data.id || ('sos-' + Date.now()),
                         title: data.title || '🚨 สัญญาณขอความช่วยเหลือฉุกเฉิน (SOS)',
                         category: data.category || 'accident',
-                        severity: 'critical',
+                        severity: data.severity || 'critical',
                         lat: data.lat,
                         lng: data.lng,
                         address: data.address || 'พิกัด GPS สดจากผู้ใช้งาน',
                         reporter: data.reporter || 'ผู้ใช้งานฉุกเฉิน',
-                        time: new Date().toISOString(),
+                        time: data.time || new Date().toISOString(),
+                        description: data.description || 'ปักหมุดรายงานภาพ/วิดีโอสถานการณ์สด!',
+                        mediaUrl: data.mediaUrl || null,
+                        mediaType: data.mediaType || 'none',
                         isLive: true,
-                        viewers: 1,
-                        description: data.description || 'กดปุ่มขอความช่วยเหลือฉุกเฉิน SOS สด!'
+                        viewers: 1
                     };
                     activeAlerts.set(newSos.id, newSos);
                     broadcast({ type: 'NEW_ALERT', alert: newSos });

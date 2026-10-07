@@ -971,24 +971,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Create Leaflet Marker
             const markerColor = alert.severity === 'critical' ? '#ef4444' : '#f59e0b';
+            const mediaBadgeIcon = alert.mediaType === 'photo' ? '📸' : (alert.mediaType === 'video' ? '🎥' : getCategoryEmoji(alert.category));
+
             const alertIcon = L.divIcon({
                 className: 'incident-map-pin',
-                html: `<div class="pulse-alert-marker" style="background:${markerColor}"><span>${getCategoryEmoji(alert.category)}</span></div>`,
-                iconSize: [32, 32],
-                iconAnchor: [16, 16]
+                html: `<div class="pulse-alert-marker" style="background:${markerColor}; border:2px solid #fff; box-shadow:0 0 10px ${markerColor};"><span>${mediaBadgeIcon}</span></div>`,
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
             });
 
             const marker = L.marker([alert.lat, alert.lng], { icon: alertIcon }).addTo(map);
             const googleNavUrl = `https://www.google.com/maps/dir/?api=1&destination=${alert.lat},${alert.lng}`;
+            const mediaTag = alert.mediaType === 'photo' ? '📸 ภาพถ่ายสด' : (alert.mediaType === 'video' ? '🎥 วิดีโอสด (<1นาที)' : '📢 รายงานสด');
 
             marker.bindPopup(`
                 <div class="map-popup-card">
-                    <h4>${alert.title}</h4>
+                    <h4>${getCategoryEmoji(alert.category)} ${alert.title}</h4>
                     <p style="font-size:11px; color:#94a3b8; margin:4px 0;">📍 ${alert.address}</p>
                     <p style="font-size:11px; color:#60a5fa;">📏 ระยะห่างจากคุณ: ${distStr}</p>
-                    <a href="${googleNavUrl}" target="_blank" class="btn btn-primary btn-sm w-100" style="margin-top:6px; display:inline-block; text-align:center; text-decoration:none;">🗺️ นำทางด้วย Google Maps</a>
+                    <p style="font-size:11px; color:#cbd5e1; margin-top:4px;">${alert.description || ''}</p>
+                    <button class="btn btn-danger btn-sm w-100 btn-popup-media" style="margin-top:6px; font-weight:700;">${mediaTag} (กดเปิดดู)</button>
+                    <a href="${googleNavUrl}" target="_blank" class="btn btn-primary btn-sm w-100" style="margin-top:4px; text-decoration:none; text-align:center;">🗺️ นำทางด้วย Google Maps</a>
                 </div>
             `);
+
+            marker.on('popupopen', () => {
+                const btn = document.querySelector('.btn-popup-media');
+                if (btn) btn.onclick = () => openStreamViewer(alert);
+            });
 
             alertMarkers.set(alert.id, marker);
 
@@ -1005,8 +1015,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <p style="font-size:12px; color:#cbd5e1; margin-bottom:8px;">${alert.description || ''}</p>
                 <div class="incident-footer">
-                    <span>👁️ ${alert.viewers || 1} ผู้ชมสด</span>
-                    <button class="btn-watch-live" data-id="${alert.id}">🔴 ดูไลฟ์สด & นำทาง</button>
+                    <span style="color:#60a5fa; font-size:11px;">${mediaTag} • 👤 ${alert.reporter || 'ประชาชน'}</span>
+                    <button class="btn-watch-live" data-id="${alert.id}">${alert.mediaType === 'photo' ? '📸 เปิดดูรูปถ่าย' : (alert.mediaType === 'video' ? '🎥 เล่นคลิปวิดีโอ' : '🔴 ดูรายงานสด')}</button>
                 </div>
             `;
 
@@ -1026,12 +1036,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCategoryEmoji(cat) {
         switch (cat) {
-            case 'accident': return '🚗';
-            case 'fire': return '🔥';
-            case 'crime': return '🚨';
             case 'disaster': return '🌊';
+            case 'traffic': return '🚗';
+            case 'fire': return '🔥';
+            case 'weather': return '🌧️';
+            case 'accident': return '🚨';
             case 'medical': return '🚑';
-            default: return '📢';
+            default: return '⚠️';
         }
     }
 
@@ -1232,7 +1243,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 9. Open Viewer Stream Modal with Live Video Stream
+    // 9. Open Viewer Stream Modal with Live Video Stream, Photo, or Video File
     function openStreamViewer(alertData) {
         streamViewerModal.classList.remove('hidden');
 
@@ -1242,17 +1253,52 @@ document.addEventListener('DOMContentLoaded', () => {
         viewerCategoryBadge.textContent = `${getCategoryEmoji(alertData.category)} ${alertData.category}`;
         btnNavGoogleMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${alertData.lat},${alertData.lng}`;
 
+        const viewerImagePlayer = document.getElementById('viewerImagePlayer');
         const viewerCanvasOverlay = document.getElementById('viewerCanvasOverlay');
+        const viewerDescText = document.getElementById('viewerDescText');
+        if (viewerDescText) {
+            viewerDescText.innerHTML = `<strong>📝 รายละเอียด:</strong> ${alertData.description || 'ไม่มีรายละเอียดเพิ่มเติม'}<br><span style="color:#60a5fa; margin-top:4px; display:inline-block;">👤 ผู้รายงาน: ${alertData.reporter || 'ประชาชนในพื้นที่'}</span>`;
+        }
 
-        // Connect Live Stream or Stream Camera Feed
-        if (mediaStream && isBroadcasting) {
+        // 1. If incident has photo media attached
+        if (alertData.mediaUrl && alertData.mediaType === 'photo') {
             if (viewerCanvasOverlay) viewerCanvasOverlay.style.display = 'none';
             if (viewerVideoPlayer) {
+                viewerVideoPlayer.pause();
+                viewerVideoPlayer.style.display = 'none';
+            }
+            if (viewerImagePlayer) {
+                viewerImagePlayer.src = alertData.mediaUrl;
+                viewerImagePlayer.style.display = 'block';
+            }
+        }
+        // 2. If incident has video media attached (up to 1 min)
+        else if (alertData.mediaUrl && alertData.mediaType === 'video') {
+            if (viewerCanvasOverlay) viewerCanvasOverlay.style.display = 'none';
+            if (viewerImagePlayer) viewerImagePlayer.style.display = 'none';
+            if (viewerVideoPlayer) {
+                viewerVideoPlayer.style.display = 'block';
+                viewerVideoPlayer.srcObject = null;
+                viewerVideoPlayer.src = alertData.mediaUrl;
+                viewerVideoPlayer.controls = true;
+                viewerVideoPlayer.loop = true;
+                viewerVideoPlayer.muted = false;
+                viewerVideoPlayer.play().catch(e => console.warn('Media play notice:', e));
+            }
+        }
+        // 3. Fallback: Connect Live Camera Feed or Animated Emergency Broadcast Radar
+        else if (mediaStream && isBroadcasting) {
+            if (viewerImagePlayer) viewerImagePlayer.style.display = 'none';
+            if (viewerCanvasOverlay) viewerCanvasOverlay.style.display = 'none';
+            if (viewerVideoPlayer) {
+                viewerVideoPlayer.style.display = 'block';
                 viewerVideoPlayer.srcObject = mediaStream;
                 viewerVideoPlayer.play().catch(e => console.warn(e));
             }
         } else {
+            if (viewerImagePlayer) viewerImagePlayer.style.display = 'none';
             if (viewerCanvasOverlay) viewerCanvasOverlay.style.display = 'block';
+            if (viewerVideoPlayer) viewerVideoPlayer.style.display = 'block';
             const canvas = viewerCanvasOverlay || document.createElement('canvas');
             canvas.width = 640;
             canvas.height = 360;
@@ -1263,7 +1309,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fillStyle = '#0a0d14';
                 ctx.fillRect(0, 0, 640, 360);
                 
-                // Draw live emergency broadcast radar graphic
                 ctx.strokeStyle = '#ef4444';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
@@ -1273,7 +1318,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 18px Outfit, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(`🔴 LIVE STREAM: ${alertData.title.substring(0, 30)}...`, 320, 170);
+                ctx.fillText(`🔴 LIVE BROADCAST: ${alertData.title.substring(0, 30)}...`, 320, 170);
                 ctx.fillStyle = '#60a5fa';
                 ctx.font = '14px monospace';
                 ctx.fillText(`LAT: ${alertData.lat.toFixed(5)}° N | LNG: ${alertData.lng.toFixed(5)}° E`, 320, 200);
@@ -1566,18 +1611,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Citizen Incident Reporting Modal Handlers
+    // Citizen Incident Reporting & Media Pin Handlers
     const citizenReportModal = document.getElementById('citizenReportModal');
     const btnCloseCitizenReport = document.getElementById('btnCloseCitizenReport');
     const citizenReportForm = document.getElementById('citizenReportForm');
     const reportTitleInput = document.getElementById('reportTitleInput');
+    const reportNameInput = document.getElementById('reportNameInput');
     const reportDescInput = document.getElementById('reportDescInput');
     const reportGpsText = document.getElementById('reportGpsText');
     const btnSubmitAndLive = document.getElementById('btnSubmitAndLive');
+    const reportMediaInput = document.getElementById('reportMediaInput');
+    const mediaPreviewWrapper = document.getElementById('mediaPreviewWrapper');
+    const mediaPreviewImg = document.getElementById('mediaPreviewImg');
+    const mediaPreviewVid = document.getElementById('mediaPreviewVid');
+    const btnRemoveMedia = document.getElementById('btnRemoveMedia');
+    const btnPickMapPin = document.getElementById('btnPickMapPin');
+
+    let currentReportMedia = null; // { type: 'photo' | 'video', url: string }
+    let selectedPinCoords = null; // { lat: number, lng: number }
+    let isPickingPinOnMap = false;
+    let tempPinMarker = null;
 
     function openCitizenReportModal() {
+        const coords = selectedPinCoords || currentPos;
         if (reportGpsText) {
-            reportGpsText.textContent = `${currentPos.lat.toFixed(5)}° N, ${currentPos.lng.toFixed(5)}° E (ความแม่นยำ ±${Math.round(currentPos.accuracy)}m)`;
+            reportGpsText.textContent = `${coords.lat.toFixed(5)}° N, ${coords.lng.toFixed(5)}° E ${selectedPinCoords ? '(ตำแหน่งเลือกบนแผนที่)' : '(พิกัด GPS อัตโนมัติ)'}`;
         }
         citizenReportModal.classList.remove('hidden');
     }
@@ -1589,41 +1647,143 @@ document.addEventListener('DOMContentLoaded', () => {
     btnReportIncident.addEventListener('click', openCitizenReportModal);
     btnCloseCitizenReport.addEventListener('click', closeCitizenReportModal);
 
+    // Pick Pin Location directly on Leaflet Map
+    if (btnPickMapPin) {
+        btnPickMapPin.addEventListener('click', () => {
+            isPickingPinOnMap = true;
+            closeCitizenReportModal();
+            alert('🎯 กรุณาคลิกบนแผนที่ ณ จุดที่คุณต้องการปักหมุดรายงาน');
+        });
+    }
+
+    if (map) {
+        map.on('click', (e) => {
+            if (isPickingPinOnMap) {
+                selectedPinCoords = { lat: e.latlng.lat, lng: e.latlng.lng };
+                isPickingPinOnMap = false;
+
+                if (tempPinMarker) map.removeLayer(tempPinMarker);
+                const tempIcon = L.divIcon({
+                    className: 'user-pin-picker',
+                    html: `<div style="background:#2563eb; color:#fff; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:18px; border:2px solid #fff; box-shadow:0 0 12px rgba(37,99,235,0.6);">📍</div>`,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16]
+                });
+                tempPinMarker = L.marker([selectedPinCoords.lat, selectedPinCoords.lng], { icon: tempIcon }).addTo(map);
+
+                openCitizenReportModal();
+                speakEmergencyWarning("ปักหมุดเลือกตำแหน่งบนแผนที่เรียบร้อยแล้ว");
+            }
+        });
+    }
+
+    // Media File Attachment & 60-second Video Validation
+    if (reportMediaInput) {
+        reportMediaInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Video length check (Max 60 seconds)
+            if (file.type.startsWith('video')) {
+                const tempVid = document.createElement('video');
+                tempVid.preload = 'metadata';
+                tempVid.onloadedmetadata = () => {
+                    window.URL.revokeObjectURL(tempVid.src);
+                    if (tempVid.duration > 60) {
+                        alert(`⚠️ วิดีโอมีความยาว ${Math.round(tempVid.duration)} วินาที ซึ่งเกินขีดจำกัด 60 วินาที (1 นาที)\n\nกรุณาเลือกคลิปวิดีโอที่มีความยาวไม่เกิน 1 นาที (60s) เพื่อการรับชมที่รวดเร็วของผู้อื่น`);
+                        reportMediaInput.value = '';
+                        resetMediaPreview();
+                        return;
+                    }
+                    readMediaFile(file, 'video');
+                };
+                tempVid.src = URL.createObjectURL(file);
+            } else if (file.type.startsWith('image')) {
+                readMediaFile(file, 'photo');
+            }
+        });
+    }
+
+    function readMediaFile(file, type) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const dataUrl = event.target.result;
+            currentReportMedia = { type: type, url: dataUrl };
+
+            if (type === 'photo') {
+                if (mediaPreviewVid) mediaPreviewVid.style.display = 'none';
+                if (mediaPreviewImg) {
+                    mediaPreviewImg.src = dataUrl;
+                    mediaPreviewImg.style.display = 'block';
+                }
+            } else {
+                if (mediaPreviewImg) mediaPreviewImg.style.display = 'none';
+                if (mediaPreviewVid) {
+                    mediaPreviewVid.src = dataUrl;
+                    mediaPreviewVid.style.display = 'block';
+                }
+            }
+            if (mediaPreviewWrapper) mediaPreviewWrapper.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    if (btnRemoveMedia) {
+        btnRemoveMedia.addEventListener('click', resetMediaPreview);
+    }
+
+    function resetMediaPreview() {
+        currentReportMedia = null;
+        if (reportMediaInput) reportMediaInput.value = '';
+        if (mediaPreviewImg) mediaPreviewImg.src = '';
+        if (mediaPreviewVid) mediaPreviewVid.src = '';
+        if (mediaPreviewWrapper) mediaPreviewWrapper.style.display = 'none';
+    }
+
     function createIncidentFromForm(isLiveMode = false) {
         const selectedCatEl = document.querySelector('input[name="reportCat"]:checked');
-        const category = selectedCatEl ? selectedCatEl.value : 'accident';
-        const title = reportTitleInput.value.trim() || '📢 รายงานเหตุการณ์ฉุกเฉินโดยประชาชน';
+        const category = selectedCatEl ? selectedCatEl.value : 'disaster';
+        const title = reportTitleInput.value.trim() || '📢 รายงานสถานการณ์สดโดยประชาชน';
+        const reporterName = reportNameInput ? (reportNameInput.value.trim() || 'ประชาชนในพื้นที่') : 'ประชาชนในพื้นที่';
         const description = reportDescInput.value.trim() || 'ผู้ใช้งานแจ้งเหตุการณ์สดผ่านระบบ Guardian Live';
+        const coords = selectedPinCoords || currentPos;
 
         const alertData = {
+            id: 'citizen-' + Date.now(),
             title: title,
             category: category,
-            severity: category === 'fire' || category === 'crime' ? 'critical' : 'warning',
-            lat: currentPos.lat,
-            lng: currentPos.lng,
-            address: `พิกัดสด: ${currentPos.lat.toFixed(5)}, ${currentPos.lng.toFixed(5)}`,
-            reporter: 'ประชาชนในพื้นที่',
+            severity: category === 'fire' ? 'critical' : 'warning',
+            lat: coords.lat,
+            lng: coords.lng,
+            address: `พิกัดปักหมุด: ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`,
+            reporter: reporterName,
             description: description,
+            mediaUrl: currentReportMedia ? currentReportMedia.url : null,
+            mediaType: currentReportMedia ? currentReportMedia.type : 'none',
             isLive: isLiveMode
         };
 
-        // Post incident report to server
-        fetch('/api/alerts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(alertData)
-        }).then(res => res.json()).then(data => {
-            activeAlerts.unshift(data.alert);
-            renderIncidents();
-            closeCitizenReportModal();
+        // Broadcast via WebSocket
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'SOS_ALERT', ...alertData }));
+        }
 
-            if (isLiveMode) {
-                startCameraBroadcast();
-                alert(`📢 ส่งรายงานแจ้งเหตุสำเร็จ! กำลังเริ่มถ่ายทอดสดไลฟ์สตรีม: "${title}"`);
-            } else {
-                alert(`📌 ปักหมุดแจ้งเหตุฉุกเฉินสำเร็จ! สัญญาณถูกกระจายไปยังผู้ใช้งานเรียลไทม์`);
-            }
-        });
+        activeAlerts.unshift(alertData);
+        renderIncidents();
+        closeCitizenReportModal();
+        resetMediaPreview();
+        selectedPinCoords = null;
+        if (tempPinMarker) {
+            map.removeLayer(tempPinMarker);
+            tempPinMarker = null;
+        }
+
+        if (isLiveMode) {
+            startCameraBroadcast();
+            alert(`📢 ปักหมุดพร้อมส่งรายงานสำเร็จ! กำลังเริ่มถ่ายทอดสดไลฟ์สตรีม: "${title}"`);
+        } else {
+            alert(`📌 ปักหมุดรายงานสถานการณ์เรียบร้อยแล้ว! ทุกคนบนแผนที่สามารถคลิกดูภาพ/วิดีโอได้ทันที`);
+        }
     }
 
     citizenReportForm.addEventListener('submit', (e) => {
@@ -1633,7 +1793,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnSubmitAndLive.addEventListener('click', () => {
         if (!reportTitleInput.value.trim()) {
-            alert('กรุณากรอกหัวข้อเหตุการณ์ฉุกเฉินก่อนเริ่มไลฟ์สด');
+            alert('กรุณากรอกหัวข้อรายงานสถานการณ์ก่อนเริ่มไลฟ์สด');
             reportTitleInput.focus();
             return;
         }

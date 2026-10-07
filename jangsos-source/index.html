@@ -305,7 +305,8 @@
 
                 <div class="viewer-main-grid">
                     <div class="viewer-video-container" style="position:relative;">
-                        <video id="viewerVideoPlayer" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; display:block;"></video>
+                        <video id="viewerVideoPlayer" autoplay playsinline controls muted style="width:100%; height:100%; object-fit:cover; display:block;"></video>
+                        <img id="viewerImagePlayer" style="width:100%; height:100%; object-fit:contain; background:#0f172a; display:none; position:absolute; top:0; left:0; z-index:1;" alt="Citizen Incident Photo">
                         <canvas id="viewerCanvasOverlay" width="640" height="360" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:2; display:none;"></canvas>
                         <div class="viewer-badge-bar" style="z-index:3;">
                             <span class="badge-tag" id="viewerCategoryBadge">🚗 อุบัติเหตุ</span>
@@ -317,6 +318,7 @@
                         <div class="info-group">
                             <label>📍 ตำแหน่งที่เกิดเหตุ (GPS Coordinates):</label>
                             <p id="viewerAddressText" class="info-val">กำลังโหลด...</p>
+                            <p id="viewerDescText" class="info-val" style="color:#cbd5e1; font-size:12px; margin-top:6px; background:rgba(255,255,255,0.05); padding:8px; border-radius:6px;"></p>
                             <a id="btnNavGoogleMaps" href="#" target="_blank" class="btn btn-primary w-100" style="margin-top:8px;">
                                 🗺️ นำทางไปยังจุดเกิดเหตุด้วย Google Maps
                             </a>
@@ -326,7 +328,7 @@
                             <h4>💬 แชตสดรายงานสถานการณ์</h4>
                             <div id="chatMessagesList" class="chat-messages">
                                 <div class="chat-msg system">
-                                    <span class="user">ระบบ:</span> ยินดีต้อนรับสู่ห้องถ่ายทอดสดเหตุการณ์ฉุกเฉิน
+                                    <span class="user">ระบบ:</span> ยินดีต้อนรับสู่ห้องรายงานและถ่ายทอดสดเหตุการณ์ฉุกเฉิน
                                 </div>
                             </div>
                             <div class="chat-input-bar">
@@ -404,66 +406,93 @@
 
         <!-- Citizen Incident Reporting & Live Stream Modal -->
         <div id="citizenReportModal" class="modal-overlay hidden">
-            <div class="modal-content citizen-report-card card-glass" style="max-width: 600px;">
+            <div class="modal-content citizen-report-card card-glass" style="max-width: 640px;">
                 <div class="studio-header">
                     <div class="live-indicator">
-                        <span class="shield-icon">📢</span>
-                        <h2>ประชาชนแจ้งเหตุฉุกเฉิน & ไลฟ์สดสถานการณ์</h2>
+                        <span class="shield-icon">📌</span>
+                        <h2>ปักหมุดตำแหน่ง & รายงานสถานการณ์สด (ภาพ/วิดีโอ)</h2>
                     </div>
                     <button id="btnCloseCitizenReport" class="btn-close">&times;</button>
                 </div>
 
                 <form id="citizenReportForm" class="citizen-form">
                     <div class="form-group">
-                        <label>📌 เลือกประเภทเหตุการณ์ฉุกเฉิน:</label>
-                        <div class="report-cat-grid">
+                        <label>📌 เลือกประเภทเหตุการณ์ / สถานการณ์:</label>
+                        <div class="report-cat-grid" style="grid-template-columns: repeat(3, 1fr);">
                             <label class="cat-option">
-                                <input type="radio" name="reportCat" value="accident" checked>
-                                <span class="cat-box">🚗 อุบัติเหตุจราจร</span>
+                                <input type="radio" name="reportCat" value="disaster" checked>
+                                <span class="cat-box">🌊 น้ำท่วมขัง</span>
+                            </label>
+                            <label class="cat-option">
+                                <input type="radio" name="reportCat" value="traffic">
+                                <span class="cat-box">🚗 จราจรติดขัด</span>
                             </label>
                             <label class="cat-option">
                                 <input type="radio" name="reportCat" value="fire">
-                                <span class="cat-box">🔥 อัคคีภัย/เพลิงไหม้</span>
+                                <span class="cat-box">🔥 เพลิงไหม้/ควัน</span>
                             </label>
                             <label class="cat-option">
-                                <input type="radio" name="reportCat" value="crime">
-                                <span class="cat-box">🚨 อาชญากรรม/ปล้น</span>
+                                <input type="radio" name="reportCat" value="weather">
+                                <span class="cat-box">🌧️ ฝนตกหนัก</span>
                             </label>
                             <label class="cat-option">
-                                <input type="radio" name="reportCat" value="disaster">
-                                <span class="cat-box">🌊 ภัยธรรมชาติ/น้ำท่วม</span>
+                                <input type="radio" name="reportCat" value="accident">
+                                <span class="cat-box">🚨 อุบัติเหตุ</span>
                             </label>
                             <label class="cat-option">
-                                <input type="radio" name="reportCat" value="medical">
-                                <span class="cat-box">🚑 เจ็บป่วยฉุกเฉิน</span>
+                                <input type="radio" name="reportCat" value="other">
+                                <span class="cat-box">⚠️ อื่นๆ</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="reportTitleInput">💬 หัวข้อเหตุการณ์ฉุกเฉิน:</label>
-                        <input type="text" id="reportTitleInput" placeholder="ตัวอย่าง: เพลิงไหม้อาคารพาณิชย์ หรือ เกิดอุบัติเหตุชนซ้อนทับ..." class="text-input" required>
+                        <label for="reportTitleInput">💬 หัวข้อรายงานสถานการณ์:</label>
+                        <input type="text" id="reportTitleInput" placeholder="เช่น: น้ำท่วมขังสูง 30 ซม. หน้าร้านค้า / รถติดสะสมยาว..." class="text-input" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="reportDescInput">📝 รายละเอียดเหตุการณ์เพิ่มเติม:</label>
-                        <textarea id="reportDescInput" rows="3" placeholder="ระบุรายละเอียด เช่น มีผู้บาดเจ็บ ควันไฟหนาแน่น ต้องการความช่วยเหลือด่วน..." class="text-input" style="resize:vertical;"></textarea>
+                        <label for="reportNameInput">👤 ชื่อผู้รายงาน (หรือ ฉายา):</label>
+                        <input type="text" id="reportNameInput" placeholder="เช่น: ประชาชนในพื้นที่ / กู้ภัยจุด..." class="text-input">
                     </div>
 
                     <div class="form-group">
-                        <label>📍 ตำแหน่งพิกัด GPS อัตโนมัติ:</label>
+                        <label for="reportDescInput">📝 รายละเอียดเพิ่มเติม:</label>
+                        <textarea id="reportDescInput" rows="2" placeholder="ระบุรายละเอียด เช่น ระดับน้ำท่วม, สภาพการจราจร, หรือคำแนะนำการเดินทาง..." class="text-input" style="resize:vertical;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📸 🎥 แนบรูปถ่าย หรือ วิดีโอสั้น (ไม่เกิน 1 นาที / 60 วินาที):</label>
+                        <input type="file" id="reportMediaInput" accept="image/*,video/*" class="text-input" style="padding:6px;">
+                        <small style="color:#94a3b8; font-size:11px; display:block; margin-top:4px;">
+                            💡 แนบภาพถ่าย (JPG/PNG) หรือคลิปวิดีโอสั้นไม่เกิน 60 วินาที เพื่อให้ผู้อื่นกดเข้ามาดูภาพจริง ณ จุดนั้นได้ทันที
+                        </small>
+                        <div id="mediaPreviewWrapper" style="display:none; margin-top:10px; position:relative; border-radius:12px; overflow:hidden; background:#000; text-align:center; max-height:220px;">
+                            <img id="mediaPreviewImg" style="max-height:220px; width:100%; object-fit:contain; display:none;" />
+                            <video id="mediaPreviewVid" controls style="max-height:220px; width:100%; object-fit:contain; display:none;"></video>
+                            <button type="button" id="btnRemoveMedia" style="position:absolute; top:6px; right:6px; background:rgba(239,68,68,0.85); color:#fff; border:none; border-radius:50%; width:28px; height:28px; font-weight:bold; cursor:pointer;">&times;</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <label style="margin-bottom:0;">📍 ตำแหน่งพิกัดปักหมุดบนแผนที่:</label>
+                            <button type="button" id="btnPickMapPin" class="btn btn-secondary btn-sm" style="border-color:#3b82f6; color:#3b82f6; font-size:11px;">
+                                🎯 คลิกเพื่อเลือกจุดปักหมุดบนแผนที่
+                            </button>
+                        </div>
                         <div class="gps-location-preview">
                             <span class="icon">🛰️</span>
-                            <span id="reportGpsText" class="gps-val">กำลังดึงพิกัดละติจูด/ลองจิจูด...</span>
+                            <span id="reportGpsText" class="gps-val">กำลังดึงพิกัด GPS ปัจจุบัน...</span>
                         </div>
                     </div>
 
                     <div class="action-buttons-group">
-                        <button type="button" id="btnSubmitAndLive" class="btn btn-danger btn-pulse flex-1">
-                            🎥 🔴 ส่งแจ้งเหตุ + เริ่มไลฟ์สดทันที
+                        <button type="submit" id="btnSubmitReportOnly" class="btn btn-primary flex-1" style="background:linear-gradient(135deg, #2563eb, #1d4ed8); font-size:15px; font-weight:700;">
+                            📌 ปักหมุดรายงานภาพ/วิดีโอสด
                         </button>
-                        <button type="submit" id="btnSubmitReportOnly" class="btn btn-primary flex-1">
-                            📌 ปักหมุดแจ้งเหตุฉุกเฉิน
+                        <button type="button" id="btnSubmitAndLive" class="btn btn-danger btn-pulse flex-1" style="font-size:14px;">
+                            🎥 🔴 ส่งแจ้งเหตุ + เริ่มไลฟ์สด
                         </button>
                     </div>
                 </form>
