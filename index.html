@@ -56,7 +56,13 @@
             </div>
 
             <div class="header-right">
-                <button id="btnToggleAudioFx" class="btn btn-secondary" style="border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">
+                <button id="btnExportReport" class="btn btn-secondary" style="border-color: rgba(16, 185, 129, 0.4); color: #10b981;">
+                    <span class="icon">📄</span> Export รายงาน CSV
+                </button>
+                <button id="btnAiSpeech" class="btn btn-secondary" style="border-color: rgba(168, 85, 247, 0.4); color: #a855f7;">
+                    <span class="icon">🗣️</span> เสียงอ่านเตือนภัย AI
+                </button>
+                <button id="btnToggleAudioFx" class="btn btn-secondary" style="border-color: rgba(56, 189, 248, 0.4); color: #2563eb;">
                     <span class="icon">🔊</span> เสียงศูนย์บัญชาการ
                 </button>
                 <button id="btnToggleSiren" class="btn btn-warning">
@@ -203,6 +209,9 @@
 
                 <!-- Floating Map Controls -->
                 <div class="map-floating-controls">
+                    <button id="btnToggleSatelliteMap" class="map-btn" title="สลับระหว่าง แผนที่ถนน / ภาพถ่ายดาวเทียม / 3D">
+                        🛰️ ภาพถ่ายดาวเทียม / ถนน
+                    </button>
                     <button id="btnToggleFlightLayer" class="map-btn active-layer" title="เปิด/ปิด เรดาร์การบินและเฮลิคอปเตอร์กู้ภัยสด">
                         🚁 เรดาร์การบินกู้ภัยสด
                     </button>

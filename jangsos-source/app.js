@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).setView([currentPos.lat, currentPos.lng], 14);
 
         // Add OpenStreetMap Tile Layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        streetLayerTile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19
         }).addTo(map);
 
@@ -1066,8 +1066,137 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (data.type === 'NEW_ALERT') {
                 activeAlerts.unshift(data.alert);
                 renderIncidents();
+                speakEmergencyWarning(`แจ้งเตือนภัยฉุกเฉินใหม่: ${data.alert.title}`);
+            } else if (data.type === 'NEW_CHAT') {
+                renderChatMessage(data.chat);
             }
         };
+    }
+
+    // AI Thai Voice Speech Engine
+    function speakEmergencyWarning(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'th-TH';
+            msg.rate = 1.0;
+            window.speechSynthesis.speak(msg);
+        }
+    }
+
+    // Export Incident Report CSV for Disaster Response Officers
+    function exportIncidentsToCsv() {
+        if (!activeAlerts || activeAlerts.length === 0) {
+            alert('ไม่มีข้อมูลรายงานเหตุการณ์ฉุกเฉินในการส่งออก');
+            return;
+        }
+
+        let csvContent = "\uFEFF"; // UTF-8 BOM for Thai Excel compatibility
+        csvContent += "ID,หัวข้อเหตุการณ์,ประเภท,ความรุนแรง,ละติจูด,ลองจิจูด,สถานที่,เวลา,ผู้รายงาน\n";
+
+        activeAlerts.forEach(a => {
+            const title = `"${(a.title || '').replace(/"/g, '""')}"`;
+            const address = `"${(a.address || '').replace(/"/g, '""')}"`;
+            csvContent += `${a.id},${title},${a.category},${a.severity},${a.lat},${a.lng},${address},${a.time},${a.reporter || 'ประชาชน'}\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `GUARDIAN_LIVE_Emergency_Report_${Date.now()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        alert('📄 ส่งออกรายงานเหตุการณ์ฉุกเฉิน (CSV) เรียบร้อยแล้ว!');
+    }
+
+    // Satellite & Topography Map Switcher
+    let isSatelliteMap = false;
+    let streetLayerTile = null;
+    let satelliteLayerTile = null;
+
+    function toggleSatelliteMap() {
+        if (!map) return;
+        const btn = document.getElementById('btnToggleSatelliteMap');
+        isSatelliteMap = !isSatelliteMap;
+
+        if (isSatelliteMap) {
+            if (streetLayerTile) map.removeLayer(streetLayerTile);
+            if (!satelliteLayerTile) {
+                satelliteLayerTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    maxZoom: 19,
+                    attribution: 'Esri World Imagery'
+                });
+            }
+            satelliteLayerTile.addTo(map);
+            if (btn) btn.classList.add('active-layer');
+        } else {
+            if (satelliteLayerTile) map.removeLayer(satelliteLayerTile);
+            if (!streetLayerTile) {
+                streetLayerTile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 });
+            }
+            streetLayerTile.addTo(map);
+            if (btn) btn.classList.remove('active-layer');
+        }
+    }
+
+    // Real-Time Live Chat in Stream Viewer Modal
+    const btnSendChat = document.getElementById('btnSendChat');
+    const chatInputText = document.getElementById('chatInputText');
+    const chatMessagesList = document.getElementById('chatMessagesList');
+
+    if (btnSendChat) {
+        btnSendChat.addEventListener('click', sendChatMessage);
+    }
+    if (chatInputText) {
+        chatInputText.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+    }
+
+    function sendChatMessage() {
+        const text = chatInputText ? chatInputText.value.trim() : '';
+        if (!text) return;
+        const chatObj = {
+            user: 'ศูนย์กู้ชีพ/ผู้สตรีม',
+            msg: text,
+            time: new Date().toLocaleTimeString('th-TH')
+        };
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'CHAT_MESSAGE', chat: chatObj }));
+        }
+        renderChatMessage(chatObj);
+        if (chatInputText) chatInputText.value = '';
+    }
+
+    function renderChatMessage(chat) {
+        if (!chatMessagesList) return;
+        const div = document.createElement('div');
+        div.className = 'chat-msg';
+        div.innerHTML = `<span class="user" style="font-weight:bold; color:#2563eb;">${chat.user}:</span> ${chat.msg}`;
+        chatMessagesList.appendChild(div);
+        chatMessagesList.scrollTop = chatMessagesList.scrollHeight;
+    }
+
+    // AI Speech Warning Button Binding
+    const btnAiSpeech = document.getElementById('btnAiSpeech');
+    if (btnAiSpeech) {
+        btnAiSpeech.addEventListener('click', () => {
+            speakEmergencyWarning("ศูนย์บัญชาการเตือนภัย GUARDIAN LIVE พร้อมทำงาน ดึงข้อมูลแผ่นดินไหว USGS เรดาร์กู้ภัย และกล้อง CCTV เรียลไทม์ 24 ชั่วโมง");
+        });
+    }
+
+    // Export CSV Report Button Binding
+    const btnExportReport = document.getElementById('btnExportReport');
+    if (btnExportReport) {
+        btnExportReport.addEventListener('click', exportIncidentsToCsv);
+    }
+
+    // Satellite Map Switcher Button Binding
+    const btnToggleSatelliteMap = document.getElementById('btnToggleSatelliteMap');
+    if (btnToggleSatelliteMap) {
+        btnToggleSatelliteMap.addEventListener('click', toggleSatelliteMap);
     }
 
     // Category Filter Buttons Event Binding
