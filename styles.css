@@ -961,3 +961,215 @@ body {
 .flex-1 {
     flex: 1;
 }
+
+/* ========================================================
+   RESPONSIVE MOBILE & TABLET LAYOUT ENGINE
+   Guarantees 100% full-screen responsive UX on smartphones
+   (iOS Safari, Android Chrome, Foldables, PWA WebViews)
+   ======================================================== */
+
+@media (max-width: 900px) {
+    .app-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 10px 14px;
+    }
+
+    .brand {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .header-center {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .gps-status-badge, .weather-header-badge {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    .header-right {
+        display: flex;
+        overflow-x: auto;
+        gap: 6px;
+        width: 100%;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .header-right .btn {
+        flex-shrink: 0;
+        white-space: nowrap;
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+
+    .command-tactical-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin: 8px 10px 0 10px;
+        padding: 10px 12px;
+    }
+
+    .threat-meter-box {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .tactical-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        width: 100%;
+    }
+
+    .tac-stat-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        font-size: 10px;
+        background: #f8fafc;
+        padding: 6px 4px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .guardian-app {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .dashboard-grid {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+        padding: 10px;
+        gap: 12px;
+    }
+
+    .map-container-section {
+        height: 420px;
+        min-height: 380px;
+        width: 100%;
+        border-radius: 12px;
+        order: 1;
+    }
+
+    .left-panel {
+        width: 100%;
+        order: 2;
+        overflow: visible;
+    }
+
+    .map-floating-controls {
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        padding: 6px;
+        overflow-x: auto;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(12px);
+        border-radius: 10px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);
+        gap: 6px;
+        z-index: 1000;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .map-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    /* Responsive Modal Dialogs */
+    .modal-overlay {
+        padding: 10px;
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    .modal-content {
+        max-height: 94vh;
+        overflow-y: auto;
+        padding: 12px;
+        margin: auto 0;
+    }
+
+    .viewer-main-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+
+    .studio-controls-bar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .studio-controls-bar .btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 11px;
+        padding: 8px 6px;
+    }
+
+    .report-cat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-info h1 {
+        font-size: 15px;
+    }
+
+    .brand-info p {
+        font-size: 10px;
+    }
+
+    .header-center {
+        grid-template-columns: 1fr;
+    }
+
+    .tactical-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .report-cat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons-group {
+        flex-direction: column;
+    }
+
+    .btn-sos-pulse {
+        padding: 14px;
+    }
+
+    .sos-text {
+        font-size: 16px;
+    }
+
+    .sos-icon {
+        font-size: 26px;
+    }
+}
