@@ -3,7 +3,7 @@
  * Handles offline caching, asset prefetching, and PWA cross-device support.
  */
 
-const CACHE_NAME = 'guardian-live-v8';
+const CACHE_NAME = 'guardian-live-v10';
 
 self.addEventListener('fetch', (event) => {
     event.respondWith(

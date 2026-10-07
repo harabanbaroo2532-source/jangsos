@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             address: 'ทางแยกสยามปทุมวัน ถนนพระราม 1 เขตปทุมวัน กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
             backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4',
-            bmaPortalUrl: 'https://bmacctv.bangkok.go.th/'
+            bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
             id: 'cctv-2',
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             address: 'วงเวียนอนุสาวรีย์ชัยสมรภูมิ เขตพญาไท กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
             backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-42680-large.mp4',
-            bmaPortalUrl: 'https://bmacctv.bangkok.go.th/'
+            bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
             id: 'cctv-3',
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             address: 'สะพานเฉลิมโลก ถนนราชดำริ เขตปทุมวัน กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
             backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-boats-sailing-in-a-river-in-a-city-43282-large.mp4',
-            bmaPortalUrl: 'http://dds.bangkok.go.th/'
+            bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
             id: 'cctv-4',
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             address: 'สะพานพระราม 8 ข้ามแม่น้ำเจ้าพระยา เขตบางพลัด กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdown.mp4',
             backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-bridge-over-a-river-in-a-city-at-night-43283-large.mp4',
-            bmaPortalUrl: 'https://bmacctv.bangkok.go.th/'
+            bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
             id: 'cctv-6',
@@ -407,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cctvAgencyBadge.textContent = cam.agency;
         btnNavCctvMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${cam.lat},${cam.lng}`;
         if (btnNavBmaPortal) {
-            btnNavBmaPortal.href = cam.bmaPortalUrl || 'https://bmacctv.bangkok.go.th/';
+            btnNavBmaPortal.href = cam.bmaPortalUrl || 'https://cctv.bangkok.go.th/export/export/';
         }
 
         // Reset tabs UI state
@@ -452,9 +452,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cctvSnapshotImg) cctvSnapshotImg.style.display = 'none';
             if (cctvIframePlayer) {
                 cctvIframePlayer.style.display = 'block';
-                cctvIframePlayer.src = cam.bmaPortalUrl || 'https://bmacctv.bangkok.go.th/';
+                cctvIframePlayer.src = cam.bmaPortalUrl || 'https://cctv.bangkok.go.th/export/export/';
             }
-            if (cctvStatusBadge) cctvStatusBadge.textContent = '🏛️ กล้องสด กทม. BMA CCTV (Official Portal)';
+            if (cctvStatusBadge) cctvStatusBadge.textContent = '🏛️ กล้องสด กทม. CCTV Export (cctv.bangkok.go.th)';
             startCctvHudAnimation(cam);
         } else if (mode === 'live' || mode === 'backup') {
             if (cctvIframePlayer) cctvIframePlayer.style.display = 'none';
