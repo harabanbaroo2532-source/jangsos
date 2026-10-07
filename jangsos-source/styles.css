@@ -1,25 +1,25 @@
-/* GUARDIAN LIVE - Dark Command Center Design System */
+/* GUARDIAN LIVE - Clean White Command Center Design System */
 :root {
-    --bg-main: #07090e;
-    --bg-surface: rgba(15, 20, 31, 0.82);
-    --bg-card: rgba(23, 30, 46, 0.7);
-    --border-color: rgba(255, 255, 255, 0.08);
+    --bg-main: #f1f5f9;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
+    --border-color: #cbd5e1;
     --border-glow: rgba(239, 68, 68, 0.4);
     
-    --primary: #3b82f6;
-    --primary-glow: rgba(59, 130, 246, 0.35);
+    --primary: #2563eb;
+    --primary-glow: rgba(37, 99, 235, 0.25);
     
     --danger: #ef4444;
     --danger-hover: #dc2626;
-    --danger-glow: rgba(239, 68, 68, 0.5);
+    --danger-glow: rgba(239, 68, 68, 0.3);
     
-    --warning: #f59e0b;
-    --warning-glow: rgba(245, 158, 11, 0.35);
+    --warning: #d97706;
+    --warning-glow: rgba(217, 119, 6, 0.25);
     
     --success: #10b981;
     
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
+    --text-main: #0f172a;
+    --text-muted: #475569;
     
     --radius-sm: 8px;
     --radius-md: 14px;
@@ -38,8 +38,8 @@
 body {
     background-color: var(--bg-main);
     background-image: 
-        radial-gradient(at 10% 10%, rgba(239, 68, 68, 0.12) 0px, transparent 40%),
-        radial-gradient(at 90% 90%, rgba(59, 130, 246, 0.1) 0px, transparent 40%);
+        radial-gradient(at 10% 10%, rgba(37, 99, 235, 0.08) 0px, transparent 40%),
+        radial-gradient(at 90% 90%, rgba(239, 68, 68, 0.06) 0px, transparent 40%);
     color: var(--text-main);
     font-family: var(--font-body);
     height: 100vh;
@@ -58,9 +58,10 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px;
-    background: var(--bg-surface);
+    background: #ffffff;
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
     z-index: 1000;
 }
 
@@ -93,6 +94,7 @@ body {
     font-family: var(--font-heading);
     font-size: 18px;
     font-weight: 800;
+    color: #0f172a;
     letter-spacing: -0.5px;
     display: flex;
     align-items: center;
@@ -127,6 +129,8 @@ body {
     padding: 6px 14px;
     font-size: 12px;
     border-radius: var(--radius-sm);
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
 }
 
 .icon-weather {
@@ -145,14 +149,91 @@ body {
 
 .gps-text .val {
     font-family: monospace;
-    color: #60a5fa;
-    font-weight: 600;
+    color: var(--primary);
+    font-weight: 700;
 }
 
 .header-right {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+/* Tactical Command Bar & AI Threat Level Meter */
+.command-tactical-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 18px;
+    margin: 8px 16px 0 16px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.threat-meter-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.threat-label {
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 800;
+    color: #334155;
+    letter-spacing: 0.5px;
+}
+
+.threat-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.threat-badge.defcon-3 {
+    background: rgba(217, 119, 6, 0.15);
+    color: #b45309;
+    border: 1px solid rgba(217, 119, 6, 0.4);
+    animation: threatBlink 2s infinite ease-in-out;
+}
+
+@keyframes threatBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.tactical-stats-grid {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.tac-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.tac-val {
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 800;
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.tac-lbl {
+    color: #334155;
 }
 
 /* Main Dashboard Grid */
@@ -173,11 +254,12 @@ body {
 }
 
 .card-glass {
-    background: var(--bg-card);
+    background: #ffffff;
     backdrop-filter: blur(16px);
-    border: 1px solid var(--border-color);
+    border: 1px solid #cbd5e1;
     border-radius: var(--radius-md);
     padding: 14px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
 }
 
 /* SOS Button */
@@ -190,16 +272,16 @@ body {
     padding: 18px;
     border: 2px solid var(--danger);
     border-radius: var(--radius-md);
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.5));
+    background: linear-gradient(135deg, #ef4444, #dc2626);
     color: #fff;
     cursor: pointer;
-    box-shadow: 0 0 25px var(--danger-glow);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
     transition: all 0.2s ease;
 }
 
 .btn-sos-pulse:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 40px var(--danger-glow);
+    box-shadow: 0 6px 24px rgba(239, 68, 68, 0.45);
 }
 
 .sos-inner {
@@ -227,7 +309,7 @@ body {
 .sos-sub {
     font-size: 11px;
     letter-spacing: 2px;
-    color: #fca5a5;
+    color: #fee2e2;
 }
 
 .sos-help-note {
@@ -236,8 +318,8 @@ body {
     margin-top: 8px;
 }
 
-/* Flood & Sea Level Gauge Panel Styles */
-.water-stations-section {
+/* Water, CCTV, Seismic Panel Styles */
+.water-stations-section, .cctv-panel-section {
     margin-bottom: 4px;
 }
 
@@ -252,14 +334,14 @@ body {
     font-family: var(--font-heading);
     font-size: 13px;
     font-weight: 700;
-    color: #cbd5e1;
+    color: #0f172a;
     margin: 0;
 }
 
 .badge-live-sm {
-    background: rgba(59, 130, 246, 0.25);
-    color: #60a5fa;
-    border: 1px solid rgba(59, 130, 246, 0.4);
+    background: rgba(37, 99, 235, 0.12);
+    color: #2563eb;
+    border: 1px solid rgba(37, 99, 235, 0.3);
     font-size: 9px;
     font-weight: 800;
     padding: 1px 5px;
@@ -280,8 +362,8 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 8px 10px;
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--border-color);
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
     border-radius: var(--radius-sm);
     font-size: 11px;
     cursor: pointer;
@@ -289,8 +371,8 @@ body {
 }
 
 .water-station-card:hover {
-    border-color: #60a5fa;
-    background: rgba(59, 130, 246, 0.12);
+    border-color: #2563eb;
+    background: #eff6ff;
 }
 
 .water-station-info {
@@ -300,7 +382,7 @@ body {
 
 .water-station-info .name {
     font-weight: 700;
-    color: #f1f5f9;
+    color: #0f172a;
 }
 
 .water-station-info .sub {
@@ -326,7 +408,7 @@ body {
     border-radius: 3px;
 }
 
-/* Water Map Marker Pins */
+/* Map Pins */
 .water-pin-marker {
     display: flex;
     align-items: center;
@@ -335,7 +417,7 @@ body {
     height: 34px;
     border-radius: 50%;
     border: 2px solid #fff;
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
     color: #fff;
     font-size: 16px;
     animation: wavePulse 2s infinite ease-in-out;
@@ -346,7 +428,6 @@ body {
     50% { transform: scale(1.15); }
 }
 
-/* Public CCTV Camera Pin Marker */
 .cctv-pin-marker {
     display: flex;
     align-items: center;
@@ -356,7 +437,7 @@ body {
     border-radius: 50%;
     border: 2px solid #fff;
     background: #10b981;
-    box-shadow: 0 0 14px rgba(16, 185, 129, 0.8);
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.7);
     color: #fff;
     font-size: 16px;
     animation: cctvBlink 2.5s infinite ease-in-out;
@@ -365,6 +446,48 @@ body {
 @keyframes cctvBlink {
     0%, 100% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
     50% { box-shadow: 0 0 20px rgba(16, 185, 129, 1); }
+}
+
+.flight-pin-marker {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.9);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 0 14px rgba(37, 99, 235, 0.7);
+    border: 2px solid #fff;
+    animation: flightPulse 2s infinite ease-out;
+}
+
+@keyframes flightPulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+    70% { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+.seismic-pin-marker {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.9);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.7);
+    border: 2px solid #fff;
+    animation: seismicRing 1.5s infinite;
+}
+
+@keyframes seismicRing {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8); }
+    70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 .hotline-grid {
@@ -379,22 +502,23 @@ body {
     align-items: center;
     padding: 8px;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-color);
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
     text-decoration: none;
-    color: #fff;
+    color: #0f172a;
     transition: background 0.2s;
 }
 
 .hotline-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: #eff6ff;
+    border-color: #2563eb;
 }
 
 .hotline-btn .num {
     font-family: var(--font-heading);
     font-size: 16px;
     font-weight: 800;
-    color: var(--warning);
+    color: #d97706;
 }
 
 .hotline-btn .txt {
@@ -413,8 +537,8 @@ body {
     padding: 5px 10px;
     border-radius: 20px;
     font-size: 11px;
-    border: 1px solid var(--border-color);
-    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
     color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s;
@@ -436,17 +560,19 @@ body {
 }
 
 .incident-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
     border-radius: var(--radius-sm);
     padding: 12px;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
     transition: all 0.2s ease;
 }
 
 .incident-card:hover {
     border-color: var(--primary);
     transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
 }
 
 .incident-card.critical {
@@ -463,6 +589,7 @@ body {
 .incident-title {
     font-size: 13px;
     font-weight: 700;
+    color: #0f172a;
 }
 
 .incident-time {
@@ -472,7 +599,7 @@ body {
 
 .incident-location {
     font-size: 11px;
-    color: #93c5fd;
+    color: var(--primary);
     margin-bottom: 6px;
     display: flex;
     align-items: center;
@@ -511,12 +638,12 @@ body {
     width: 100%;
     height: 100%;
     border-radius: var(--radius-md);
-    background: #0f172a;
+    background: #e2e8f0;
 }
 
-/* Dark tile filter for Leaflet map */
+/* Clean Light map tiles */
 .leaflet-tile-container img {
-    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    filter: none;
 }
 
 .map-floating-controls {
@@ -530,25 +657,27 @@ body {
 
 .map-btn {
     padding: 10px 16px;
-    background: var(--bg-surface);
+    background: #ffffff;
     backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color);
+    border: 1px solid #cbd5e1;
     border-radius: var(--radius-sm);
-    color: #fff;
+    color: #0f172a;
     font-family: var(--font-heading);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
     transition: all 0.2s;
 }
 
 .map-btn:hover {
     background: var(--primary);
+    color: #ffffff;
 }
 
 .btn-primary-glass {
     background: linear-gradient(135deg, var(--danger), #f97316);
+    color: #ffffff;
     border: none;
 }
 
@@ -556,7 +685,7 @@ body {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(15, 23, 42, 0.65);
     backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
@@ -572,6 +701,10 @@ body {
 .modal-content {
     width: 100%;
     max-width: 900px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--radius-md);
+    color: #0f172a;
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -684,14 +817,14 @@ body {
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.08);
-    color: #fff;
-    border: 1px solid var(--border-color);
+    background: #f8fafc;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
 }
 
 .btn-warning {
-    background: var(--warning);
-    color: #000;
+    background: #d97706;
+    color: #fff;
 }
 
 .btn-danger {
@@ -753,13 +886,15 @@ body {
 .chat-messages {
     flex: 1;
     overflow-y: auto;
-    background: rgba(0,0,0,0.3);
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
     border-radius: 6px;
     padding: 8px;
     display: flex;
     flex-direction: column;
     gap: 6px;
     font-size: 11px;
+    color: #0f172a;
 }
 
 /* Citizen Incident Reporting Form Styles */
@@ -786,8 +921,8 @@ body {
     align-items: center;
     justify-content: center;
     padding: 8px 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-color);
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
     border-radius: var(--radius-sm);
     font-size: 11px;
     font-weight: 600;
@@ -809,12 +944,12 @@ body {
     align-items: center;
     gap: 8px;
     padding: 10px 12px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--border-color);
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
     border-radius: var(--radius-sm);
     font-family: monospace;
     font-size: 12px;
-    color: #60a5fa;
+    color: var(--primary);
 }
 
 .action-buttons-group {
@@ -826,125 +961,3 @@ body {
 .flex-1 {
     flex: 1;
 }
-
-/* Tactical Command Bar & AI Threat Level Meter (Better than Osiris AI) */
-.command-tactical-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 10px 18px;
-    margin: 8px 16px 0 16px;
-    background: rgba(6, 11, 20, 0.85);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    border-radius: var(--radius-sm);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.threat-meter-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.threat-label {
-    font-family: var(--font-heading);
-    font-size: 11px;
-    font-weight: 800;
-    color: #94a3b8;
-    letter-spacing: 0.5px;
-}
-
-.threat-badge {
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
-.threat-badge.defcon-3 {
-    background: rgba(245, 158, 11, 0.2);
-    color: #f59e0b;
-    border: 1px solid rgba(245, 158, 11, 0.4);
-    animation: threatBlink 2s infinite ease-in-out;
-}
-
-@keyframes threatBlink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
-.tactical-stats-grid {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-.tac-stat-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.tac-val {
-    font-family: monospace;
-    font-size: 13px;
-    font-weight: 800;
-    color: #38bdf8;
-    background: rgba(56, 189, 248, 0.12);
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-.tac-lbl {
-    color: #cbd5e1;
-}
-
-/* Flight & Seismic Map Pins */
-.flight-pin-marker {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(56, 189, 248, 0.9);
-    color: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    box-shadow: 0 0 14px rgba(56, 189, 248, 0.8);
-    border: 2px solid #fff;
-    animation: flightPulse 2s infinite ease-out;
-}
-
-@keyframes flightPulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); }
-    70% { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
-}
-
-.seismic-pin-marker {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(239, 68, 68, 0.9);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
-    border: 2px solid #fff;
-    animation: seismicRing 1.5s infinite;
-}
-
-@keyframes seismicRing {
-    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8); }
-    70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-}
-
-

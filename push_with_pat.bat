@@ -12,7 +12,7 @@ if "%TOKEN%"=="" (
 )
 
 echo Pushing code to GitHub...
-git push https://%TOKEN%@github.com/harabanbaroo2532-source/jangsos.git main
+git push -f https://%TOKEN%@github.com/harabanbaroo2532-source/jangsos.git main
 
 echo.
 echo Complete! Render will auto-deploy https://jangsos.onrender.com in 1 minute!
