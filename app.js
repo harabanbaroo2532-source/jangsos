@@ -376,6 +376,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!cctvPlayerModal) return;
 
+        // 1. Reveal modal FIRST so hidden check in drawCctvFrame passes
+        cctvPlayerModal.classList.remove('hidden');
+
         cctvModalTitle.textContent = `📹 ${cam.name}`;
         cctvLocationText.textContent = `${cam.address} (GPS: ${cam.lat.toFixed(5)}, ${cam.lng.toFixed(5)})`;
         cctvAgencyText.textContent = cam.agency;
@@ -398,11 +401,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Traffic vehicles for simulation
         const cars = [
-            { x: 50, y: 175, speed: 2.8, color: '#ef4444', width: 34 },
-            { x: 220, y: 200, speed: 3.5, color: '#f59e0b', width: 28 },
-            { x: 380, y: 225, speed: 2.2, color: '#38bdf8', width: 40 },
-            { x: 120, y: 250, speed: 3.0, color: '#10b981', width: 30 },
-            { x: 450, y: 275, speed: 2.5, color: '#a855f7', width: 36 }
+            { x: 50, y: 175, speed: 2.8, color: '#ef4444', width: 36 },
+            { x: 220, y: 200, speed: 3.5, color: '#f59e0b', width: 30 },
+            { x: 380, y: 225, speed: 2.2, color: '#38bdf8', width: 42 },
+            { x: 120, y: 250, speed: 3.0, color: '#10b981', width: 32 },
+            { x: 450, y: 275, speed: 2.5, color: '#a855f7', width: 38 }
         ];
 
         let frameCount = 0;
@@ -412,48 +415,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
             frameCount++;
 
-            // Dark CCTV background
-            ctx.fillStyle = '#060a12';
+            // High-contrast dark CCTV background
+            ctx.fillStyle = '#0f172a';
             ctx.fillRect(0, 0, 640, 360);
+
+            // Draw City Skyline Background
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(30, 50, 50, 100);
+            ctx.fillRect(100, 30, 70, 120);
+            ctx.fillRect(190, 70, 45, 80);
+            ctx.fillRect(440, 40, 75, 110);
+            ctx.fillRect(530, 60, 60, 90);
+
+            // Building windows
+            ctx.fillStyle = '#fef08a';
+            for (let i = 0; i < 8; i++) {
+                if ((frameCount + i * 8) % 40 > 10) {
+                    ctx.fillRect(112 + (i % 2) * 22, 45 + Math.floor(i / 2) * 22, 12, 12);
+                    ctx.fillRect(455 + (i % 2) * 22, 55 + Math.floor(i / 2) * 22, 12, 12);
+                }
+            }
 
             if (cam.id === 'cctv-5' || cam.id === 'cctv-3') {
                 // Waterway / Bridge View
-                ctx.fillStyle = '#0c1a29';
-                ctx.fillRect(0, 120, 640, 170);
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(0, 140, 640, 160);
 
                 // River Waves
-                ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+                ctx.strokeStyle = '#38bdf8';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
                 for (let x = 0; x < 640; x += 15) {
-                    const waveY = 190 + Math.sin((x + frameCount * 4) * 0.04) * 6;
+                    const waveY = 185 + Math.sin((x + frameCount * 4) * 0.04) * 6;
                     if (x === 0) ctx.moveTo(x, waveY); else ctx.lineTo(x, waveY);
                 }
                 ctx.stroke();
 
                 // Boat / Patrol Vessel
                 const boatX = (frameCount * 2.2) % 720 - 60;
-                ctx.fillStyle = '#475569';
-                ctx.fillRect(boatX, 185, 48, 14);
-                ctx.fillStyle = '#ef4444'; ctx.fillRect(boatX + 44, 187, 4, 4);
-                ctx.fillStyle = '#10b981'; ctx.fillRect(boatX, 187, 4, 4);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(boatX, 180, 52, 16);
+                ctx.fillStyle = '#ef4444'; ctx.fillRect(boatX + 46, 182, 6, 6);
+                ctx.fillStyle = '#10b981'; ctx.fillRect(boatX, 182, 6, 6);
 
                 // Bridge structure overlay
-                ctx.fillStyle = 'rgba(30, 41, 59, 0.85)';
-                ctx.fillRect(0, 100, 640, 20);
-                ctx.strokeStyle = '#64748b';
+                ctx.fillStyle = 'rgba(51, 65, 85, 0.9)';
+                ctx.fillRect(0, 115, 640, 25);
+                ctx.strokeStyle = '#94a3b8';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
-                ctx.moveTo(100, 100); ctx.lineTo(320, 30); ctx.lineTo(540, 100);
+                ctx.moveTo(100, 115); ctx.lineTo(320, 35); ctx.lineTo(540, 115);
                 ctx.stroke();
             } else {
-                // Road & Traffic View
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(0, 140, 640, 170);
+                // Multi-lane Road & Traffic View
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(0, 145, 640, 165);
 
                 // Yellow Center Line
                 ctx.strokeStyle = '#f59e0b';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 3;
                 ctx.setLineDash([16, 16]);
                 ctx.beginPath();
                 ctx.moveTo(0, 225); ctx.lineTo(640, 225);
@@ -461,35 +481,50 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.setLineDash([]);
 
                 // Road Borders
-                ctx.strokeStyle = '#64748b';
-                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 4;
                 ctx.beginPath();
-                ctx.moveTo(0, 140); ctx.lineTo(640, 140);
+                ctx.moveTo(0, 145); ctx.lineTo(640, 145);
                 ctx.moveTo(0, 310); ctx.lineTo(640, 310);
                 ctx.stroke();
 
-                // Vehicles moving
+                // Traffic Light Signals
+                const trafficLightState = Math.floor(frameCount / 120) % 3;
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(580, 130, 24, 60);
+                ctx.fillStyle = trafficLightState === 0 ? '#ef4444' : '#450a0a';
+                ctx.beginPath(); ctx.arc(592, 142, 6, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = trafficLightState === 1 ? '#f59e0b' : '#451a03';
+                ctx.beginPath(); ctx.arc(592, 160, 6, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = trafficLightState === 2 ? '#10b981' : '#064e3b';
+                ctx.beginPath(); ctx.arc(592, 178, 6, 0, Math.PI * 2); ctx.fill();
+
+                // Moving Vehicles
                 cars.forEach(car => {
-                    car.x += car.speed;
+                    if (trafficLightState === 0 && car.x > 480 && car.x < 550) {
+                        // Stop at red light
+                    } else {
+                        car.x += car.speed;
+                    }
                     if (car.x > 670) car.x = -60;
 
                     // Car Body
                     ctx.fillStyle = car.color;
-                    ctx.fillRect(car.x, car.y, car.width, 16);
+                    ctx.fillRect(car.x, car.y, car.width, 18);
 
                     // Headlights & Taillights
                     ctx.fillStyle = '#fef08a';
-                    ctx.fillRect(car.x + car.width, car.y + 2, 4, 4);
-                    ctx.fillRect(car.x + car.width, car.y + 10, 4, 4);
+                    ctx.fillRect(car.x + car.width, car.y + 2, 5, 5);
+                    ctx.fillRect(car.x + car.width, car.y + 11, 5, 5);
 
                     ctx.fillStyle = '#ef4444';
-                    ctx.fillRect(car.x - 3, car.y + 2, 3, 4);
-                    ctx.fillRect(car.x - 3, car.y + 10, 3, 4);
+                    ctx.fillRect(car.x - 4, car.y + 2, 4, 5);
+                    ctx.fillRect(car.x - 4, car.y + 11, 4, 5);
                 });
             }
 
-            // Crosshair / Grid overlay
-            ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
+            // Crosshair / Viewfinder overlay
+            ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(320, 0); ctx.lineTo(320, 360);
@@ -497,42 +532,42 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.stroke();
 
             // Scanline animation
-            const scanY = (frameCount * 2) % 360;
-            ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+            const scanY = (frameCount * 2.5) % 360;
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.12)';
             ctx.fillRect(0, scanY, 640, 6);
 
             // Watermark HUD Details
             ctx.fillStyle = '#10b981';
-            ctx.font = 'bold 14px monospace';
+            ctx.font = 'bold 15px monospace';
             ctx.textAlign = 'left';
-            ctx.fillText(`🔴 LIVE CCTV | ${cam.name}`, 16, 28);
+            ctx.fillText(`🔴 LIVE CCTV | ${cam.name}`, 16, 30);
 
             ctx.fillStyle = '#ffffff';
             ctx.font = '12px monospace';
-            ctx.fillText(`TIMESTAMP: ${new Date().toLocaleDateString('th-TH')} ${new Date().toLocaleTimeString('th-TH')}`, 16, 48);
-            ctx.fillText(`CAM ID: ${cam.id.toUpperCase()} | STREAM: 1080P 60FPS`, 16, 66);
-            ctx.fillText(`GPS: ${cam.lat.toFixed(5)}° N, ${cam.lng.toFixed(5)}° E`, 16, 84);
+            ctx.fillText(`TIMESTAMP: ${new Date().toLocaleDateString('th-TH')} ${new Date().toLocaleTimeString('th-TH')}`, 16, 52);
+            ctx.fillText(`CAM ID: ${cam.id.toUpperCase()} | STATUS: 🟢 STREAM OK (60FPS)`, 16, 72);
+            ctx.fillText(`GPS: ${cam.lat.toFixed(5)}° N, ${cam.lng.toFixed(5)}° E`, 16, 92);
 
             ctx.fillStyle = '#38bdf8';
-            ctx.fillText(`AGENCY: ${cam.agency}`, 16, 102);
+            ctx.fillText(`AGENCY: ${cam.agency}`, 16, 112);
 
             // Blinking REC Indicator
-            if (Math.floor(Date.now() / 500) % 2 === 0) {
+            if (Math.floor(Date.now() / 400) % 2 === 0) {
                 ctx.fillStyle = '#ef4444';
                 ctx.beginPath();
-                ctx.arc(612, 24, 7, 0, Math.PI * 2);
+                ctx.arc(610, 26, 7, 0, Math.PI * 2);
                 ctx.fill();
 
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 12px monospace';
                 ctx.textAlign = 'right';
-                ctx.fillText('REC', 598, 28);
+                ctx.fillText('REC', 596, 30);
             }
 
             activeCctvAnimId = requestAnimationFrame(drawCctvFrame);
         }
 
-        // Try setting srcObject with play()
+        // Try setting srcObject for video player
         try {
             if (canvas.captureStream && cctvVideoPlayer) {
                 const stream = canvas.captureStream(25);
@@ -544,7 +579,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         drawCctvFrame();
-        cctvPlayerModal.classList.remove('hidden');
     }
 
     // Render Weather Radar & Rain Forecast Markers
@@ -1118,6 +1152,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 9. Open Viewer Stream Modal with Live Video Stream
     function openStreamViewer(alertData) {
+        streamViewerModal.classList.remove('hidden');
+
         viewerStreamTitle.textContent = `🔴 ${alertData.title}`;
         viewerAddressText.textContent = `${alertData.address} (GPS: ${alertData.lat.toFixed(5)}, ${alertData.lng.toFixed(5)})`;
         viewerCountBadge.textContent = `👁️ ${alertData.viewers || 1} ผู้ชมสด`;
@@ -1173,8 +1209,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             drawLiveFeed();
         }
-
-        streamViewerModal.classList.remove('hidden');
     }
 
     // 10. WebSocket Setup & Listeners
