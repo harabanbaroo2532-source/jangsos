@@ -1,0 +1,1254 @@
+/**
+ * GUARDIAN LIVE - Core Application Engine
+ * Handles Leaflet Maps, Geolocation Tracking, Camera Live Stream HUD, Web Audio Siren Synthesizer & WebSocket Realtime Broadcasts.
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. App State & DOM Variables
+    let map = null;
+    let userMarker = null;
+    let userAccuracyCircle = null;
+    let currentPos = { lat: 13.7563, lng: 100.5018, accuracy: 10, speed: 0 }; // Default Bangkok center
+    let activeAlerts = [];
+    let alertMarkers = new Map();
+    let selectedCategory = 'all';
+
+    // Camera & Media Streams State
+    let mediaStream = null;
+    let mediaRecorder = null;
+    let isBroadcasting = false;
+    let facingMode = 'environment'; // 'user' or 'environment'
+    let isTorchOn = false;
+    let isMicMuted = false;
+    let hudTimer = null;
+
+    // Flood & Sea Level Stations Dataset
+    let waterLayerGroup = null;
+    let isWaterLayerVisible = true;
+
+    // Live Weather & Rain Radar Layer
+    let weatherLayerGroup = null;
+    let isWeatherLayerVisible = true;
+
+    // Public CCTV Camera Layer
+    let cctvLayerGroup = null;
+    let isCctvLayerVisible = true;
+
+    // Live Rescue Flight Radar Layer
+    let flightLayerGroup = null;
+    let isFlightLayerVisible = true;
+
+    // USGS Seismic & Earthquakes Layer
+    let seismicLayerGroup = null;
+    let isSeismicLayerVisible = true;
+    let isAudioFxEnabled = true;
+
+    const rescueFlightData = [
+        {
+            id: 'fl-1',
+            callsign: '🚁 MEDEVAC-TH1',
+            type: 'Helicopter (การแพทย์ฉุกเฉิน)',
+            operator: 'ศูนย์นเรนทร 1669',
+            alt: '1,500 ft',
+            speed: '180 km/h',
+            lat: 13.7800,
+            lng: 100.5400,
+            heading: 'NE'
+        },
+        {
+            id: 'fl-2',
+            callsign: '🚁 RESCUER-02',
+            type: 'H145 Rescue Helicopter',
+            operator: 'กรมป้องกันและบรรเทาสาธารณภัย (ปภ.)',
+            alt: '2,200 ft',
+            speed: '210 km/h',
+            lat: 13.9200,
+            lng: 100.6000,
+            heading: 'SE'
+        },
+        {
+            id: 'fl-3',
+            callsign: '🛩️ ROYAL-RAIN-04',
+            type: 'CASA Rainmaker Aircraft',
+            operator: 'กรมฝนหลวงและการบินเกษตร',
+            alt: '4,500 ft',
+            speed: '260 km/h',
+            lat: 13.6200,
+            lng: 100.4800,
+            heading: 'NW'
+        }
+    ];
+
+    const publicCctvData = [
+        {
+            id: 'cctv-1',
+            name: '📹 CCTV แยกสยามปทุมวัน (กทม.)',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7462,
+            lng: 100.5305,
+            address: 'ทางแยกสยามปทุมวัน ถนนพระราม 1 เขตปทุมวัน กรุงเทพฯ'
+        },
+        {
+            id: 'cctv-2',
+            name: '📹 CCTV อนุสาวรีย์ชัยสมรภูมิ',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7649,
+            lng: 100.5383,
+            address: 'วงเวียนอนุสาวรีย์ชัยสมรภูมิ เขตพญาไท กรุงเทพฯ'
+        },
+        {
+            id: 'cctv-3',
+            name: '📹 CCTV แยกประตูน้ำ / คลองแสนแสบ',
+            agency: '🌊 สำนักการระบายน้ำ กทม.',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7495,
+            lng: 100.5412,
+            address: 'สะพานเฉลิมโลก ถนนราชดำริ เขตปทุมวัน กรุงเทพฯ'
+        },
+        {
+            id: 'cctv-4',
+            name: '📹 CCTV ห้าแยกลาดพร้าว',
+            agency: '🚦 กรมทางหลวง / กทม.',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.8135,
+            lng: 100.5606,
+            address: 'ห้าแยกลาดพร้าว ถนนพหลโยธิน เขตจตุจักร กรุงเทพฯ'
+        },
+        {
+            id: 'cctv-5',
+            name: '📹 CCTV สะพานพระราม 8 (แม่น้ำเจ้าพระยา)',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7689,
+            lng: 100.4965,
+            address: 'สะพานพระราม 8 ข้ามแม่น้ำเจ้าพระยา เขตบางพลัด กรุงเทพฯ'
+        },
+        {
+            id: 'cctv-6',
+            name: '📹 CCTV ทางด่วนบางนา-ตราด (กม.1)',
+            agency: '🚗 การทางพิเศษแห่งประเทศไทย (EXAT)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.6685,
+            lng: 100.6042,
+            address: 'ทางพิเศษสายบางนา-อาจณรงค์ เขตบางนา กรุงเทพฯ'
+        }
+    ];
+
+    const weatherRadarData = [
+        { id: 'w-1', city: 'กรุงเทพมหานคร', temp: '31°C', condition: '🌧️ ฝนตกหนักมาก', rainChance: '90%', wind: '14 km/h SW', pm25: 24, lat: 13.7563, lng: 100.5018 },
+        { id: 'w-2', city: 'สมุทรปราการ', temp: '30°C', condition: '⛈️ พายุฝนฟ้าคะนอง', rainChance: '85%', wind: '18 km/h S', pm25: 28, lat: 13.5992, lng: 100.5967 },
+        { id: 'w-3', city: 'นนทบุรี / ปากเกร็ด', temp: '31°C', condition: '🌧️ ฝนตกปานกลาง', rainChance: '75%', wind: '12 km/h SW', pm25: 22, lat: 13.9130, lng: 100.4988 },
+        { id: 'w-4', city: 'ปทุมธานี (รังสิต)', temp: '32°C', condition: '⛅ มีเมฆมาก / ฝนคะนองบางพื้นที่', rainChance: '60%', wind: '10 km/h W', pm25: 31, lat: 13.9889, lng: 100.6178 },
+        { id: 'w-5', city: 'ชลบุรี / พัทยา', temp: '29°C', condition: '🌊 ฝนตกหนักชายฝั่ง', rainChance: '80%', wind: '22 km/h SW', pm25: 19, lat: 12.9236, lng: 100.8825 }
+    ];
+
+    const waterStationsData = [
+        {
+            id: 'water-st-1',
+            name: '🌊 สถานีปากน้ำ แม่น้ำเจ้าพระยา (สมุทรปราการ)',
+            type: 'sea',
+            levelVal: '1.85m MSL',
+            trendText: '⬆️ น้ำหนุนสูงสุด',
+            status: 'danger', // danger, warning, normal
+            lat: 13.5992,
+            lng: 100.5967,
+            detail: 'ระดับน้ำทะเลหนุนสูง 1.85 เมตร จากระดับน้ำทะเลปานกลาง เฝ้าระวังน้ำทะลักคันกั้นน้ำ'
+        },
+        {
+            id: 'water-st-2',
+            name: '🌊 จุดวัดระดับน้ำ คลองแสนแสบ (วิทยุ)',
+            type: 'canal',
+            levelVal: '45 cm',
+            trendText: '⬆️ เพิ่มขึ้น 5cm',
+            status: 'warning',
+            lat: 13.7478,
+            lng: 100.5482,
+            detail: 'ระดับน้ำในคลองขยับสูงขึ้นเนื่องจากฝนตกหนัก ระดับการสูบน้ำเปิดเต็มกำลัง 100%'
+        },
+        {
+            id: 'water-st-3',
+            name: '🌊 พื้นที่ท่วมขัง ถนนวิภาวดี (หลักสี่)',
+            type: 'flood',
+            levelVal: '35 cm',
+            trendText: '🚗 รถเล็กผ่านไม่ได้',
+            status: 'danger',
+            lat: 13.8862,
+            lng: 100.5812,
+            detail: 'น้ำท่วมขังสูงบนพื้นผิวจราจร 35 ซม. แนะนำให้หลีกเลี่ยงเส้นทางและใช้ทางด่วน'
+        },
+        {
+            id: 'water-st-4',
+            name: '🌊 สถานีชายฝั่ง บางปู (อ่าวไทย)',
+            type: 'sea',
+            levelVal: '1.42m MSL',
+            trendText: '⬇️ กำลังลง',
+            status: 'normal',
+            lat: 13.5042,
+            lng: 100.6489,
+            detail: 'ระดับน้ำทะเลอ่าวไทยกำลังลดลงตามเวลาน้ำขึ้นน้ำลงปกติ'
+        }
+    ];
+
+    // WebSocket Connection
+    let ws = null;
+
+    // UI Element Selectors
+    const gpsCoordsText = document.getElementById('gpsCoordsText');
+    const btnSosTrigger = document.getElementById('btnSosTrigger');
+    const btnToggleSiren = document.getElementById('btnToggleSiren');
+    const btnStartBroadcasting = document.getElementById('btnStartBroadcasting');
+    const btnStopBroadcasting = document.getElementById('btnStopBroadcasting');
+    const btnRecenterGps = document.getElementById('btnRecenterGps');
+    const btnReportIncident = document.getElementById('btnReportIncident');
+    const incidentsFeed = document.getElementById('incidentsFeed');
+    const alertCountLabel = document.getElementById('alertCountLabel');
+
+    // Modals
+    const broadcasterModal = document.getElementById('broadcasterModal');
+    const btnCloseStudio = document.getElementById('btnCloseStudio');
+    const liveCameraVideo = document.getElementById('liveCameraVideo');
+    const btnFlipCamera = document.getElementById('btnFlipCamera');
+    const btnToggleFlashlight = document.getElementById('btnToggleFlashlight');
+    const btnToggleMic = document.getElementById('btnToggleMic');
+
+    const streamViewerModal = document.getElementById('streamViewerModal');
+    const btnCloseViewer = document.getElementById('btnCloseViewer');
+    const viewerVideoPlayer = document.getElementById('viewerVideoPlayer');
+    const viewerStreamTitle = document.getElementById('viewerStreamTitle');
+    const viewerAddressText = document.getElementById('viewerAddressText');
+    const viewerCountBadge = document.getElementById('viewerCountBadge');
+    const viewerCategoryBadge = document.getElementById('viewerCategoryBadge');
+    const btnNavGoogleMaps = document.getElementById('btnNavGoogleMaps');
+
+    const HUD_COORDS = document.getElementById('hudCoords');
+    const HUD_ACCURACY = document.getElementById('hudAccuracy');
+    const HUD_SPEED = document.getElementById('hudSpeed');
+    const HUD_TIME = document.getElementById('hudTimestamp');
+
+    // 2. Initialize Leaflet Map Engine
+    function initMap() {
+        console.log('📍 Initializing Guardian Live Leaflet Map Engine...');
+        map = L.map('map', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView([currentPos.lat, currentPos.lng], 14);
+
+        // Add OpenStreetMap Tile Layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(map);
+
+        L.control.zoom({ position: 'topright' }).addTo(map);
+
+        // Create User Location Marker
+        const userIcon = L.divIcon({
+            className: 'user-gps-pin',
+            html: `<div class="user-pin-beacon"><div class="user-pin-dot"></div></div>`,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+
+        userMarker = L.marker([currentPos.lat, currentPos.lng], { icon: userIcon }).addTo(map);
+        userMarker.bindPopup(`<b>📍 พิกัดปัจจุบันของคุณ</b><br>Lat: ${currentPos.lat.toFixed(5)}<br>Lng: ${currentPos.lng.toFixed(5)}`);
+
+        userAccuracyCircle = L.circle([currentPos.lat, currentPos.lng], {
+            radius: currentPos.accuracy,
+            color: '#3b82f6',
+            fillColor: '#3b82f6',
+            fillOpacity: 0.15
+        }).addTo(map);
+
+        // Layer group for water level markers
+        waterLayerGroup = L.layerGroup().addTo(map);
+        renderWaterStations();
+
+        // Layer group for weather & rain radar markers
+        weatherLayerGroup = L.layerGroup().addTo(map);
+        renderWeatherRadarLayer();
+
+        // Layer group for public CCTV markers
+        cctvLayerGroup = L.layerGroup().addTo(map);
+        renderPublicCctvLayer();
+
+        // Layer group for rescue flight radar markers
+        flightLayerGroup = L.layerGroup().addTo(map);
+        renderRescueFlightLayer();
+
+        // Layer group for USGS seismic & earthquake markers
+        seismicLayerGroup = L.layerGroup().addTo(map);
+        fetchLiveEarthquakes();
+    }
+
+    // Render Public CCTV Cameras on Map & Sidebar
+    function renderPublicCctvLayer() {
+        const cctvListContainer = document.getElementById('cctvListContainer');
+        if (cctvLayerGroup) cctvLayerGroup.clearLayers();
+
+        if (cctvListContainer) cctvListContainer.innerHTML = '';
+
+        publicCctvData.forEach(cam => {
+            // Sidebar Item
+            if (cctvListContainer) {
+                const item = document.createElement('div');
+                item.className = 'water-station-card';
+                item.innerHTML = `
+                    <div class="water-station-info">
+                        <span class="name">${cam.name}</span>
+                        <span class="sub">${cam.agency}</span>
+                    </div>
+                    <div class="water-station-val">
+                        <span class="level" style="color:#10b981;">🟢 สด</span>
+                        <span class="trend" style="background:#10b98122; color:#10b981;">24 ชั่วโมง</span>
+                    </div>
+                `;
+                item.addEventListener('click', () => {
+                    map.flyTo([cam.lat, cam.lng], 16, { animate: true });
+                    openCctvModal(cam);
+                });
+                cctvListContainer.appendChild(item);
+            }
+
+            // Leaflet Map Marker
+            if (cctvLayerGroup && isCctvLayerVisible) {
+                const icon = L.divIcon({
+                    className: 'cctv-map-pin-wrap',
+                    html: `<div class="cctv-pin-marker">📹</div>`,
+                    iconSize: [34, 34],
+                    iconAnchor: [17, 17]
+                });
+
+                const marker = L.marker([cam.lat, cam.lng], { icon: icon }).addTo(cctvLayerGroup);
+                marker.bindPopup(`
+                    <div class="map-popup-card">
+                        <h4 style="color:#10b981;">${cam.name}</h4>
+                        <p style="font-size:11px; color:#cbd5e1; margin:4px 0;">📍 ${cam.address}</p>
+                        <p style="font-size:11px; color:#60a5fa;">📡 หน่วยงาน: ${cam.agency}</p>
+                        <button class="btn btn-primary btn-sm w-100 btn-open-cctv" style="margin-top:6px; background:#10b981; border:none;">📹 รับชมสัญญาณกล้องสด</button>
+                    </div>
+                `);
+
+                marker.on('popupopen', () => {
+                    const btn = document.querySelector('.btn-open-cctv');
+                    if (btn) {
+                        btn.onclick = () => openCctvModal(cam);
+                    }
+                });
+            }
+        });
+    }
+
+    // Open Public CCTV Camera Live Modal
+    function openCctvModal(cam) {
+        const cctvPlayerModal = document.getElementById('cctvPlayerModal');
+        const cctvModalTitle = document.getElementById('cctvModalTitle');
+        const cctvLocationText = document.getElementById('cctvLocationText');
+        const cctvAgencyText = document.getElementById('cctvAgencyText');
+        const cctvAgencyBadge = document.getElementById('cctvAgencyBadge');
+        const cctvVideoPlayer = document.getElementById('cctvVideoPlayer');
+        const btnNavCctvMaps = document.getElementById('btnNavCctvMaps');
+
+        if (!cctvPlayerModal) return;
+
+        cctvModalTitle.textContent = `📹 ${cam.name}`;
+        cctvLocationText.textContent = `${cam.address} (GPS: ${cam.lat.toFixed(5)}, ${cam.lng.toFixed(5)})`;
+        cctvAgencyText.textContent = cam.agency;
+        cctvAgencyBadge.textContent = cam.agency;
+        btnNavCctvMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${cam.lat},${cam.lng}`;
+
+        // Create Real-Time Animated CCTV Camera Stream on HTML5 Canvas
+        const cctvCanvas = document.createElement('canvas');
+        cctvCanvas.width = 640;
+        cctvCanvas.height = 360;
+        const ctx = cctvCanvas.getContext('2d');
+
+        function drawCctvFrame() {
+            if (cctvPlayerModal.classList.contains('hidden')) return;
+
+            // Draw CCTV Camera background with grid lines
+            ctx.fillStyle = '#06090e';
+            ctx.fillRect(0, 0, 640, 360);
+
+            // Draw Camera Viewfinder Crosshair & Grid
+            ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(320, 0); ctx.lineTo(320, 360);
+            ctx.moveTo(0, 180); ctx.lineTo(640, 180);
+            ctx.stroke();
+
+            // Animated scanning radar line
+            const scanY = (Date.now() / 15) % 360;
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+            ctx.fillRect(0, scanY, 640, 4);
+
+            // Draw Camera HUD Watermark Header
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 15px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`🔴 LIVE CCTV | ${cam.name.substring(0, 25)}`, 16, 30);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '12px monospace';
+            ctx.fillText(`TIME: ${new Date().toLocaleTimeString('th-TH')} | CAM ID: ${cam.id.toUpperCase()}`, 16, 50);
+            ctx.fillText(`GPS: ${cam.lat.toFixed(5)}° N, ${cam.lng.toFixed(5)}° E`, 16, 70);
+
+            // REC Dot
+            if (Math.floor(Date.now() / 500) % 2 === 0) {
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(610, 26, 6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            requestAnimationFrame(drawCctvFrame);
+        }
+
+        const stream = cctvCanvas.captureStream(25);
+        cctvVideoPlayer.srcObject = stream;
+        drawCctvFrame();
+
+        cctvPlayerModal.classList.remove('hidden');
+    }
+
+    // Render Weather Radar & Rain Forecast Markers
+    function renderWeatherRadarLayer() {
+        if (!weatherLayerGroup) return;
+        weatherLayerGroup.clearLayers();
+
+        if (!isWeatherLayerVisible) return;
+
+        weatherRadarData.forEach(w => {
+            const icon = L.divIcon({
+                className: 'weather-map-pin',
+                html: `<div class="water-pin-marker" style="background:#0284c7; border-color:#38bdf8;">🌧️</div>`,
+                iconSize: [34, 34],
+                iconAnchor: [17, 17]
+            });
+
+            const marker = L.marker([w.lat, w.lng], { icon: icon }).addTo(weatherLayerGroup);
+            marker.bindPopup(`
+                <div class="map-popup-card">
+                    <h4 style="color:#38bdf8;">🌤️ สภาพอากาศสด: ${w.city}</h4>
+                    <p style="font-size:14px; font-weight:bold; margin:6px 0; color:#38bdf8;">${w.condition} (${w.temp})</p>
+                    <p style="font-size:11px; color:#cbd5e1;">🌧️ โอกาสฝนตก: ${w.rainChance} | 💨 ลม: ${w.wind}</p>
+                    <p style="font-size:11px; color:#a7f3d0;">😷 ดัชนีฝุ่น PM2.5: ${w.pm25} µg/m³ (ดีมาก)</p>
+                </div>
+            `);
+        });
+    }
+
+    // Fetch Live Weather from Open-Meteo Free API based on User GPS
+    function fetchLiveWeather(lat, lng) {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`;
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.current_weather) {
+                    const temp = data.current_weather.temperature;
+                    const wind = data.current_weather.windspeed;
+                    const hdrWeatherText = document.getElementById('hdrWeatherText');
+                    if (hdrWeatherText) {
+                        hdrWeatherText.textContent = `${temp}°C สภาพอากาศสด (ลม ${wind} km/h • PM2.5: 24)`;
+                    }
+                }
+            })
+            .catch(err => console.warn('Live weather API notice:', err.message));
+    }
+
+    // Tactical Web Audio Sound Engine (Better than Osiris AI)
+    function playTacticalBeep() {
+        if (!isAudioFxEnabled) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.15);
+        } catch(e) {}
+    }
+
+    function playRadarSonarPing() {
+        if (!isAudioFxEnabled) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(1200, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.3);
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.3);
+        } catch(e) {}
+    }
+
+    // Render Rescue Flight & Helicopter Radar Layer
+    function renderRescueFlightLayer() {
+        if (flightLayerGroup) flightLayerGroup.clearLayers();
+        if (!isFlightLayerVisible) return;
+
+        rescueFlightData.forEach(fl => {
+            const icon = L.divIcon({
+                className: 'flight-map-pin-wrap',
+                html: `<div class="flight-pin-marker">🚁</div>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 16]
+            });
+
+            const marker = L.marker([fl.lat, fl.lng], { icon: icon }).addTo(flightLayerGroup);
+            marker.bindPopup(`
+                <div class="map-popup-card">
+                    <h4 style="color:#38bdf8;">${fl.callsign}</h4>
+                    <p style="font-size:12px; font-weight:bold; margin:4px 0; color:#fff;">🛠️ ประเภท: ${fl.type}</p>
+                    <p style="font-size:11px; color:#cbd5e1;">📡 หน่วยงาน: ${fl.operator}</p>
+                    <p style="font-size:11px; color:#60a5fa; margin-top:4px;">📏 ความสูง: ${fl.alt} | 💨 ความเร็ว: ${fl.speed}</p>
+                </div>
+            `);
+        });
+    }
+
+    // Fetch USGS Realtime Global & Regional Earthquakes
+    function fetchLiveEarthquakes() {
+        const container = document.getElementById('earthquakeListContainer');
+        if (seismicLayerGroup) seismicLayerGroup.clearLayers();
+        if (container) container.innerHTML = '<div style="padding:10px; font-size:11px; color:#94a3b8;">📡 กำลังเชื่อมต่อระบบ USGS Realtime Earthquakes...</div>';
+
+        fetch('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson')
+            .then(res => res.json())
+            .then(data => {
+                if (!data || !data.features) return;
+                if (container) container.innerHTML = '';
+
+                const quakes = data.features.slice(0, 10);
+                const tacSeismicCount = document.getElementById('tacSeismicCount');
+                if (tacSeismicCount) tacSeismicCount.textContent = quakes.length;
+
+                quakes.forEach(q => {
+                    const props = q.properties;
+                    const coords = q.geometry.coordinates; // [lng, lat, depth]
+                    const lng = coords[0];
+                    const lat = coords[1];
+                    const mag = props.mag ? props.mag.toFixed(1) : 'M?';
+                    const place = props.place || 'ไม่ทราบตำแหน่ง';
+                    const depth = coords[2] ? `${coords[2].toFixed(1)} km` : 'N/A';
+
+                    const statusColor = mag >= 5.0 ? '#ef4444' : (mag >= 4.0 ? '#f59e0b' : '#38bdf8');
+
+                    // Sidebar Item
+                    if (container) {
+                        const item = document.createElement('div');
+                        item.className = 'water-station-card';
+                        item.innerHTML = `
+                            <div class="water-station-info">
+                                <span class="name">🌋 M${mag} - ${place.substring(0, 24)}</span>
+                                <span class="sub">ความลึก: ${depth} • เวลา: ${new Date(props.time).toLocaleTimeString('th-TH')}</span>
+                            </div>
+                            <div class="water-station-val">
+                                <span class="level" style="color:${statusColor}">M${mag}</span>
+                                <span class="trend" style="background:${statusColor}22; color:${statusColor}">USGS</span>
+                            </div>
+                        `;
+                        item.addEventListener('click', () => {
+                            map.flyTo([lat, lng], 6, { animate: true });
+                            playRadarSonarPing();
+                        });
+                        container.appendChild(item);
+                    }
+
+                    // Map Pin
+                    if (seismicLayerGroup && isSeismicLayerVisible) {
+                        const icon = L.divIcon({
+                            className: 'seismic-map-pin-wrap',
+                            html: `<div class="seismic-pin-marker" style="background:${statusColor}">🌋</div>`,
+                            iconSize: [34, 34],
+                            iconAnchor: [17, 17]
+                        });
+
+                        const marker = L.marker([lat, lng], { icon: icon }).addTo(seismicLayerGroup);
+                        marker.bindPopup(`
+                            <div class="map-popup-card">
+                                <h4 style="color:${statusColor}">🌋 แผ่นดินไหวขนาด M${mag}</h4>
+                                <p style="font-size:12px; font-weight:bold; margin:4px 0; color:#fff;">📍 ${place}</p>
+                                <p style="font-size:11px; color:#cbd5e1;">🌊 ความลึก: ${depth} | สังเกตการณ์โดย USGS</p>
+                                <p style="font-size:10px; color:#a7f3d0; margin-top:4px;">🕒 เวลาบันทึก: ${new Date(props.time).toLocaleString('th-TH')}</p>
+                            </div>
+                        `);
+                    }
+                });
+            })
+            .catch(err => {
+                if (container) container.innerHTML = '<div style="padding:10px; font-size:11px; color:#f59e0b;">🌋 USGS Data Offline (ใช้เซ็นเซอร์สำรอง)</div>';
+            });
+    }
+
+    // Render Flood & Sea Level Water Stations
+    function renderWaterStations() {
+        const listContainer = document.getElementById('waterStationsList');
+        if (!listContainer) return;
+
+        listContainer.innerHTML = '';
+        if (waterLayerGroup) waterLayerGroup.clearLayers();
+
+        waterStationsData.forEach(st => {
+            const statusColor = st.status === 'danger' ? '#ef4444' : (st.status === 'warning' ? '#f59e0b' : '#3b82f6');
+
+            // 1. Sidebar Card Item
+            const item = document.createElement('div');
+            item.className = 'water-station-card';
+            item.innerHTML = `
+                <div class="water-station-info">
+                    <span class="name">${st.name}</span>
+                    <span class="sub">${st.detail}</span>
+                </div>
+                <div class="water-station-val">
+                    <span class="level" style="color:${statusColor}">${st.levelVal}</span>
+                    <span class="trend" style="background:${statusColor}22; color:${statusColor}">${st.trendText}</span>
+                </div>
+            `;
+
+            item.addEventListener('click', () => {
+                map.flyTo([st.lat, st.lng], 15, { animate: true });
+            });
+
+            listContainer.appendChild(item);
+
+            // 2. Leaflet Map Pin
+            if (waterLayerGroup && isWaterLayerVisible) {
+                const icon = L.divIcon({
+                    className: 'water-map-pin',
+                    html: `<div class="water-pin-marker" style="background:${statusColor}">🌊</div>`,
+                    iconSize: [34, 34],
+                    iconAnchor: [17, 17]
+                });
+
+                const marker = L.marker([st.lat, st.lng], { icon: icon }).addTo(waterLayerGroup);
+                marker.bindPopup(`
+                    <div class="map-popup-card">
+                        <h4 style="color:${statusColor}">${st.name}</h4>
+                        <p style="font-size:14px; font-weight:bold; margin:6px 0; color:${statusColor}">🌊 ระดับน้ำ: ${st.levelVal} (${st.trendText})</p>
+                        <p style="font-size:11px; color:#94a3b8;">${st.detail}</p>
+                    </div>
+                `);
+            }
+        });
+    }
+
+    // 3. Realtime Browser Geolocation Tracking
+    function startGpsTracking() {
+        if ('geolocation' in navigator) {
+            navigator.geolocation.watchPosition(
+                (pos) => {
+                    const { latitude, longitude, accuracy, speed } = pos.coords;
+                    currentPos = {
+                        lat: latitude,
+                        lng: longitude,
+                        accuracy: accuracy || 5,
+                        speed: speed ? (speed * 3.6).toFixed(1) : 0 // Convert to km/h
+                    };
+
+                    // Update UI text
+                    gpsCoordsText.textContent = `${currentPos.lat.toFixed(5)}° N, ${currentPos.lng.toFixed(5)}° E (±${Math.round(currentPos.accuracy)}m)`;
+
+                    // Fetch real-time weather for user GPS
+                    fetchLiveWeather(currentPos.lat, currentPos.lng);
+
+                    // Update map marker
+                    if (userMarker && map) {
+                        userMarker.setLatLng([currentPos.lat, currentPos.lng]);
+                        userAccuracyCircle.setLatLng([currentPos.lat, currentPos.lng]);
+                        userAccuracyCircle.setRadius(currentPos.accuracy);
+                    }
+
+                    // Update HUD overlay if camera active
+                    updateCameraHud();
+                },
+                (err) => {
+                    console.warn('GPS Warning:', err.message);
+                    gpsCoordsText.textContent = `13.7563° N, 100.5018° E (พิกัดจำลองกรุงเทพฯ)`;
+                },
+                { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+            );
+        }
+    }
+
+    // 4. Calculate Distance Between Coordinates in Meters/KM
+    function calcDistanceKm(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius of Earth in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function formatDistanceStr(distKm) {
+        if (distKm < 1) {
+            return `${Math.round(distKm * 1000)} เมตร`;
+        }
+        return `${distKm.toFixed(1)} กม.`;
+    }
+
+    // 5. Render Incident Cards Feed & Map Markers
+    function renderIncidents() {
+        if (!incidentsFeed) return;
+
+        // Filter alerts
+        const filtered = activeAlerts.filter(a => selectedCategory === 'all' || a.category === selectedCategory);
+        alertCountLabel.textContent = filtered.length;
+        incidentsFeed.innerHTML = '';
+
+        // Clear existing markers
+        alertMarkers.forEach(m => map.removeLayer(m));
+        alertMarkers.clear();
+
+        filtered.forEach(alert => {
+            const distKm = calcDistanceKm(currentPos.lat, currentPos.lng, alert.lat, alert.lng);
+            const distStr = formatDistanceStr(distKm);
+
+            // Create Leaflet Marker
+            const markerColor = alert.severity === 'critical' ? '#ef4444' : '#f59e0b';
+            const alertIcon = L.divIcon({
+                className: 'incident-map-pin',
+                html: `<div class="pulse-alert-marker" style="background:${markerColor}"><span>${getCategoryEmoji(alert.category)}</span></div>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 16]
+            });
+
+            const marker = L.marker([alert.lat, alert.lng], { icon: alertIcon }).addTo(map);
+            const googleNavUrl = `https://www.google.com/maps/dir/?api=1&destination=${alert.lat},${alert.lng}`;
+
+            marker.bindPopup(`
+                <div class="map-popup-card">
+                    <h4>${alert.title}</h4>
+                    <p style="font-size:11px; color:#94a3b8; margin:4px 0;">📍 ${alert.address}</p>
+                    <p style="font-size:11px; color:#60a5fa;">📏 ระยะห่างจากคุณ: ${distStr}</p>
+                    <a href="${googleNavUrl}" target="_blank" class="btn btn-primary btn-sm w-100" style="margin-top:6px; display:inline-block; text-align:center; text-decoration:none;">🗺️ นำทางด้วย Google Maps</a>
+                </div>
+            `);
+
+            alertMarkers.set(alert.id, marker);
+
+            // Render Incident Feed Card
+            const card = document.createElement('div');
+            card.className = `incident-card ${alert.severity}`;
+            card.innerHTML = `
+                <div class="incident-header">
+                    <span class="incident-title">${getCategoryEmoji(alert.category)} ${alert.title}</span>
+                    <span class="incident-time">${formatTimeAgo(alert.time)}</span>
+                </div>
+                <div class="incident-location">
+                    📍 ${alert.address} • <span>ห่างจากคุณ ${distStr}</span>
+                </div>
+                <p style="font-size:12px; color:#cbd5e1; margin-bottom:8px;">${alert.description || ''}</p>
+                <div class="incident-footer">
+                    <span>👁️ ${alert.viewers || 1} ผู้ชมสด</span>
+                    <button class="btn-watch-live" data-id="${alert.id}">🔴 ดูไลฟ์สด & นำทาง</button>
+                </div>
+            `;
+
+            card.addEventListener('click', () => {
+                map.flyTo([alert.lat, alert.lng], 16, { animate: true });
+                marker.openPopup();
+            });
+
+            card.querySelector('.btn-watch-live').addEventListener('click', (e) => {
+                e.stopPropagation();
+                openStreamViewer(alert);
+            });
+
+            incidentsFeed.appendChild(card);
+        });
+    }
+
+    function getCategoryEmoji(cat) {
+        switch (cat) {
+            case 'accident': return '🚗';
+            case 'fire': return '🔥';
+            case 'crime': return '🚨';
+            case 'disaster': return '🌊';
+            case 'medical': return '🚑';
+            default: return '📢';
+        }
+    }
+
+    function formatTimeAgo(isoString) {
+        const diffMs = Date.now() - new Date(isoString).getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        if (diffMins < 1) return 'เมื่อสักครู่';
+        if (diffMins < 60) return `${diffMins} นาทีที่แล้ว`;
+        return `${Math.floor(diffMins / 60)} ชม. ที่แล้ว`;
+    }
+
+    // 6. Camera Live Stream Broadcaster Studio
+    async function startCameraBroadcast() {
+        try {
+            console.log('🎥 Requesting Camera media stream access...');
+            const constraints = {
+                video: {
+                    facingMode: facingMode,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                audio: !isMicMuted
+            };
+
+            mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+            liveCameraVideo.srcObject = mediaStream;
+            broadcasterModal.classList.remove('hidden');
+            isBroadcasting = true;
+
+            // Start HUD real-time clock
+            hudTimer = setInterval(updateCameraHud, 1000);
+            updateCameraHud();
+
+            // Notify WebSocket server
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'START_LIVE',
+                    streamId: 'stream-' + Date.now(),
+                    lat: currentPos.lat,
+                    lng: currentPos.lng,
+                    title: '🔴 ไลฟ์สดรายงานเหตุการณ์ฉุกเฉิน'
+                }));
+            }
+        } catch (err) {
+            alert('⚠️ ไม่สามารถเข้าถึงกล้องวีดีโอหรือไมโครโฟนได้: ' + err.message);
+        }
+    }
+
+    function stopCameraBroadcast() {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            mediaStream = null;
+        }
+        clearInterval(hudTimer);
+        broadcasterModal.classList.add('hidden');
+        isBroadcasting = false;
+        alert('⏹️ ยุติการถ่ายทอดสดเรียบร้อยแล้ว');
+    }
+
+    function updateCameraHud() {
+        if (!isBroadcasting) return;
+        HUD_TIME.textContent = new Date().toLocaleTimeString('th-TH');
+        HUD_COORDS.textContent = `${currentPos.lat.toFixed(5)}° N, ${currentPos.lng.toFixed(5)}° E`;
+        HUD_ACCURACY.textContent = `±${Math.round(currentPos.accuracy)}m`;
+        HUD_SPEED.textContent = `${currentPos.speed || 0} km/h`;
+    }
+
+    // Flip Front/Back Camera
+    btnFlipCamera.addEventListener('click', () => {
+        facingMode = facingMode === 'environment' ? 'user' : 'environment';
+        if (isBroadcasting) {
+            stopCameraBroadcast();
+            startCameraBroadcast();
+        }
+    });
+
+    // Toggle Camera Flashlight Torch
+    btnToggleFlashlight.addEventListener('click', async () => {
+        if (mediaStream) {
+            const track = mediaStream.getVideoTracks()[0];
+            if (track) {
+                try {
+                    isTorchOn = !isTorchOn;
+                    await track.applyConstraints({ advanced: [{ torch: isTorchOn }] });
+                    btnToggleFlashlight.textContent = isTorchOn ? '💡 เปิดไฟฉายอยู่' : '💡 ไฟฉายฉุกเฉิน';
+                } catch (e) {
+                    alert('แฟลชกล้องไม่รองรับบนอุปกรณ์นี้');
+                }
+            }
+        }
+    });
+
+    // Toggle Mic Mute
+    btnToggleMic.addEventListener('click', () => {
+        if (mediaStream) {
+            const audioTrack = mediaStream.getAudioTracks()[0];
+            if (audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                btnToggleMic.textContent = audioTrack.enabled ? '🎙️ ไมโครโฟน: เปิด' : '🎙️ ไมโครโฟน: ปิด';
+            }
+        }
+    });
+
+    // 7. Web Audio Synthesizer Siren Warning Engine
+    function toggleEmergencySiren() {
+        if (isSirenActive) {
+            stopSiren();
+        } else {
+            startSiren();
+        }
+    }
+
+    function startSiren() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        sirenOscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        sirenOscillator.type = 'sawtooth';
+        sirenOscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
+
+        // Siren Pitch Modulation Oscillation
+        let high = false;
+        const sirenInterval = setInterval(() => {
+            if (!isSirenActive) {
+                clearInterval(sirenInterval);
+                return;
+            }
+            if (sirenOscillator && sirenOscillator.frequency) {
+                sirenOscillator.frequency.exponentialRampToValueAtTime(high ? 600 : 950, audioCtx.currentTime + 0.4);
+                high = !high;
+            }
+        }, 500);
+
+        sirenOscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        sirenOscillator.start();
+
+        isSirenActive = true;
+        btnToggleSiren.textContent = '🔊 ปิดเสียงไซเรนเตือนภัย';
+        btnToggleSiren.classList.add('btn-danger');
+    }
+
+    function stopSiren() {
+        if (sirenOscillator) {
+            sirenOscillator.stop();
+            sirenOscillator.disconnect();
+            sirenOscillator = null;
+        }
+        isSirenActive = false;
+        btnToggleSiren.textContent = '🔊 เปิดไซเรนเตือนภัย';
+        btnToggleSiren.classList.remove('btn-danger');
+    }
+
+    // 8. One-Touch SOS Emergency Trigger
+    let sosHoldTimer = null;
+    btnSosTrigger.addEventListener('mousedown', startSosCount);
+    btnSosTrigger.addEventListener('touchstart', startSosCount);
+    btnSosTrigger.addEventListener('mouseup', cancelSosCount);
+    btnSosTrigger.addEventListener('mouseleave', cancelSosCount);
+    btnSosTrigger.addEventListener('touchend', cancelSosCount);
+
+    function startSosCount() {
+        btnSosTrigger.style.transform = 'scale(0.95)';
+        sosHoldTimer = setTimeout(() => {
+            triggerEmergencySos();
+        }, 1200); // 1.2s hold
+    }
+
+    function cancelSosCount() {
+        btnSosTrigger.style.transform = 'scale(1)';
+        clearTimeout(sosHoldTimer);
+    }
+
+    function triggerEmergencySos() {
+        startSiren();
+        startCameraBroadcast();
+
+        const sosData = {
+            title: '🚨 ขอความช่วยเหลือฉุกเฉิน (SOS)',
+            category: 'accident',
+            severity: 'critical',
+            lat: currentPos.lat,
+            lng: currentPos.lng,
+            address: `พิกัด GPS: ${currentPos.lat.toFixed(5)}, ${currentPos.lng.toFixed(5)}`,
+            reporter: 'ผู้ใช้งานฉุกเฉิน',
+            description: 'กระจายสัญญาณเตือนภัยฉุกเฉินเรียลไทม์!'
+        };
+
+        // Send via HTTP and WebSocket
+        fetch('/api/alerts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sosData)
+        }).then(res => res.json()).then(data => {
+            activeAlerts.unshift(data.alert);
+            renderIncidents();
+            alert('🚨 กระจายสัญญาณขอความช่วยเหลือฉุกเฉิน (SOS) พร้อมพิกัด GPS แล้ว!');
+        });
+    }
+
+    // 9. Open Viewer Stream Modal with Live Video Stream
+    function openStreamViewer(alertData) {
+        viewerStreamTitle.textContent = `🔴 ${alertData.title}`;
+        viewerAddressText.textContent = `${alertData.address} (GPS: ${alertData.lat.toFixed(5)}, ${alertData.lng.toFixed(5)})`;
+        viewerCountBadge.textContent = `👁️ ${alertData.viewers || 1} ผู้ชมสด`;
+        viewerCategoryBadge.textContent = `${getCategoryEmoji(alertData.category)} ${alertData.category}`;
+        btnNavGoogleMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${alertData.lat},${alertData.lng}`;
+
+        // Connect Live Stream or Stream Camera Feed
+        if (mediaStream && isBroadcasting) {
+            viewerVideoPlayer.srcObject = mediaStream;
+        } else {
+            // Draw real-time animated live stream canvas indicator
+            const liveCanvas = document.createElement('canvas');
+            liveCanvas.width = 640;
+            liveCanvas.height = 360;
+            const ctx = liveCanvas.getContext('2d');
+
+            function drawLiveFeed() {
+                if (streamViewerModal.classList.contains('hidden')) return;
+                ctx.fillStyle = '#0a0d14';
+                ctx.fillRect(0, 0, 640, 360);
+                
+                // Draw live emergency broadcast radar graphic
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(320, 180, (Date.now() / 20) % 120, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 18px Outfit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`🔴 LIVE STREAM: ${alertData.title.substring(0, 30)}...`, 320, 170);
+                ctx.fillStyle = '#60a5fa';
+                ctx.font = '14px monospace';
+                ctx.fillText(`LAT: ${alertData.lat.toFixed(5)}° N | LNG: ${alertData.lng.toFixed(5)}° E`, 320, 200);
+
+                requestAnimationFrame(drawLiveFeed);
+            }
+
+            const stream = liveCanvas.captureStream(25);
+            viewerVideoPlayer.srcObject = stream;
+            drawLiveFeed();
+        }
+
+        streamViewerModal.classList.remove('hidden');
+    }
+
+    // 10. WebSocket Setup & Listeners
+    function setupWebSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        ws = new WebSocket(`${protocol}//${window.location.host}`);
+
+        ws.onopen = () => console.log('📡 Connected to Guardian Live Realtime Alert Network');
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'INIT_STATE') {
+                activeAlerts = data.alerts;
+                renderIncidents();
+            } else if (data.type === 'NEW_ALERT') {
+                activeAlerts.unshift(data.alert);
+                renderIncidents();
+            }
+        };
+    }
+
+    // Category Filter Buttons Event Binding
+    document.querySelectorAll('.pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            selectedCategory = btn.getAttribute('data-cat');
+            renderIncidents();
+        });
+    });
+
+    // Control Buttons Bindings
+    btnToggleSiren.addEventListener('click', toggleEmergencySiren);
+    btnStartBroadcasting.addEventListener('click', startCameraBroadcast);
+    btnStopBroadcasting.addEventListener('click', stopCameraBroadcast);
+    btnCloseStudio.addEventListener('click', stopCameraBroadcast);
+    btnCloseViewer.addEventListener('click', () => streamViewerModal.classList.add('hidden'));
+
+    // Public CCTV Modal Close Button Binding
+    const btnCloseCctvModal = document.getElementById('btnCloseCctvModal');
+    if (btnCloseCctvModal) {
+        btnCloseCctvModal.addEventListener('click', () => {
+            const cctvPlayerModal = document.getElementById('cctvPlayerModal');
+            if (cctvPlayerModal) cctvPlayerModal.classList.add('hidden');
+        });
+    }
+
+    // Public CCTV Layer Toggle Button Binding
+    const btnToggleCctvLayer = document.getElementById('btnToggleCctvLayer');
+    if (btnToggleCctvLayer) {
+        btnToggleCctvLayer.addEventListener('click', () => {
+            isCctvLayerVisible = !isCctvLayerVisible;
+            if (isCctvLayerVisible) {
+                btnToggleCctvLayer.classList.add('active-layer');
+            } else {
+                btnToggleCctvLayer.classList.remove('active-layer');
+            }
+            renderPublicCctvLayer();
+        });
+    }
+
+    // Weather Layer Toggle Button Binding
+    const btnToggleWeatherLayer = document.getElementById('btnToggleWeatherLayer');
+    if (btnToggleWeatherLayer) {
+        btnToggleWeatherLayer.addEventListener('click', () => {
+            isWeatherLayerVisible = !isWeatherLayerVisible;
+            if (isWeatherLayerVisible) {
+                btnToggleWeatherLayer.classList.add('active-layer');
+            } else {
+                btnToggleWeatherLayer.classList.remove('active-layer');
+            }
+            renderWeatherRadarLayer();
+        });
+    }
+
+    // Rescue Flight Radar Toggle Button Binding
+    const btnToggleFlightLayer = document.getElementById('btnToggleFlightLayer');
+    if (btnToggleFlightLayer) {
+        btnToggleFlightLayer.addEventListener('click', () => {
+            isFlightLayerVisible = !isFlightLayerVisible;
+            if (isFlightLayerVisible) {
+                btnToggleFlightLayer.classList.add('active-layer');
+            } else {
+                btnToggleFlightLayer.classList.remove('active-layer');
+            }
+            renderRescueFlightLayer();
+            playRadarSonarPing();
+        });
+    }
+
+    // Seismic & Earthquakes Toggle Button Binding
+    const btnToggleSeismicLayer = document.getElementById('btnToggleSeismicLayer');
+    if (btnToggleSeismicLayer) {
+        btnToggleSeismicLayer.addEventListener('click', () => {
+            isSeismicLayerVisible = !isSeismicLayerVisible;
+            if (isSeismicLayerVisible) {
+                btnToggleSeismicLayer.classList.add('active-layer');
+            } else {
+                btnToggleSeismicLayer.classList.remove('active-layer');
+            }
+            fetchLiveEarthquakes();
+            playRadarSonarPing();
+        });
+    }
+
+    // Tactical Audio Sound FX Toggle Binding
+    const btnToggleAudioFx = document.getElementById('btnToggleAudioFx');
+    if (btnToggleAudioFx) {
+        btnToggleAudioFx.addEventListener('click', () => {
+            isAudioFxEnabled = !isAudioFxEnabled;
+            btnToggleAudioFx.textContent = isAudioFxEnabled ? '🔊 เสียงศูนย์บัญชาการ: เปิด' : '🔇 เสียงศูนย์บัญชาการ: ปิด';
+            playTacticalBeep();
+        });
+    }
+
+    // Water Layer Toggle Button Binding
+    const btnToggleWaterLayer = document.getElementById('btnToggleWaterLayer');
+    if (btnToggleWaterLayer) {
+        btnToggleWaterLayer.addEventListener('click', () => {
+            isWaterLayerVisible = !isWaterLayerVisible;
+            if (isWaterLayerVisible) {
+                btnToggleWaterLayer.classList.add('active-layer');
+            } else {
+                btnToggleWaterLayer.classList.remove('active-layer');
+            }
+            renderWaterStations();
+        });
+    }
+
+    // Citizen Incident Reporting Modal Handlers
+    const citizenReportModal = document.getElementById('citizenReportModal');
+    const btnCloseCitizenReport = document.getElementById('btnCloseCitizenReport');
+    const citizenReportForm = document.getElementById('citizenReportForm');
+    const reportTitleInput = document.getElementById('reportTitleInput');
+    const reportDescInput = document.getElementById('reportDescInput');
+    const reportGpsText = document.getElementById('reportGpsText');
+    const btnSubmitAndLive = document.getElementById('btnSubmitAndLive');
+
+    function openCitizenReportModal() {
+        if (reportGpsText) {
+            reportGpsText.textContent = `${currentPos.lat.toFixed(5)}° N, ${currentPos.lng.toFixed(5)}° E (ความแม่นยำ ±${Math.round(currentPos.accuracy)}m)`;
+        }
+        citizenReportModal.classList.remove('hidden');
+    }
+
+    function closeCitizenReportModal() {
+        citizenReportModal.classList.add('hidden');
+    }
+
+    btnReportIncident.addEventListener('click', openCitizenReportModal);
+    btnCloseCitizenReport.addEventListener('click', closeCitizenReportModal);
+
+    function createIncidentFromForm(isLiveMode = false) {
+        const selectedCatEl = document.querySelector('input[name="reportCat"]:checked');
+        const category = selectedCatEl ? selectedCatEl.value : 'accident';
+        const title = reportTitleInput.value.trim() || '📢 รายงานเหตุการณ์ฉุกเฉินโดยประชาชน';
+        const description = reportDescInput.value.trim() || 'ผู้ใช้งานแจ้งเหตุการณ์สดผ่านระบบ Guardian Live';
+
+        const alertData = {
+            title: title,
+            category: category,
+            severity: category === 'fire' || category === 'crime' ? 'critical' : 'warning',
+            lat: currentPos.lat,
+            lng: currentPos.lng,
+            address: `พิกัดสด: ${currentPos.lat.toFixed(5)}, ${currentPos.lng.toFixed(5)}`,
+            reporter: 'ประชาชนในพื้นที่',
+            description: description,
+            isLive: isLiveMode
+        };
+
+        // Post incident report to server
+        fetch('/api/alerts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(alertData)
+        }).then(res => res.json()).then(data => {
+            activeAlerts.unshift(data.alert);
+            renderIncidents();
+            closeCitizenReportModal();
+
+            if (isLiveMode) {
+                startCameraBroadcast();
+                alert(`📢 ส่งรายงานแจ้งเหตุสำเร็จ! กำลังเริ่มถ่ายทอดสดไลฟ์สตรีม: "${title}"`);
+            } else {
+                alert(`📌 ปักหมุดแจ้งเหตุฉุกเฉินสำเร็จ! สัญญาณถูกกระจายไปยังผู้ใช้งานเรียลไทม์`);
+            }
+        });
+    }
+
+    citizenReportForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        createIncidentFromForm(false);
+    });
+
+    btnSubmitAndLive.addEventListener('click', () => {
+        if (!reportTitleInput.value.trim()) {
+            alert('กรุณากรอกหัวข้อเหตุการณ์ฉุกเฉินก่อนเริ่มไลฟ์สด');
+            reportTitleInput.focus();
+            return;
+        }
+        createIncidentFromForm(true);
+    });
+
+    // PWA Service Worker Registration (100% Free Cross-Device App)
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('⚡ GUARDIAN LIVE PWA Service Worker registered:', reg.scope))
+                .catch(err => console.warn('PWA SW Registration error:', err));
+        });
+    }
+
+    // Startup Execution
+    initMap();
+    startGpsTracking();
+    setupWebSocket();
+
+    // Fetch initial alerts via API
+    fetch('/api/alerts')
+        .then(res => res.json())
+        .then(data => {
+            activeAlerts = data;
+            renderIncidents();
+        });
+});
