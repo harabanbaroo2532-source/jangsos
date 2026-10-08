@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openCctvModal(cam) {
         currentCctvCam = cam;
-        currentCctvMode = 'bma';
+        currentCctvMode = 'live';
 
         const cctvPlayerModal = document.getElementById('cctvPlayerModal');
         const cctvModalTitle = document.getElementById('cctvModalTitle');
@@ -482,18 +482,18 @@ document.addEventListener('DOMContentLoaded', () => {
             btnNavBmaPortal.href = cam.bmaPortalUrl || 'https://cctv.bangkok.go.th/export/export/';
         }
 
-        // Reset tabs UI state
+        // Reset tabs UI state (Default to 🔴 สตรีมวิดีโอสด 24 ชม. for instant playback)
         document.querySelectorAll('.cctv-src-tab').forEach(btn => {
             btn.classList.remove('btn-primary', 'btn-success', 'active');
             btn.classList.add('btn-secondary');
         });
-        const btnBma = document.getElementById('btnSrcBma');
-        if (btnBma) {
-            btnBma.classList.remove('btn-secondary');
-            btnBma.classList.add('btn-success', 'active');
+        const btnLive = document.getElementById('btnSrcLive');
+        if (btnLive) {
+            btnLive.classList.remove('btn-secondary');
+            btnLive.classList.add('btn-primary', 'active');
         }
 
-        switchCctvMode('bma');
+        switchCctvMode('live');
     }
 
     function switchCctvMode(mode) {
@@ -520,13 +520,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mode === 'bma') {
             if (cctvCanvasOverlay) cctvCanvasOverlay.style.display = 'none';
             if (cctvSnapshotImg) cctvSnapshotImg.style.display = 'none';
-            if (cctvVideoPlayer) {
-                cctvVideoPlayer.pause();
-                cctvVideoPlayer.style.display = 'none';
-            }
             if (cctvIframePlayer) {
                 cctvIframePlayer.style.display = 'block';
                 cctvIframePlayer.src = cam.bmaPortalUrl || 'https://cctv.bangkok.go.th/export/export/';
+            }
+            if (cctvVideoPlayer) {
+                cctvVideoPlayer.style.display = 'block';
+                const videoSrc = cam.videoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+                if (cctvVideoPlayer.src !== videoSrc) cctvVideoPlayer.src = videoSrc;
+                cctvVideoPlayer.loop = true;
+                cctvVideoPlayer.muted = true;
+                cctvVideoPlayer.playsInline = true;
+                cctvVideoPlayer.play().catch(e => console.warn(e));
             }
             if (cctvStatusBadge) cctvStatusBadge.textContent = '🏛️ กล้องสด กทม. CCTV Export (cctv.bangkok.go.th)';
             startCctvHudAnimation(cam);
