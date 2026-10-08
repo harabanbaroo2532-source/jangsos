@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5305,
             address: 'ทางแยกสยามปทุมวัน ถนนพระราม 1 เขตปทุมวัน กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
             bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5383,
             address: 'วงเวียนอนุสาวรีย์ชัยสมรภูมิ เขตพญาไท กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-42680-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
             bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5412,
             address: 'สะพานเฉลิมโลก ถนนราชดำริ เขตปทุมวัน กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-boats-sailing-in-a-river-in-a-city-43282-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoycomes.mp4',
             bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5606,
             address: 'ห้าแยกลาดพร้าว ถนนพหลโยธิน เขตจตุจักร กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoycomes.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-cars-moving-on-a-highway-at-night-42682-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdown.mp4',
             bmaPortalUrl: 'https://traffic.doh.go.th/'
         },
         {
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.4965,
             address: 'สะพานพระราม 8 ข้ามแม่น้ำเจ้าพระยา เขตบางพลัด กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdown.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-bridge-over-a-river-in-a-city-at-night-43283-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
             bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.6042,
             address: 'ทางพิเศษสายบางนา-อาจณรงค์ เขตบางนา กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-time-lapse-of-traffic-on-a-highway-at-night-42679-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
             bmaPortalUrl: 'https://www.exat.co.th/'
         },
         {
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5604,
             address: 'ทางแยกอโศก-สุขุมวิท ถนนสุขุมวิท เขตคลองเตย กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
             bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.4912,
             address: 'วงเวียนใหญ่ ถนนประชาธิปก เขตธนบุรี กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-42680-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
             bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5648,
             address: 'ทางแยกพระราม 9 ถนนรัชดาภิเษก เขตห้วยขวาง กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-cars-moving-on-a-highway-at-night-42682-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4',
             bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5348,
             address: 'ทางแยกศาลาแดง ถนนสีลม เขตบางรัก กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
             bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.4925,
             address: 'สะพานสมเด็จพระปิ่นเกล้า ข้ามแม่น้ำเจ้าพระยา เขตพระนคร กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-bridge-over-a-river-in-a-city-at-night-43283-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
             bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         },
         {
@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lng: 100.5085,
             address: 'ทางแยกราชวงศ์ ถนนเยาวราช เขตสัมพันธวงศ์ กรุงเทพฯ',
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-42680-large.mp4',
+            backupUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
             bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         }
     ];
