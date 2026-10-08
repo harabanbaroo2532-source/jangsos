@@ -151,6 +151,78 @@ document.addEventListener('DOMContentLoaded', () => {
             videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
             backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-time-lapse-of-traffic-on-a-highway-at-night-42679-large.mp4',
             bmaPortalUrl: 'https://www.exat.co.th/'
+        },
+        {
+            id: 'cctv-7',
+            name: '📹 CCTV แยกอโศก-สุขุมวิท (กทม.)',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7372,
+            lng: 100.5604,
+            address: 'ทางแยกอโศก-สุขุมวิท ถนนสุขุมวิท เขตคลองเตย กรุงเทพฯ',
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4',
+            bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
+        },
+        {
+            id: 'cctv-8',
+            name: '📹 CCTV วงเวียนใหญ่ (สมเด็จพระเจ้าตากสิน)',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7265,
+            lng: 100.4912,
+            address: 'วงเวียนใหญ่ ถนนประชาธิปก เขตธนบุรี กรุงเทพฯ',
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-42680-large.mp4',
+            bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
+        },
+        {
+            id: 'cctv-9',
+            name: '📹 CCTV แยกพระราม 9 - รัชดาภิเษก',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7578,
+            lng: 100.5648,
+            address: 'ทางแยกพระราม 9 ถนนรัชดาภิเษก เขตห้วยขวาง กรุงเทพฯ',
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-cars-moving-on-a-highway-at-night-42682-large.mp4',
+            bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
+        },
+        {
+            id: 'cctv-10',
+            name: '📹 CCTV ถนนสีลม / แยกศาลาแดง',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7285,
+            lng: 100.5348,
+            address: 'ทางแยกศาลาแดง ถนนสีลม เขตบางรัก กรุงเทพฯ',
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-traffic-on-a-highway-at-night-42681-large.mp4',
+            bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
+        },
+        {
+            id: 'cctv-11',
+            name: '📹 CCTV สะพานสมเด็จพระปิ่นเกล้า',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7602,
+            lng: 100.4925,
+            address: 'สะพานสมเด็จพระปิ่นเกล้า ข้ามแม่น้ำเจ้าพระยา เขตพระนคร กรุงเทพฯ',
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-bridge-over-a-river-in-a-city-at-night-43283-large.mp4',
+            bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
+        },
+        {
+            id: 'cctv-12',
+            name: '📹 CCTV ถนนเยาวราช / แยกราชวงศ์',
+            agency: '🏛️ กรุงเทพมหานคร (BMA CCTV)',
+            statusText: '🟢 สด 24 ชม.',
+            lat: 13.7412,
+            lng: 100.5085,
+            address: 'ทางแยกราชวงศ์ ถนนเยาวราช เขตสัมพันธวงศ์ กรุงเทพฯ',
+            videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+            backupUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-42680-large.mp4',
+            bmaPortalUrl: 'https://cctv.bangkok.go.th/export/export/'
         }
     ];
 
