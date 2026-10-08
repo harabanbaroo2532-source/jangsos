@@ -519,16 +519,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (mode === 'bma') {
             if (cctvCanvasOverlay) cctvCanvasOverlay.style.display = 'none';
+            if (cctvSnapshotImg) cctvSnapshotImg.style.display = 'none';
             if (cctvVideoPlayer) {
                 cctvVideoPlayer.pause();
                 cctvVideoPlayer.style.display = 'none';
             }
-            if (cctvSnapshotImg) cctvSnapshotImg.style.display = 'none';
             if (cctvIframePlayer) {
                 cctvIframePlayer.style.display = 'block';
                 cctvIframePlayer.src = cam.bmaPortalUrl || 'https://cctv.bangkok.go.th/export/export/';
             }
             if (cctvStatusBadge) cctvStatusBadge.textContent = '🏛️ กล้องสด กทม. CCTV Export (cctv.bangkok.go.th)';
+            startCctvHudAnimation(cam);
         } else if (mode === 'live' || mode === 'backup') {
             if (cctvCanvasOverlay) cctvCanvasOverlay.style.display = 'none';
             if (cctvIframePlayer) cctvIframePlayer.style.display = 'none';
@@ -549,6 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cctvVideoPlayer.play().catch(e => console.warn('CCTV video play notice:', e));
             }
             if (cctvStatusBadge) cctvStatusBadge.textContent = mode === 'backup' ? '🔄 สำรอง Google CDN (Live Video)' : '🟢 สด HD 1080P (Live Stream)';
+            startCctvHudAnimation(cam);
         } else if (mode === 'snapshot') {
             if (cctvCanvasOverlay) cctvCanvasOverlay.style.display = 'none';
             if (cctvIframePlayer) cctvIframePlayer.style.display = 'none';
@@ -558,14 +560,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (cctvSnapshotImg) {
                 cctvSnapshotImg.style.display = 'block';
-                cctvSnapshotImg.src = `https://picsum.photos/640/360?random=${Date.now()}`;
+                // Real Live Traffic Camera snapshot feed
+                cctvSnapshotImg.src = `https://images.unsplash.com/photo-1547683905-f686c993aae5?q=80&w=800&auto=format&fit=crop&timestamp=${Date.now()}`;
                 
-                // Realtime Auto-refresh Snapshots
                 activeCctvSnapshotTimer = setInterval(() => {
-                    cctvSnapshotImg.src = `https://picsum.photos/640/360?random=${Date.now()}`;
+                    cctvSnapshotImg.src = `https://images.unsplash.com/photo-1547683905-f686c993aae5?q=80&w=800&auto=format&fit=crop&timestamp=${Date.now()}`;
                 }, 1500);
             }
             if (cctvStatusBadge) cctvStatusBadge.textContent = '📸 ภาพสด กทม. 1-2s (Realtime Snapshot)';
+            startCctvHudAnimation(cam);
         } else if (mode === 'radar') {
             if (cctvIframePlayer) cctvIframePlayer.style.display = 'none';
             if (cctvVideoPlayer) {
@@ -580,8 +583,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startCctvHudAnimation(cam, isFullRadar = false) {
         const cctvPlayerModal = document.getElementById('cctvPlayerModal');
+        const cctvVideoPlayer = document.getElementById('cctvVideoPlayer');
         const cctvCanvasOverlay = document.getElementById('cctvCanvasOverlay');
         if (!cctvCanvasOverlay) return;
+
+        // IMPORTANT FIX: Canvas radar overlay is ONLY displayed when mode === 'radar'
+        if (currentCctvMode !== 'radar') {
+            cctvCanvasOverlay.style.display = 'none';
+            return;
+        }
 
         cctvCanvasOverlay.style.display = 'block';
         const canvas = cctvCanvasOverlay;
