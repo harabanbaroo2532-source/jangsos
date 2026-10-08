@@ -1054,6 +1054,20 @@ document.addEventListener('DOMContentLoaded', () => {
         alertMarkers.forEach(m => map.removeLayer(m));
         alertMarkers.clear();
 
+        const tacAlertsCount = document.getElementById('tacAlertsCount');
+        if (tacAlertsCount) tacAlertsCount.textContent = filtered.length;
+
+        if (filtered.length === 0) {
+            incidentsFeed.innerHTML = `
+                <div style="padding:24px 16px; text-align:center; color:#94a3b8; font-size:12px;">
+                    <span style="font-size:36px; display:block; margin-bottom:8px;">📌</span>
+                    ยังไม่มีรายงานเหตุการณ์ในขณะนี้<br>
+                    <small style="color:#64748b; font-size:11px;">กดปุ่ม ➕ แจ้งเหตุฉุกเฉินใหม่ เพื่อเริ่มปักหมุดภาพ/วิดีโอสด</small>
+                </div>
+            `;
+            return;
+        }
+
         filtered.forEach(alert => {
             const distKm = calcDistanceKm(currentPos.lat, currentPos.lng, alert.lat, alert.lng);
             const distStr = formatDistanceStr(distKm);
