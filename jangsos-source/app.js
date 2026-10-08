@@ -396,6 +396,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Public CCTV Cameras on Map & Sidebar
     function renderPublicCctvLayer() {
         const cctvListContainer = document.getElementById('cctvListContainer');
+        const tacCctvCount = document.getElementById('tacCctvCount');
+        if (tacCctvCount) tacCctvCount.textContent = publicCctvData.length;
         if (cctvLayerGroup) cctvLayerGroup.clearLayers();
 
         if (cctvListContainer) cctvListContainer.innerHTML = '';
