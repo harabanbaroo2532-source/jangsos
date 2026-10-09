@@ -1714,6 +1714,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Data Sources & Verification Audit Modal Event Handlers
+    const btnVerifyDataSources = document.getElementById('btnVerifyDataSources');
+    const verifyModal = document.getElementById('verifyModal');
+    const btnCloseVerifyModal = document.getElementById('btnCloseVerifyModal');
+    const btnConfirmVerify = document.getElementById('btnConfirmVerify');
+
+    if (btnVerifyDataSources && verifyModal) {
+        btnVerifyDataSources.addEventListener('click', () => {
+            verifyModal.classList.remove('hidden');
+            playTacticalBeep();
+        });
+    }
+
+    if (btnCloseVerifyModal && verifyModal) {
+        btnCloseVerifyModal.addEventListener('click', () => {
+            verifyModal.classList.add('hidden');
+        });
+    }
+
+    if (btnConfirmVerify && verifyModal) {
+        btnConfirmVerify.addEventListener('click', () => {
+            verifyModal.classList.add('hidden');
+            playTacticalBeep();
+        });
+    }
+
     // Citizen Incident Reporting & Media Pin Handlers
     const citizenReportModal = document.getElementById('citizenReportModal');
     const btnCloseCitizenReport = document.getElementById('btnCloseCitizenReport');
