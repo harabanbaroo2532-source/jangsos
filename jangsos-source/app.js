@@ -70,17 +70,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateQrCodeDisplay() {
-        const classVal = document.getElementById('qrClassSelect')?.value || 'ม.1/1';
-        const topicVal = document.getElementById('qrSessionTopicInput')?.value || 'ปฏิบัติการทัศนศิลป์';
+        const classVal = document.getElementById('qrClassSelect')?.value.trim() || 'ยังไม่ระบุห้อง';
+        const subjVal = document.getElementById('qrSubjectCustomInput')?.value.trim() || 'ยังไม่ระบุวิชา';
+        const topicVal = document.getElementById('qrSessionTopicInput')?.value.trim() || 'ครูสามารถพิมพ์หัวข้อคาบเรียนหรือรายละเอียดงานที่ช่องด้านบน';
+        const customPinEl = document.getElementById('qrPinCustomInput');
+        if (customPinEl && customPinEl.value.trim()) {
+            currentSessionPin = customPinEl.value.trim();
+        }
+
         const qrImg = document.getElementById('qrCodeImage');
         const qrClassTitle = document.getElementById('qrDisplayClassTitle');
         const qrTopicTitle = document.getElementById('qrDisplayTopicTitle');
-        const qrPinText = document.getElementById('qrPinCodeText');
         const qrModeBadge = document.getElementById('qrModeBadge');
 
-        if (qrClassTitle) qrClassTitle.textContent = `ห้อง ${classVal} • วิชาทัศนศิลป์`;
+        if (qrClassTitle) qrClassTitle.textContent = `${classVal} • ${subjVal}`;
         if (qrTopicTitle) qrTopicTitle.textContent = topicVal;
-        if (qrPinText) qrPinText.textContent = currentSessionPin;
         if (gpsCoordsText) gpsCoordsText.textContent = `${currentSessionPin} (${classVal})`;
 
         if (qrModeBadge) {
@@ -290,8 +294,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 <td style="padding:10px; text-align:center;">
                     <div style="display:flex; gap:4px; justify-content:center;">
-                        <button type="button" class="btn-borrow-item" data-idx="${idx}" style="background:#ffffff; color:#334155; border:1px solid #cbd5e1; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:500;">เบิก/ยืม (-1)</button>
-                        <button type="button" class="btn-return-item" data-idx="${idx}" style="background:#0f172a; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:500;">รับคืน (+1)</button>
+                        <button type="button" class="btn-borrow-item" data-idx="${idx}" style="background:#ffffff; color:#334155; border:1px solid #cbd5e1; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:500;">เบิก (-1)</button>
+                        <button type="button" class="btn-return-item" data-idx="${idx}" style="background:#0f172a; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:500;">คืน (+1)</button>
+                        <button type="button" class="btn-delete-item" data-idx="${idx}" style="background:#ffffff; color:#dc2626; border:1px solid #fecaca; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:500;">ลบ</button>
                     </div>
                 </td>
             `;
@@ -335,8 +340,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     schoolAssets[i].borrowedQty -= 1;
                     schoolAssets[i].borrower = `รับคืนเข้าคลังเมื่อ ${new Date().toLocaleTimeString('th-TH')}`;
                     renderInventoryTable();
-                    renderInventoryMapMarkers();
                 }
+            });
+        });
+
+        tbody.querySelectorAll('.btn-delete-item').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const i = Number(btn.dataset.idx);
+                schoolAssets.splice(i, 1);
+                renderInventoryTable();
             });
         });
     }
@@ -345,44 +357,45 @@ document.addEventListener('DOMContentLoaded', () => {
         // Map removed; inventory is managed directly via the School Inventory & Asset Table
     }
 
-    // Add New Asset Form Handler
+    // Add New Asset Form Handler (Teacher Custom Fields)
     const addAssetForm = document.getElementById('addAssetForm');
     if (addAssetForm) {
         addAssetForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const code = document.getElementById('assetCodeInput').value.trim();
             const name = document.getElementById('assetNameInput').value.trim();
-            const category = document.getElementById('assetCatInput').value;
-            const qty = Number(document.getElementById('assetQtyInput').value) || 10;
-            const price = Number(document.getElementById('assetPriceInput').value) || 100;
+            const category = document.getElementById('assetCatInput').value.trim() || 'ทั่วไป';
+            const room = document.getElementById('assetRoomInput')?.value.trim() || 'ห้องพัสดุโรงเรียน';
+            const qty = Number(document.getElementById('assetQtyInput').value) || 1;
+            const unit = document.getElementById('assetUnitInput')?.value.trim() || 'ชิ้น';
+            const price = Number(document.getElementById('assetPriceInput').value) || 0;
 
             const newAsset = {
                 id: 'INV-' + Date.now(),
                 code,
                 name,
                 category,
-                room: 'อาคารศิลปะ / ห้องพัสดุกลาง',
+                room,
                 totalQty: qty,
                 availableQty: qty,
                 borrowedQty: 0,
-                unit: 'ชิ้น/ชุด',
+                unit,
                 pricePerUnit: price,
                 status: 'พร้อมใช้งาน',
-                borrower: 'ลงทะเบียนเข้าคลังใหม่',
-                lat: currentPos.lat + (Math.random() - 0.5) * 0.002,
-                lng: currentPos.lng + (Math.random() - 0.5) * 0.002
+                borrower: 'ครูบันทึกเข้าระบบ',
+                lat: currentPos.lat,
+                lng: currentPos.lng
             };
 
             schoolAssets.unshift(newAsset);
             renderInventoryTable();
-            renderInventoryMapMarkers();
             addAssetForm.reset();
-            speakThaiText(`ลงทะเบียนพัสดุ ${name} จำนวน ${qty} ชุด เรียบร้อยแล้วค่ะ`);
         });
     }
 
-    // 8. AI Lesson Plan, Worksheet & Exam Generator Engine (ม.1 - ม.6)
+    // 8. Teacher Custom Document & Lesson Plan Editor (ม.1 - ม.6)
     const btnGenerateAiContent = document.getElementById('btnGenerateAiContent');
+    const btnClearAiDoc = document.getElementById('btnClearAiDoc');
     const aiOutputContainer = document.getElementById('aiOutputContainer');
 
     function generateTeacherAiContent() {
@@ -391,171 +404,93 @@ document.addEventListener('DOMContentLoaded', () => {
         const docTypeEl = document.getElementById('aiDocTypeSelect');
         const topicEl = document.getElementById('aiTopicInput');
 
-        const subjectName = subjectEl ? subjectEl.options[subjectEl.selectedIndex].text : '🎨 ทัศนศิลป์';
-        const grade = gradeEl ? gradeEl.value : 'ม.1';
-        const docType = docTypeEl ? docTypeEl.value : 'lesson-plan';
-        const topic = (topicEl && topicEl.value.trim()) ? topicEl.value.trim() : 'ทัศนธาตุทั้ง 7 และการสร้างสรรค์งานศิลปะ';
+        const subjectName = (subjectEl && subjectEl.value.trim()) ? subjectEl.value.trim() : '[ระบุชื่อรายวิชา]';
+        const grade = (gradeEl && gradeEl.value.trim()) ? gradeEl.value.trim() : '[ระบุระดับชั้น]';
+        const docType = docTypeEl ? docTypeEl.value : 'custom-blank';
+        const topic = (topicEl && topicEl.value.trim()) ? topicEl.value.trim() : '[ระบุหัวข้อเรื่อง / ชิ้นงาน]';
 
         let html = '';
 
-        if (docType === 'lesson-plan') {
+        if (docType === 'custom-blank') {
             html = `
-                <div style="border-bottom:2px solid #2563eb; padding-bottom:8px; margin-bottom:12px;">
-                    <h3 style="color:#1e40af; margin:0;">📋 แผนการจัดการเรียนรู้แบบ Active Learning (5 ขั้นตอน GPAS 5 Steps)</h3>
-                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;"><b>รายวิชา:</b> ${subjectName} | <b>ระดับชั้น:</b> ${grade} | <b>เรื่อง:</b> ${topic} | <b>เวลา:</b> 2 ชั่วโมง</p>
+                <div style="border-bottom:1px solid #cbd5e1; padding-bottom:8px; margin-bottom:12px;">
+                    <h3 style="color:#0f172a; margin:0; font-size:15px;">เอกสารการเรียนการสอน / ใบสั่งงาน</h3>
+                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;"><b>รายวิชา:</b> ${subjectName} | <b>ระดับชั้น:</b> ${grade} | <b>เรื่อง:</b> ${topic}</p>
                 </div>
-                <p><b>1. มาตรฐานการเรียนรู้ / ตัวชี้วัด (หลักสูตรแกนกลาง สพฐ.):</b><br>
-                • <b>ศ 1.1 ${grade}/1:</b> บรรยายความแตกต่างและความคล้ายคลึงกันของงานทัศนศิลป์และสิ่งแวดล้อมโดยใช้ความรู้เรื่องทัศนธาตุ<br>
-                • <b>ศ 1.1 ${grade}/2:</b> ระบุและวาดภาพสื่อความหมายด้วยจุด เส้น รูปร่าง รูปทรง น้ำหนัก สี บริเวณว่าง และพื้นผิว</p>
+                <p><b>1. จุดประสงค์ / เป้าหมายของงาน:</b><br>
+                - (คลิกพิมพ์รายละเอียดที่ครูต้องการ...)</p>
+                <p><b>2. คำชี้แจงและรายละเอียดงานที่ให้นักเรียนปฏิบัติ:</b><br>
+                - (คลิกพิมพ์ขั้นตอนการทำชิ้นงาน หรือโจทย์ที่ครูมอบหมาย...)</p>
+                <p><b>3. กำหนดการส่งงานและเกณฑ์การให้คะแนน:</b><br>
+                - คะแนนเต็ม: ...... คะแนน | กำหนดส่ง: ....................</p>
+            `;
+        } else if (docType === 'lesson-plan') {
+            html = `
+                <div style="border-bottom:1px solid #cbd5e1; padding-bottom:8px; margin-bottom:12px;">
+                    <h3 style="color:#0f172a; margin:0; font-size:15px;">แผนการจัดการเรียนรู้</h3>
+                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;"><b>รายวิชา:</b> ${subjectName} | <b>ระดับชั้น:</b> ${grade} | <b>หน่วยการเรียนรู้/เรื่อง:</b> ${topic} | <b>เวลา:</b> .... ชั่วโมง</p>
+                </div>
+                <p><b>1. มาตรฐานการเรียนรู้ / ตัวชี้วัด:</b><br>
+                • (ระบุรหัสตัวชี้วัดและรายละเอียด...)</p>
 
                 <p><b>2. จุดประสงค์การเรียนรู้ (K-P-A):</b><br>
-                • <b>ด้านความรู้ (K):</b> นักเรียนอธิบายองค์ประกอบของ <i>${topic}</i> และหลักการใช้สี/เส้นสื่ออารมณ์ได้ถูกต้อง<br>
-                • <b>ด้านทักษะกระบวนการ (P):</b> นักเรียนปฏิบัติการสร้างสรรค์ผลงานศิลปะเรื่อง <i>${topic}</i> และปักหมุดส่งงานผ่านระบบดิจิทัลได้<br>
-                • <b>ด้านคุณลักษณะ (A):</b> มีวินัย รับผิดชอบในการเบิก-คืนวัสดุอุปกรณ์ศิลปะ และชื่นชมผลงานของผู้อื่น</p>
+                • <b>ด้านความรู้ (K):</b> อธิบายหลักการของ ${topic} ได้<br>
+                • <b>ด้านทักษะกระบวนการ (P):</b> ปฏิบัติงานสร้างสรรค์เรื่อง ${topic} ได้ตามเกณฑ์<br>
+                • <b>ด้านคุณลักษณะ (A):</b> มีวินัย รับผิดชอบ และส่งงานตรงเวลา</p>
 
-                <p><b>3. กิจกรรมการเรียนรู้ (Active Learning 5 ขั้นตอน):</b><br>
-                • <b>ขั้นที่ 1 สังเกตและรวบรวมข้อมูล (Gathering):</b> ครูเปิดสื่อวิดีโอบทเรียนเรื่อง <i>"${topic}"</i> บนระบบ EDU-CRAFT AI และให้นักเรียนสำรวจสิ่งแวดล้อมรอบโรงเรียน<br>
-                • <b>ขั้นที่ 2 คิดวิเคราะห์และสรุปความรู้ (Processing):</b> ครูสาธิตการลากเส้นและลงน้ำหนักสีบนกระดานไวท์บอร์ดออนไลน์ พร้อมตั้งคำถามกระตุ้นคิด<br>
-                • <b>ขั้นที่ 3 ปฏิบัติและสรุปความรู้ (Applying 1):</b> นักเรียนเบิกวัสดุอุปกรณ์จากระบบพัสดุห้องศิลปะ และลงมือวาดภาพสร้างสรรค์ผลงาน<br>
-                • <b>ขั้นที่ 4 สื่อสารและนำเสนอ (Applying 2):</b> นักเรียนถ่ายภาพผลงานหรืออัดคลิปไม่เกิน 1 นาที ปักหมุดลงบนแผนที่โรงเรียนเพื่อจัดนิทรรศการออนไลน์<br>
-                • <b>ขั้นที่ 5 ประเมินเพื่อเพิ่มคุณค่า (Self-Regulating):</b> ครูและเพื่อนร่วมชั้นคลิกชมหมุดผลงาน ให้คะแนนตามเกณฑ์ Rubric และทำความสะอาดคืนพัสดุเข้าคลัง</p>
+                <p><b>3. กิจกรรมการเรียนรู้:</b><br>
+                • <b>ขั้นนำเข้าสู่บทเรียน:</b> (ระบุกิจกรรมนำเข้าสู่บทเรียน...)<br>
+                • <b>ขั้นสอนและฝึกปฏิบัติ:</b> (ระบุขั้นตอนการสอนและการมอบหมายงาน...)<br>
+                • <b>ขั้นสรุปและประเมินผล:</b> (ระบุการตรวจผลงานและสรุปบทเรียน...)</p>
 
-                <p><b>4. สื่อการสอนและรายการพัสดุที่ใช้ในคาบเรียน:</b><br>
-                • วิดีโอบทเรียนทัศนธาตุ Full HD, กระดาษร้อยปอนด์ A3, ชุดสีน้ำ/สีอะคริลิก, ขาตั้งวาดภาพไม้บีช (เบิกจากทะเบียนพัสดุ ศป-69)</p>
+                <p><b>4. สื่อการเรียนการสอน / วัสดุอุปกรณ์:</b><br>
+                • (ระบุสื่อและอุปกรณ์ที่ใช้ในคาบเรียน...)</p>
             `;
         } else if (docType === 'quiz') {
             html = `
-                <div style="border-bottom:2px solid #7c3aed; padding-bottom:8px; margin-bottom:12px;">
-                    <h3 style="color:#6d28d9; margin:0;">✍️ ชุดข้อสอบมาตรฐานพร้อมเฉลยละเอียด: ${topic} (${grade})</h3>
-                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;">รายวิชา ${subjectName} • แบบปรนัย 4 ตัวเลือก วัดความเข้าใจและการนำไปใช้</p>
+                <div style="border-bottom:1px solid #cbd5e1; padding-bottom:8px; margin-bottom:12px;">
+                    <h3 style="color:#0f172a; margin:0; font-size:15px;">แบบทดสอบรายวิชา ${subjectName} (${grade})</h3>
+                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;">เรื่อง: ${topic}</p>
                 </div>
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-                        <b>ข้อที่ 1:</b> ข้อใดคือความหมายที่ถูกต้องที่สุดของ "ทัศนธาตุ (Visual Elements)" ในงานศิลปะ?<br>
-                        ก. อุปกรณ์ราคาแพงที่ใช้ในการวาดภาพระบายสี<br>
-                        ข. ส่วนประกอบพื้นฐานที่มองเห็นได้ในงานทัศนศิลป์ ได้แก่ จุด เส้น รูปร่าง รูปทรง น้ำหนัก สี บริเวณว่าง และพื้นผิว<br>
-                        ค. การจัดแสดงผลงานศิลปะในพิพิธภัณฑ์แห่งชาติ<br>
-                        ง. เทคนิคการผสมสีน้ำมันบนเฟรมผ้าใบแคนวาส<br>
-                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ข. (คำอธิบาย: ทัศนธาตุทั้ง 7 คือหัวใจพื้นฐานที่ประกอบกันเป็นผลงานทัศนศิลป์ทุกชิ้น)</span>
-                    </div>
-                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-                        <b>ข้อที่ 2:</b> หากนักเรียนต้องการวาดภาพให้สื่อถึง "ความมั่นคง แข็งแรง และสูงเด่น" เช่น เสาหินหรือตึกสูง ควรเลือกใช้เส้นลักษณะใดเป็นหลัก?<br>
-                        ก. เส้นตรงแนวตั้ง (Vertical Line)<br>
-                        ข. เส้นโค้งคลื่น (Curved Line)<br>
-                        ค. เส้นซิกแซกหรือเส้นฟันปลา (Zigzag Line)<br>
-                        ง. เส้นขดก้นหอย (Spiral Line)<br>
-                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ก. เส้นตรงแนวตั้ง (ให้ความรู้สึกตั้งตรง มั่นคง แข็งแรง และสง่างาม)</span>
-                    </div>
-                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-                        <b>ข้อที่ 3:</b> ข้อใดแสดงถึงความแตกต่างระหว่าง "รูปร่าง (Shape)" และ "รูปทรง (Form)" ได้ถูกต้อง?<br>
-                        ก. รูปร่างมีเฉพาะสีโทนร้อน ส่วนรูปทรงมีเฉพาะสีโทนเย็น<br>
-                        ข. รูปร่างมี 2 มิติ (กว้าง x ยาว) ส่วนรูปทรงมี 3 มิติ (กว้าง x ยาว x ลึก/หนา)<br>
-                        ค. รูปร่างเกิดจากพู่กัน ส่วนรูปทรงเกิดจากดินสอเท่านั้น<br>
-                        ง. ไม่มีความแตกต่างกัน สามารถใช้แทนกันได้ทุกกรณี<br>
-                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ข. รูปร่างมี 2 มิติ ส่วนรูปทรงมี 3 มิติที่มีปริมาตรและความลึก</span>
-                    </div>
-                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-                        <b>ข้อที่ 4:</b> ในการเบิก-ยืมครุภัณฑ์ศิลปะ (เช่น ขาตั้งวาดภาพและชุดสีอะคริลิก) ข้อปฏิบัติใดถูกต้องตามระเบียบห้องปฏิบัติการศิลปะ?<br>
-                        ก. นำกลับบ้านโดยไม่ต้องแจ้งครูผู้ดูแลพัสดุ<br>
-                        ข. ลงชื่อเบิกยืมในระบบทะเบียนพัสดุ ล้างพู่กันและจานสีให้สะอาดหลังใช้งาน และส่งคืนตามจำนวนที่เบิก<br>
-                        ค. ทิ้งคราบสีอะคริลิกไว้ให้แห้งติดพู่กันเพื่อให้ขนพู่กันแข็งแรง<br>
-                        ง. เบิกวัสดุสิ้นเปลืองเกินจำนวนที่ใช้งานจริงไปเก็บไว้ส่วนตัว<br>
-                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ข. ช่วยยืดอายุการใช้งานครุภัณฑ์และรักษาวินัยการบริหารพัสดุของโรงเรียน</span>
-                    </div>
-                </div>
+                <p><b>ข้อที่ 1:</b> (พิมพ์โจทย์คำถามข้อที่ 1...)<br>
+                ก. ตัวเลือกที่ 1<br>
+                ข. ตัวเลือกที่ 2<br>
+                ค. ตัวเลือกที่ 3<br>
+                ง. ตัวเลือกที่ 4<br>
+                <b>เฉลย:</b> ...</p>
+                <p><b>ข้อที่ 2:</b> (พิมพ์โจทย์คำถามข้อที่ 2...)<br>
+                ก. ตัวเลือกที่ 1<br>
+                ข. ตัวเลือกที่ 2<br>
+                ค. ตัวเลือกที่ 3<br>
+                ง. ตัวเลือกที่ 4<br>
+                <b>เฉลย:</b> ...</p>
             `;
         } else if (docType === 'worksheet') {
             html = `
-                <div style="border-bottom:2px solid #db2777; padding-bottom:8px; margin-bottom:12px;">
-                    <h3 style="color:#be185d; margin:0;">🎨 ใบงานปฏิบัติการศิลปะ & เกณฑ์การให้คะแนน (Rubric Score)</h3>
-                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;">หัวข้อใบงาน: <b>${topic}</b> | ระดับชั้น ${grade} (คะแนนเต็ม 20 คะแนน)</p>
+                <div style="border-bottom:1px solid #cbd5e1; padding-bottom:8px; margin-bottom:12px;">
+                    <h3 style="color:#0f172a; margin:0; font-size:15px;">ใบงานและเกณฑ์การประเมินผลงาน (Rubric)</h3>
+                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;"><b>รายวิชา:</b> ${subjectName} | <b>ระดับชั้น:</b> ${grade} | <b>เรื่อง:</b> ${topic}</p>
                 </div>
                 <p><b>คำชี้แจงสำหรับนักเรียน:</b><br>
-                1. ให้นักเรียนสร้างสรรค์ผลงานภาพวาดภายใต้หัวข้อ <i>"${topic}"</i> ลงบนกระดาษร้อยปอนด์ หรือสเก็ตช์ภาพจากสถานที่จริงในโรงเรียน<br>
-                2. เมื่อวาดเสร็จแล้ว ให้ถ่ายภาพผลงาน หรืออัดคลิปวิดีโออธิบายแนวคิดสั้นๆ (ไม่เกิน 1 นาที) แล้วกดปุ่ม <b>"📌 ปักหมุดส่งงานศิลปะ"</b> บนแผนที่โรงเรียน</p>
-                <table style="width:100%; border-collapse:collapse; margin-top:8px; font-size:12px;">
-                    <tr style="background:#fdf2f8; color:#9d174d; font-weight:700;">
-                        <th style="border:1px solid #fbcfe8; padding:6px;">เกณฑ์การประเมิน (Rubric)</th>
-                        <th style="border:1px solid #fbcfe8; padding:6px;">ดีเยี่ยม (5 คะแนน)</th>
-                        <th style="border:1px solid #fbcfe8; padding:6px;">ดี (3-4 คะแนน)</th>
-                        <th style="border:1px solid #fbcfe8; padding:6px;">ควรปรับปรุง (1-2 คะแนน)</th>
-                    </tr>
-                    <tr>
-                        <td style="border:1px solid #e2e8f0; padding:6px;"><b>1. การใช้ทัศนธาตุ (เส้น/สี/แสงเงา)</b></td>
-                        <td style="border:1px solid #e2e8f0; padding:6px;">ใช้เส้น สี และน้ำหนักแสงเงาได้กลมกลืน สื่ออารมณ์ชัดเจน</td>
-                        <td style="border:1px solid #e2e8f0; padding:6px;">ใช้ทัศนธาตุได้ถูกต้องตามโจทย์</td>
-                        <td style="border:1px solid #e2e8f0; padding:6px;">ยังขาดความสมบูรณ์ของเส้นและแสงเงา</td>
-                    </tr>
-                    <tr>
-                        <td style="border:1px solid #e2e8f0; padding:6px;"><b>2. ความคิดสร้างสรรค์และองค์ประกอบศิลป์</b></td>
-                        <td style="border:1px solid #e2e8f0; padding:6px;">จัดวางจุดเด่นและบริเวณว่างได้สมดุล แปลกใหม่น่าสนใจ</td>
-                        <td style="border:1px solid #e2e8f0; padding:6px;">จัดองค์ประกอบภาพได้ดีตามมาตรฐาน</td>
-                        <td style="border:1px solid #e2e8f0; padding:6px;">ภาพเอียงหรือขาดจุดสนใจหลัก</td>
-                    </tr>
-                    <tr>
-                        <td style="border:1px solid #e2e8f0; padding:6px;"><b>3. การดูแลรักษาพัสดุอุปกรณ์ & ส่งงานตรงเวลา</b></td>
-                        <td style="border:1px solid #e2e8f0; padding:6px;">เบิก-คืนอุปกรณ์สะอาดครบถ้วน ปักหมุดส่งงานพร้อมคำอธิบายครบ</td>
-                        <td style="border:1px solid #e2e8f0; padding:6px;">ส่งงานตรงเวลาและคืนอุปกรณ์ครบ</td>
-                        <td style="border:1px solid #e2e8f0; padding:6px;">ส่งงานล่าช้าหรือไม่ทำความสะอาดอุปกรณ์</td>
-                    </tr>
-                </table>
-            `;
-        } else if (docType === 'procurement-law-quiz') {
-            html = `
-                <div style="border-bottom:2px solid #059669; padding-bottom:8px; margin-bottom:12px;">
-                    <h3 style="color:#065f46; margin:0;">⚖️ ชุดข้อสอบและสรุปสาระสำคัญ พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</h3>
-                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;">สำหรับครูผู้รับผิดชอบงานพัสดุโรงเรียน และการสอบเลื่อนวิทยฐานะ/ความรู้ความสามารถทั่วไป</p>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-                        <b>ข้อที่ 1:</b> ตาม พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา 55 การจัดซื้อจัดจ้างมีกี่วิธี อะไรบ้าง?<br>
-                        ก. 2 วิธี ได้แก่ วิธีตกลงราคา และวิธีสอบราคา<br>
-                        ข. 3 วิธี ได้แก่ 1) วิธีประกาศเชิญชวนทั่วไป 2) วิธีคัดเลือก และ 3) วิธีเฉพาะเจาะจง<br>
-                        ค. 4 วิธี ได้แก่ วิธีตกลงราคา วิธีสอบราคา วิธีประกวดราคา และวิธีพิเศษ<br>
-                        ง. 5 วิธี ตามที่ผู้อำนวยการโรงเรียนกำหนด<br>
-                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ข. 3 วิธี (ประกาศเชิญชวนทั่วไป, คัดเลือก, และเฉพาะเจาะจง ตามมาตรา 55)</span>
-                    </div>
-                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-                        <b>ข้อที่ 2:</b> การจัดซื้อวัสดุหรือครุภัณฑ์ทางการศึกษาโดย "วิธีเฉพาะเจาะจง" ตามมาตรา 56 วรรคหนึ่ง (2)(ข) กำหนดวงเงินไว้ไม่เกินเท่าใด?<br>
-                        ก. ไม่เกิน 100,000 บาท<br>
-                        ข. ไม่เกิน 300,000 บาท<br>
-                        ค. ไม่เกิน 500,000 บาท<br>
-                        ง. ไม่เกิน 1,000,000 บาท<br>
-                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ค. ไม่เกิน 500,000 บาท (กฎกระทรวงกำหนดวงเงินการจัดซื้อจัดจ้างพัสดุโดยวิธีเฉพาะเจาะจง พ.ศ. 2560)</span>
-                    </div>
-                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-                        <b>ข้อที่ 3:</b> ตามระเบียบกระทรวงการคลังฯ พ.ศ. 2560 ข้อ 162 กรณีผู้ขายส่งมอบ "ครุภัณฑ์หรือวัสดุการสอน" ล่าช้ากว่ากำหนด ต้องคิดค่าปรับเป็นรายวันในอัตราใด?<br>
-                        ก. ร้อยละ 0.01 ต่อวัน<br>
-                        ข. ร้อยละ 0.10 ต่อวัน<br>
-                        ค. ร้อยละ 0.20 ต่อวัน ของราคาสิ่งของที่ยังไม่ได้รับมอบ<br>
-                        ง. วันละ 500 บาทคงที่<br>
-                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ค. ร้อยละ 0.20 (0.2%) ต่อวัน ของราคาสิ่งของที่ยังไม่ได้รับมอบ (ส่วนงานจ้างทำของคิดร้อยละ 0.10 ต่อวัน แต่ไม่ต่ำกว่าวันละ 100 บาท)</span>
-                    </div>
-                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-                        <b>ข้อที่ 4:</b> ตามระเบียบกระทรวงการคลังฯ ข้อ 213 การตรวจสอบพัสดุประจำปีของสถานศึกษา ต้องเริ่มดำเนินการเมื่อใดและให้แล้วเสร็จภายในกี่วันทำการ?<br>
-                        ก. เริ่มวันทำการแรกของเดือนมกราคม ให้แล้วเสร็จภายใน 15 วันทำการ<br>
-                        ข. เริ่มวันทำการแรกของเดือนตุลาคม ให้แล้วเสร็จภายใน 30 วันทำการ<br>
-                        ค. เริ่มวันสุดท้ายของเดือนกันยายน ให้แล้วเสร็จภายใน 60 วันทำการ<br>
-                        ง. ตรวจเมื่อใดก็ได้ตามที่ครูพัสดุสะดวก<br>
-                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ข. แต่งตั้งผู้รับผิดชอบก่อนสิ้นเดือนกันยายน และเริ่มตรวจนับตั้งแต่วันทำการแรกของเดือนตุลาคม ให้แล้วเสร็จภายใน 30 วันทำการ</span>
-                    </div>
-                </div>
+                1. ให้นักเรียนปฏิบัติงานในหัวข้อ "${topic}" ตามรายละเอียดที่ครูกำหนด<br>
+                2. เมื่อเสร็จแล้วให้สแกน QR Code เพื่อส่งภาพถ่ายผลงานพร้อมระบุชื่อและรหัสประจำตัว</p>
+                <p><b>เกณฑ์การให้คะแนน (ปรับแก้คะแนนได้เอง):</b><br>
+                - ความถูกต้องตามหัวข้อและเทคนิค: ..... คะแนน<br>
+                - ความคิดสร้างสรรค์และความประณีต: ..... คะแนน<br>
+                - ความรับผิดชอบและการส่งงานตรงเวลา: ..... คะแนน<br>
+                <b>รวมคะแนนเต็ม:</b> ..... คะแนน</p>
             `;
         } else {
             html = `
-                <div style="border-bottom:2px solid #d97706; padding-bottom:8px; margin-bottom:12px;">
-                    <h3 style="color:#b45309; margin:0;">📦 ใบเบิกวัสดุ-ครุภัณฑ์ประกอบการสอนประจำคาบเรียน</h3>
-                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;">หน่วยการเรียนรู้: <b>${topic}</b> | ระดับชั้น ${grade} (สำหรับนักเรียน 30 คน)</p>
+                <div style="border-bottom:1px solid #cbd5e1; padding-bottom:8px; margin-bottom:12px;">
+                    <h3 style="color:#0f172a; margin:0; font-size:15px;">ใบเบิกวัสดุ-ครุภัณฑ์ประกอบการสอน</h3>
+                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;"><b>รายวิชา:</b> ${subjectName} | <b>ระดับชั้น:</b> ${grade} | <b>เรื่อง:</b> ${topic}</p>
                 </div>
-                <ul style="padding-left:18px; line-height:1.8;">
-                    <li><b>ครุภัณฑ์-ศป-69-001:</b> ขาตั้งวาดภาพไม้บีชปรับระดับ — จำนวนเบิกยืม <b>15 - 30 ตัว</b> (คืนหลังจบคาบเรียน)</li>
-                    <li><b>วัสดุ-ศป-69-014:</b> ชุดสีน้ำ / สีอะคริลิก และจานหลุมผสมสี — จำนวน <b>15 ชุด</b> (แบ่งกลุ่มละ 2 คน)</li>
-                    <li><b>วัสดุ-ศป-69-022:</b> กระดาษร้อยปอนด์ 190 แกรม ขนาด A3 — จำนวนเบิกจ่าย <b>30 แผ่น</b> (วัสดุสิ้นเปลือง)</li>
-                    <li><b>ครุภัณฑ์-อด-69-008:</b> เครื่องโปรเจคเตอร์เลเซอร์และลำโพงห้องเรียนศิลปะ — จำนวน <b>1 ชุด</b></li>
-                </ul>
-                <p style="background:#fffbeb; border:1px solid #fde68a; padding:8px; border-radius:6px; font-size:12px; color:#92400e;">
-                    📌 <b>หมายเหตุสำหรับครูผู้ดูแลพัสดุ:</b> สามารถกดปุ่ม <i>"ทะเบียนพัสดุโรงเรียน"</i> ด้านบนเพื่อตัดยอดเบิก-ยืมและส่งออกไฟล์ CSV แนบรายงานพัสดุประจำเดือนได้ทันที
-                </p>
+                <p><b>รายการวัสดุและครุภัณฑ์ที่ต้องการเบิกใช้ (คลิกแก้ไขรายการได้):</b><br>
+                1. รหัสพัสดุ ............... รายการ ........................................... จำนวน ........ หน่วย<br>
+                2. รหัสพัสดุ ............... รายการ ........................................... จำนวน ........ หน่วย<br>
+                3. รหัสพัสดุ ............... รายการ ........................................... จำนวน ........ หน่วย</p>
+                <p>ลงชื่อ ................................................. ครูผู้ขอเบิก</p>
             `;
         }
 
@@ -570,7 +505,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Generate initial content on load
+    if (btnClearAiDoc && aiOutputContainer) {
+        btnClearAiDoc.addEventListener('click', () => {
+            aiOutputContainer.innerHTML = '<p>พิมพ์รายละเอียดเอกสารของครูที่นี่...</p>';
+            aiOutputContainer.focus();
+        });
+    }
+
+    // Set initial editable blank template on load
     generateTeacherAiContent();
 
     // Copy & Download AI Document
@@ -766,24 +708,31 @@ document.addEventListener('DOMContentLoaded', () => {
         generateTeacherAiContent();
     });
 
-    // 11. Open Viewer & Teacher Grading Modal
+    // 11. Open Viewer & Teacher Grading / Editing Modal
     function openStreamViewer(item) {
         selectedSubmissionForGrading = item;
         streamViewerModal.classList.remove('hidden');
 
         document.getElementById('viewerStreamTitle').textContent = item.title;
-        document.getElementById('viewerAddressText').textContent = `📍 ${item.locationName || item.address || 'อาคารศิลปะ'} (พิกัด: ${item.lat.toFixed(5)}, ${item.lng.toFixed(5)})`;
-        document.getElementById('viewerCountBadge').textContent = `👁️ ${item.viewers || 1} เข้าชม`;
+        document.getElementById('viewerAddressText').textContent = `${item.locationName || item.address || 'ห้องเรียนศิลปะ'}`;
+        document.getElementById('viewerCountBadge').textContent = `เข้าชม ${item.viewers || 1} ครั้ง`;
         const meta = getCategoryMeta(item.category);
-        document.getElementById('viewerCategoryBadge').textContent = `${meta.emoji} ${meta.label}`;
-        document.getElementById('btnNavGoogleMaps').href = `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`;
+        document.getElementById('viewerCategoryBadge').textContent = meta.label;
+
+        const editTitleEl = document.getElementById('viewerEditTitleInput');
+        const editDescEl = document.getElementById('viewerEditDescInput');
+        const gradeSelectEl = document.getElementById('teacherGradeSelect');
+
+        if (editTitleEl) editTitleEl.value = item.title || '';
+        if (editDescEl) editDescEl.value = item.description || '';
+        if (gradeSelectEl) gradeSelectEl.value = item.score || '';
 
         const viewerDescText = document.getElementById('viewerDescText');
         if (viewerDescText) {
             viewerDescText.innerHTML = `
-                <b>👤 ผู้ส่งงาน/ผู้ตรวจ:</b> ${item.studentName || item.reporter || 'นักเรียน'} (${item.grade || 'ม.1'})<br>
-                <b>📝 รายละเอียด:</b> ${item.description || '-'}<br>
-                <span style="color:#059669; font-weight:700;">🏆 ผลการประเมินปัจจุบัน: ${item.score || 'รอครูตรวจให้คะแนน'}</span>
+                <b>ผู้ส่งงาน / ผู้รับผิดชอบ:</b> ${item.studentName || item.reporter || 'นักเรียน'} (${item.grade || '-'})<br>
+                <b>รายละเอียด:</b> ${item.description || '-'}<br>
+                <span style="color:#0f172a; font-weight:600;">ผลการประเมิน / สถานะ: ${item.score || 'รอตรวจให้คะแนน'}</span>
             `;
         }
 
@@ -803,10 +752,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Save Teacher Grade Button
+    // Save Teacher Custom Details & Grade Button
     document.getElementById('btnSaveStudentGrade')?.addEventListener('click', () => {
         if (!selectedSubmissionForGrading) return;
-        const gradeVal = document.getElementById('teacherGradeSelect')?.value || '20/20 (เกรด 4 ดีเยี่ยม)';
+        const newTitle = document.getElementById('viewerEditTitleInput')?.value.trim();
+        const newDesc = document.getElementById('viewerEditDescInput')?.value.trim();
+        const gradeVal = document.getElementById('teacherGradeSelect')?.value.trim() || 'ตรวจแล้ว';
+
+        if (newTitle) selectedSubmissionForGrading.title = newTitle;
+        if (newDesc !== undefined) selectedSubmissionForGrading.description = newDesc;
         selectedSubmissionForGrading.score = gradeVal;
         selectedSubmissionForGrading.status = 'graded';
 
@@ -817,8 +771,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(() => {});
 
         renderIncidents();
+        renderQrAttendanceTable();
         openStreamViewer(selectedSubmissionForGrading);
-        speakThaiText(`บันทึกผลการประเมิน ${gradeVal} เรียบร้อยแล้วค่ะ`);
+    });
+
+    // Delete Submission Button
+    document.getElementById('btnDeleteSubmission')?.addEventListener('click', () => {
+        if (!selectedSubmissionForGrading) return;
+        activeSubmissions = activeSubmissions.filter(s => s.id !== selectedSubmissionForGrading.id);
+        streamViewerModal.classList.add('hidden');
+        renderIncidents();
     });
 
     // 12. Student Artwork / Asset Pin Submission Form (Supports Photo & Video <= 60s)
@@ -1252,16 +1214,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btnRunFineCalc')?.addEventListener('click', runLatePenaltyCalculation);
 
-    // Official Government Procurement Document Generator
+    // Official Government Procurement Document Generator (Editable by Teacher)
     function generateOfficialGovProcurementDoc() {
         const formType = document.getElementById('govFormTypeSelect')?.value || 'memo-buy';
-        const project = document.getElementById('govFormProjectInput')?.value || 'โครงการจัดซื้อวัสดุและครุภัณฑ์ฝึกปฏิบัติการทัศนศิลป์';
-        const amount = Number(document.getElementById('govFormAmountInput')?.value || 38500);
+        const project = document.getElementById('govFormProjectInput')?.value.trim() || '[ระบุชื่อโครงการ / รายการพัสดุ]';
+        const amount = Number(document.getElementById('govFormAmountInput')?.value || 0);
         const box = document.getElementById('govDocPreviewBox');
         if (!box) return;
 
         const todayStr = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
-        const amountStr = amount.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+        const amountStr = amount > 0 ? amount.toLocaleString('th-TH', { minimumFractionDigits: 2 }) : '....................';
         const inspectRole = amount <= 100000 ? 'ผู้ตรวจรับพัสดุ จำนวน 1 ท่าน' : 'คณะกรรมการตรวจรับพัสดุ จำนวน 3 ท่าน';
 
         let docText = '';
@@ -1371,6 +1333,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btnGenGovDocNow')?.addEventListener('click', generateOfficialGovProcurementDoc);
     document.getElementById('govFormTypeSelect')?.addEventListener('change', generateOfficialGovProcurementDoc);
+    document.getElementById('btnClearGovDoc')?.addEventListener('click', () => {
+        const box = document.getElementById('govDocPreviewBox');
+        if (box) {
+            box.textContent = 'คลิกพิมพ์รายละเอียดหนังสือราชการของครูที่นี่...';
+            box.focus();
+        }
+    });
 
     document.getElementById('btnCopyGovDoc')?.addEventListener('click', () => {
         const text = document.getElementById('govDocPreviewBox')?.textContent || '';
@@ -1409,8 +1378,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    document.getElementById('qrClassSelect')?.addEventListener('change', updateQrCodeDisplay);
+    document.getElementById('qrClassSelect')?.addEventListener('input', updateQrCodeDisplay);
+    document.getElementById('qrSubjectCustomInput')?.addEventListener('input', updateQrCodeDisplay);
     document.getElementById('qrSessionTopicInput')?.addEventListener('input', updateQrCodeDisplay);
+    document.getElementById('qrPinCustomInput')?.addEventListener('input', updateQrCodeDisplay);
 
     document.getElementById('btnGenerateNewQr')?.addEventListener('click', () => {
         const randNum = Math.floor(1000 + Math.random() * 9000);

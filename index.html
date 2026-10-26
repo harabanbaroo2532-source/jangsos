@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="styles.css?v=22">
+    <link rel="stylesheet" href="styles.css?v=23">
 </head>
 <body>
     <div class="guardian-app">
@@ -195,26 +195,31 @@
                     </div>
                 </div>
 
-                <!-- Classroom Selector & Active Session Configuration -->
-                <div style="display:grid; grid-template-columns: 1fr 1.6fr auto; gap:10px; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0; align-items:end;">
+                <!-- Classroom Selector & Active Session Configuration (Teacher Editable) -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1.6fr auto; gap:10px; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0; align-items:end;">
                     <div>
-                        <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">ระดับชั้น / ห้องเรียน</label>
-                        <select id="qrClassSelect" style="width:100%; padding:7px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:12.5px; color:#0f172a; background:#fff;">
-                            <option value="ม.1/1">ชั้นมัธยมศึกษาปีที่ 1/1</option>
-                            <option value="ม.1/2">ชั้นมัธยมศึกษาปีที่ 1/2</option>
-                            <option value="ม.2/1">ชั้นมัธยมศึกษาปีที่ 2/1</option>
-                            <option value="ม.3/1">ชั้นมัธยมศึกษาปีที่ 3/1</option>
-                            <option value="ม.4/1">ชั้นมัธยมศึกษาปีที่ 4/1</option>
-                            <option value="ม.5/1">ชั้นมัธยมศึกษาปีที่ 5/1</option>
-                            <option value="ม.6/1">ชั้นมัธยมศึกษาปีที่ 6/1</option>
-                        </select>
+                        <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">ระดับชั้น / ห้องเรียน (พิมพ์เองได้)</label>
+                        <input type="text" id="qrClassSelect" list="classRoomOptions" placeholder="เช่น ม.1/1, ม.4/2" value="" style="width:100%; padding:7px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:12.5px; color:#0f172a; background:#fff;">
+                        <datalist id="classRoomOptions">
+                            <option value="ม.1/1"></option>
+                            <option value="ม.1/2"></option>
+                            <option value="ม.2/1"></option>
+                            <option value="ม.3/1"></option>
+                            <option value="ม.4/1"></option>
+                            <option value="ม.5/1"></option>
+                            <option value="ม.6/1"></option>
+                        </datalist>
                     </div>
                     <div>
-                        <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">หัวข้อคาบเรียน / ชิ้นงานที่เปิดรับ</label>
-                        <input type="text" id="qrSessionTopicInput" placeholder="ระบุหัวข้อคาบเรียนหรือชื่อชิ้นงาน..." value="ทัศนธาตุและการสร้างสรรค์งานทัศนศิลป์" style="width:100%; padding:7px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:12.5px; background:#fff;">
+                        <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">รายวิชา / รหัสคาบเรียน</label>
+                        <input type="text" id="qrSubjectCustomInput" placeholder="เช่น ทัศนศิลป์ (ศ21101)" value="" style="width:100%; padding:7px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:12.5px; background:#fff;">
                     </div>
-                    <button type="button" id="btnGenerateNewQr" class="btn btn-secondary" style="padding:7px 14px;">
-                        เปลี่ยนรหัส QR
+                    <div>
+                        <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">หัวข้อคาบเรียน / รายละเอียดงานที่สั่ง</label>
+                        <input type="text" id="qrSessionTopicInput" placeholder="พิมพ์ชื่อชิ้นงาน หรือคำชี้แจงที่ต้องการให้นักเรียนส่ง..." value="" style="width:100%; padding:7px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:12.5px; background:#fff;">
+                    </div>
+                    <button type="button" id="btnGenerateNewQr" class="btn btn-primary" style="padding:7px 14px;">
+                        อัปเดต QR
                     </button>
                 </div>
 
@@ -222,19 +227,20 @@
                 <div style="display:grid; grid-template-columns: 270px 1fr; gap:16px; flex:1; min-height:360px;">
                     <!-- Left Card: Clean QR Code Display -->
                     <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center;">
-                        <div>
+                        <div style="width:100%;">
                             <span id="qrModeBadge" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-size:11px; font-weight:600; padding:3px 10px; border-radius:4px; display:inline-block; margin-bottom:8px;">
                                 สแกนเช็คชื่อเข้าเรียน
                             </span>
-                            <h3 id="qrDisplayClassTitle" style="font-size:14px; font-weight:600; color:#0f172a; margin:0 0 2px 0;">ห้อง ม.1/1 • วิชาทัศนศิลป์</h3>
-                            <p id="qrDisplayTopicTitle" style="font-size:11.5px; color:#64748b; margin:0 0 10px 0;">ทัศนธาตุและการสร้างสรรค์งานทัศนศิลป์</p>
+                            <h3 id="qrDisplayClassTitle" style="font-size:14px; font-weight:600; color:#0f172a; margin:0 0 2px 0;">ระบุห้องเรียนและรายวิชา</h3>
+                            <p id="qrDisplayTopicTitle" style="font-size:11.5px; color:#64748b; margin:0 0 10px 0;">ระบุหัวข้อคาบเรียนหรือชิ้นงานที่เปิดรับ</p>
                         </div>
 
                         <!-- Dynamic QR Code Image Box -->
                         <div style="background:#ffffff; padding:12px; border:1px solid #cbd5e1; border-radius:8px;">
-                            <img id="qrCodeImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://jangsos.onrender.com/?action=checkin%26class=M1-1" alt="QR Code สำหรับนักเรียนสแกน" style="width:176px; height:176px; display:block; margin:0 auto;" />
-                            <div style="font-family:monospace; font-size:11px; font-weight:600; color:#475569; margin-top:8px;">
-                                รหัสคาบเรียน: <span id="qrPinCodeText">ART-2569</span>
+                            <img id="qrCodeImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://jangsos.onrender.com/?action=checkin" alt="QR Code สำหรับนักเรียนสแกน" style="width:176px; height:176px; display:block; margin:0 auto;" />
+                            <div style="font-size:11px; font-weight:600; color:#475569; margin-top:8px; display:flex; align-items:center; justify-content:center; gap:4px;">
+                                <span>รหัสคาบ:</span>
+                                <input type="text" id="qrPinCustomInput" value="ART-01" style="width:75px; text-align:center; font-family:monospace; font-size:11px; font-weight:600; border:1px solid #cbd5e1; border-radius:4px; padding:2px 4px; color:#0f172a;">
                             </div>
                         </div>
 
@@ -314,50 +320,58 @@
                     <button id="btnCloseAiGenerator" class="btn-close">&times;</button>
                 </div>
 
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
                     <div>
-                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">กลุ่มสาระ / รายวิชา</label>
-                        <select id="aiSubjectSelect" class="form-input" style="width:100%; padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
-                            <option value="visual-art">ทัศนศิลป์ (Visual Arts)</option>
-                            <option value="Thai-art">ศิลปะไทยและภูมิปัญญาท้องถิ่น</option>
-                            <option value="design-art">การออกแบบและองค์ประกอบศิลป์</option>
-                            <option value="music-drama">ดนตรี-นาฏศิลป์</option>
-                            <option value="inventory-work">การงานอาชีพ / งานพัสดุโรงเรียน</option>
-                        </select>
+                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">รายวิชา (พิมพ์เองได้)</label>
+                        <input type="text" id="aiSubjectSelect" list="subjectListOptions" class="form-input" placeholder="เช่น ทัศนศิลป์ 1 (ศ21101)" value="">
+                        <datalist id="subjectListOptions">
+                            <option value="ทัศนศิลป์ (Visual Arts)"></option>
+                            <option value="ศิลปะไทยและภูมิปัญญาท้องถิ่น"></option>
+                            <option value="การออกแบบและองค์ประกอบศิลป์"></option>
+                            <option value="ดนตรี-นาฏศิลป์"></option>
+                            <option value="การงานอาชีพ / งานพัสดุโรงเรียน"></option>
+                        </datalist>
                     </div>
                     <div>
-                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">ระดับชั้นมัธยมศึกษา</label>
-                        <select id="aiGradeSelect" class="form-input" style="width:100%; padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
-                            <option value="ม.1">มัธยมศึกษาปีที่ 1 (ม.1)</option>
-                            <option value="ม.2">มัธยมศึกษาปีที่ 2 (ม.2)</option>
-                            <option value="ม.3">มัธยมศึกษาปีที่ 3 (ม.3)</option>
-                            <option value="ม.4">มัธยมศึกษาปีที่ 4 (ม.4)</option>
-                            <option value="ม.5">มัธยมศึกษาปีที่ 5 (ม.5)</option>
-                            <option value="ม.6">มัธยมศึกษาปีที่ 6 (ม.6)</option>
-                        </select>
+                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">ระดับชั้น (พิมพ์เองได้)</label>
+                        <input type="text" id="aiGradeSelect" list="gradeListOptions" class="form-input" placeholder="เช่น ม.1, ม.4/1" value="">
+                        <datalist id="gradeListOptions">
+                            <option value="ม.1"></option>
+                            <option value="ม.2"></option>
+                            <option value="ม.3"></option>
+                            <option value="ม.4"></option>
+                            <option value="ม.5"></option>
+                            <option value="ม.6"></option>
+                        </datalist>
                     </div>
                     <div>
                         <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">ประเภทเอกสาร</label>
                         <select id="aiDocTypeSelect" class="form-input" style="width:100%; padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
-                            <option value="lesson-plan">แผนการจัดการเรียนรู้ (5 ขั้นตอน)</option>
-                            <option value="quiz">แบบทดสอบปรนัย 4 ตัวเลือก พร้อมเฉลย</option>
-                            <option value="worksheet">ใบงานปฏิบัติการศิลปะ + เกณฑ์การให้คะแนน</option>
-                            <option value="material-list">ใบเบิกวัสดุ-อุปกรณ์ประจำคาบเรียน</option>
-                            <option value="procurement-law-quiz">สรุปและแนวข้อสอบ พ.ร.บ. พัสดุ 2560</option>
+                            <option value="custom-blank">เขียนเอง / แบบฟอร์มเปล่า (ครูลงรายละเอียดเอง)</option>
+                            <option value="lesson-plan">โครงร่างแผนการจัดการเรียนรู้ (แก้ไขได้)</option>
+                            <option value="worksheet">โครงร่างใบงาน + เกณฑ์การให้คะแนน (แก้ไขได้)</option>
+                            <option value="quiz">โครงร่างแบบทดสอบปรนัย (แก้ไขได้)</option>
+                            <option value="material-list">โครงร่างใบเบิกวัสดุ-อุปกรณ์ (แก้ไขได้)</option>
                         </select>
                     </div>
                 </div>
 
-                <div style="display:flex; gap:8px; margin-bottom:14px;">
-                    <input type="text" id="aiTopicInput" class="form-input" style="flex:1; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;" placeholder="ระบุหัวข้อเรื่อง เช่น ทัศนธาตุทั้ง 7, เส้นและอารมณ์, ทฤษฎีสีน้ำ..." value="ทัศนธาตุทั้ง 7 และการถ่ายทอดอารมณ์ด้วยเส้นและสี">
+                <div style="display:flex; gap:8px; margin-bottom:10px;">
+                    <input type="text" id="aiTopicInput" class="form-input" style="flex:1; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;" placeholder="ระบุหัวข้อเรื่อง / ชื่อหน่วยการเรียนรู้ หรือคำชี้แจงที่ครูต้องการ..." value="">
                     <button id="btnGenerateAiContent" class="btn btn-primary">
-                        จัดทำเอกสาร
+                        สร้างโครงร่างเอกสาร
+                    </button>
+                    <button id="btnClearAiDoc" type="button" class="btn btn-secondary">
+                        ล้างหน้ากระดาษ
                     </button>
                 </div>
 
-                <!-- Output Box -->
-                <div id="aiOutputContainer" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px; max-height:360px; overflow-y:auto; font-size:13px; line-height:1.7; color:#1e293b;">
-                    <!-- Populated by Generator -->
+                <div style="font-size:11px; color:#64748b; margin-bottom:6px;">
+                    * คลิกพิมพ์หรือแก้ไขข้อความในกรอบด้านล่างได้โดยตรงทุกบรรทัด
+                </div>
+
+                <!-- Editable Output Box -->
+                <div id="aiOutputContainer" contenteditable="true" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:16px; min-height:260px; max-height:360px; overflow-y:auto; font-size:13px; line-height:1.7; color:#0f172a; outline:none;">
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
@@ -409,22 +423,26 @@
                     </div>
                 </div>
 
-                <!-- Add New Asset / Requisition Form -->
+                <!-- Add New Asset / Requisition Form (Teacher Custom Input) -->
                 <form id="addAssetForm" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; margin-bottom:14px;">
-                    <div style="font-size:12.5px; font-weight:600; color:#0f172a; margin-bottom:8px;">ลงทะเบียนพัสดุ / ครุภัณฑ์ใหม่</div>
-                    <div style="display:grid; grid-template-columns: 1.2fr 2fr 1.2fr 0.8fr 0.8fr auto; gap:8px; align-items:center;">
-                        <input type="text" id="assetCodeInput" placeholder="รหัสพัสดุ (เช่น ศป-69-001)" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                        <input type="text" id="assetNameInput" placeholder="ชื่อวัสดุ/ครุภัณฑ์" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                        <select id="assetCatInput" style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; background:#fff;">
-                            <option value="ครุภัณฑ์ศิลปะ">ครุภัณฑ์ศิลปะ</option>
-                            <option value="วัสดุสิ้นเปลืองศิลปะ">วัสดุสิ้นเปลืองศิลปะ</option>
-                            <option value="ครุภัณฑ์ดนตรี-นาฏศิลป์">ครุภัณฑ์ดนตรี-นาฏศิลป์</option>
-                            <option value="ครุภัณฑ์โสตทัศนูปกรณ์">ครุภัณฑ์โสตทัศนูปกรณ์</option>
-                        </select>
+                    <div style="font-size:12.5px; font-weight:600; color:#0f172a; margin-bottom:8px;">ลงทะเบียนพัสดุ / ครุภัณฑ์ใหม่ (กรอกรายละเอียดเองได้ทุกช่อง)</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1.6fr 1.1fr 1.1fr 0.6fr 0.6fr 0.8fr auto; gap:6px; align-items:center;">
+                        <input type="text" id="assetCodeInput" placeholder="รหัสพัสดุ" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <input type="text" id="assetNameInput" placeholder="ชื่อวัสดุ / ครุภัณฑ์" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <input type="text" id="assetCatInput" list="assetCatOptions" placeholder="หมวดหมู่" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; background:#fff;">
+                        <datalist id="assetCatOptions">
+                            <option value="ครุภัณฑ์ศิลปะ"></option>
+                            <option value="วัสดุสิ้นเปลืองศิลปะ"></option>
+                            <option value="ครุภัณฑ์ดนตรี-นาฏศิลป์"></option>
+                            <option value="ครุภัณฑ์โสตทัศนูปกรณ์"></option>
+                            <option value="วัสดุสำนักงาน"></option>
+                        </datalist>
+                        <input type="text" id="assetRoomInput" placeholder="สถานที่เก็บ / ห้อง" style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
                         <input type="number" id="assetQtyInput" placeholder="จำนวน" min="1" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <input type="text" id="assetUnitInput" placeholder="หน่วยนับ" style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
                         <input type="number" id="assetPriceInput" placeholder="ราคา/หน่วย" min="0" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
                         <button type="submit" class="btn btn-primary btn-sm">
-                            + เพิ่มรายการ
+                            + บันทึก
                         </button>
                     </div>
                 </form>
@@ -588,18 +606,27 @@
                             <p id="viewerAddressText" style="font-size:11.5px; color:#64748b; margin-bottom:6px;"></p>
                             <div id="viewerDescText" style="font-size:12px; color:#1e293b; line-height:1.6; padding:8px; background:#ffffff; border-radius:6px; border:1px solid #e2e8f0;"></div>
                             
-                            <!-- Teacher Grading Box -->
+                            <!-- Teacher Custom Grading & Editing Box -->
                             <div style="margin-top:10px; padding-top:10px; border-top:1px solid #e2e8f0;">
-                                <label style="font-size:11.5px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">บันทึกผลการประเมิน / คะแนน</label>
+                                <label style="font-size:11.5px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">แก้ไขหัวข้อ / รายละเอียดงาน</label>
+                                <input type="text" id="viewerEditTitleInput" placeholder="ชื่อผลงาน / รายการ" style="width:100%; padding:6px 8px; border-radius:6px; border:1px solid #cbd5e1; font-size:12px; margin-bottom:6px; background:#fff;">
+                                <textarea id="viewerEditDescInput" rows="2" placeholder="รายละเอียดงาน หรือหมายเหตุของครู..." style="width:100%; padding:6px 8px; border-radius:6px; border:1px solid #cbd5e1; font-size:12px; margin-bottom:8px; background:#fff;"></textarea>
+
+                                <label style="font-size:11.5px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">ให้คะแนน / ผลการประเมิน (พิมพ์เองได้)</label>
                                 <div style="display:flex; gap:6px;">
-                                    <select id="teacherGradeSelect" style="flex:1; padding:6px; border-radius:6px; border:1px solid #cbd5e1; font-size:12px; background:#fff;">
-                                        <option value="20/20 (เกรด 4 ดีเยี่ยม)">20/20 (เกรด 4 ดีเยี่ยม)</option>
-                                        <option value="18/20 (เกรด 3.5 ดีมาก)">18/20 (เกรด 3.5 ดีมาก)</option>
-                                        <option value="15/20 (เกรด 3 ผ่านเกณฑ์)">15/20 (เกรด 3 ผ่านเกณฑ์)</option>
-                                        <option value="ตรวจเช็คพัสดุครบถ้วน">พัสดุครบถ้วนสมบูรณ์</option>
-                                    </select>
+                                    <input type="text" id="teacherGradeSelect" list="gradeScoreOptions" placeholder="เช่น 19/20 (เกรด 4), ผ่านเกณฑ์, แก้ไขงาน" style="flex:1; padding:6px 8px; border-radius:6px; border:1px solid #cbd5e1; font-size:12px; background:#fff;">
+                                    <datalist id="gradeScoreOptions">
+                                        <option value="20/20 (เกรด 4 ดีเยี่ยม)"></option>
+                                        <option value="18/20 (เกรด 3.5 ดีมาก)"></option>
+                                        <option value="15/20 (เกรด 3 ผ่านเกณฑ์)"></option>
+                                        <option value="รอแก้ไขและส่งใหม่"></option>
+                                        <option value="ตรวจเช็คพัสดุครบถ้วน"></option>
+                                    </datalist>
                                     <button type="button" id="btnSaveStudentGrade" class="btn btn-primary btn-sm">
-                                        บันทึกผล
+                                        บันทึกข้อมูล
+                                    </button>
+                                    <button type="button" id="btnDeleteSubmission" class="btn btn-danger btn-sm">
+                                        ลบ
                                     </button>
                                 </div>
                             </div>
@@ -650,21 +677,22 @@
 
                     <div class="form-group" style="display:grid; grid-template-columns: 2fr 1fr; gap:8px;">
                         <div>
-                            <label>ชื่อ-นามสกุล / รหัสนักเรียน</label>
-                            <input type="text" id="reportNameInput" placeholder="ระบุชื่อ-นามสกุล และรหัสประจำตัว" required class="form-input">
+                            <label>ชื่อ-นามสกุล / ผู้รับผิดชอบ</label>
+                            <input type="text" id="reportNameInput" placeholder="ระบุชื่อนักเรียน หรือชื่อครูผู้บันทึก" required class="form-input">
                         </div>
                         <div>
-                            <label>ระดับชั้น / หมวด</label>
-                            <select id="reportGradeInput" class="form-input">
-                                <option value="ม.1/1">ชั้น ม.1/1</option>
-                                <option value="ม.1/2">ชั้น ม.1/2</option>
-                                <option value="ม.2/1">ชั้น ม.2/1</option>
-                                <option value="ม.3/1">ชั้น ม.3/1</option>
-                                <option value="ม.4/1">ชั้น ม.4/1</option>
-                                <option value="ม.5/1">ชั้น ม.5/1</option>
-                                <option value="ม.6/1">ชั้น ม.6/1</option>
-                                <option value="งานพัสดุ">งานพัสดุโรงเรียน</option>
-                            </select>
+                            <label>ระดับชั้น / หมวด (พิมพ์เองได้)</label>
+                            <input type="text" id="reportGradeInput" list="reportGradeOptions" placeholder="เช่น ม.1/1, งานพัสดุ" class="form-input">
+                            <datalist id="reportGradeOptions">
+                                <option value="ม.1/1"></option>
+                                <option value="ม.1/2"></option>
+                                <option value="ม.2/1"></option>
+                                <option value="ม.3/1"></option>
+                                <option value="ม.4/1"></option>
+                                <option value="ม.5/1"></option>
+                                <option value="ม.6/1"></option>
+                                <option value="งานพัสดุ"></option>
+                            </datalist>
                         </div>
                     </div>
 
@@ -838,23 +866,28 @@
                             </select>
                         </div>
                         <div>
-                            <label style="font-size:11px; font-weight:600; display:block; margin-bottom:3px;">ชื่อโครงการ / รายการที่จัดซื้อ</label>
-                            <input type="text" id="govFormProjectInput" value="โครงการจัดซื้อวัสดุและครุภัณฑ์ฝึกปฏิบัติการทัศนศิลป์" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                            <label style="font-size:11px; font-weight:600; display:block; margin-bottom:3px;">ชื่อโครงการ / รายการที่จัดซื้อ (ครูกรอกเองได้)</label>
+                            <input type="text" id="govFormProjectInput" placeholder="ระบุชื่อโครงการ หรือรายการวัสดุ/ครุภัณฑ์..." value="" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
                         </div>
                         <div>
                             <label style="font-size:11px; font-weight:600; display:block; margin-bottom:3px;">วงเงินงบประมาณ (บาท)</label>
-                            <input type="number" id="govFormAmountInput" value="38500" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                            <input type="number" id="govFormAmountInput" placeholder="ระบุจำนวนเงิน" value="" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
                         </div>
                     </div>
 
-                    <div style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:11px; color:#64748b;">ร่างบันทึกข้อความราชการตามแบบฟอร์มมาตรฐานงานพัสดุสถานศึกษา</span>
-                        <button type="button" id="btnGenGovDocNow" class="btn btn-primary btn-sm">
-                            สร้างร่างเอกสาร
-                        </button>
+                    <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:11px; color:#64748b;">* สามารถคลิกแก้ไขข้อความในกล่องหนังสือราชการด้านล่างได้โดยตรงทุกบรรทัด</span>
+                        <div style="display:flex; gap:6px;">
+                            <button type="button" id="btnGenGovDocNow" class="btn btn-primary btn-sm">
+                                สร้างโครงร่างเอกสาร
+                            </button>
+                            <button type="button" id="btnClearGovDoc" class="btn btn-secondary btn-sm">
+                                ล้างข้อความ
+                            </button>
+                        </div>
                     </div>
 
-                    <div id="govDocPreviewBox" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:16px; font-family:'Sarabun',sans-serif; font-size:13px; line-height:1.7; color:#0f172a; max-height:240px; overflow-y:auto; white-space:pre-line;">
+                    <div id="govDocPreviewBox" contenteditable="true" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:6px; padding:16px; font-family:'Sarabun',sans-serif; font-size:13px; line-height:1.7; color:#0f172a; min-height:220px; max-height:260px; overflow-y:auto; white-space:pre-line; outline:none;">
                     </div>
 
                     <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
@@ -937,6 +970,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=22"></script>
+    <script src="app.js?v=23"></script>
 </body>
 </html>
