@@ -10,18 +10,12 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Global State
-    let map = null;
-    let userMarker = null;
     let currentPos = { lat: 13.7563, lng: 100.5018, accuracy: 8 };
     let activeSubmissions = [];
     let schoolAssets = [];
-    let markersLayer = L.layerGroup();
-    let assetsMapLayer = L.layerGroup();
-    let isArtPinsVisible = true;
-    let isAssetPinsVisible = true;
-    let isSatelliteView = false;
-    let streetTileLayer = null;
-    let satelliteTileLayer = null;
+    let qrAttendanceList = [];
+    let currentQrMode = 'attend'; // 'attend' | 'homework'
+    let currentSessionPin = 'ART-2569';
 
     let ws = null;
     let mediaStream = null;
@@ -187,70 +181,210 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
+    const defaultQrRoster = [
+        {
+            studentId: '69101',
+            name: 'ด.ช. นภัสกร ศิลปะเจริญ',
+            classRoom: 'ม.1/1',
+            scanTime: '08:32:15',
+            status: 'มาเรียน',
+            homeworkStatus: 'ส่งงานแล้ว (19/20)',
+            submissionId: 'art-101'
+        },
+        {
+            studentId: '69102',
+            name: 'ด.ญ. กัญญาณัฐ วาดฝัน',
+            classRoom: 'ม.1/1',
+            scanTime: '08:33:04',
+            status: 'มาเรียน',
+            homeworkStatus: 'ส่งงานแล้ว (20/20)',
+            submissionId: 'art-101'
+        },
+        {
+            studentId: '69103',
+            name: 'ด.ช. ธีรภัทร รักศิลป์',
+            classRoom: 'ม.1/1',
+            scanTime: '08:34:20',
+            status: 'มาเรียน',
+            homeworkStatus: 'ส่งงานแล้ว (18/20)',
+            submissionId: 'art-102'
+        },
+        {
+            studentId: '69104',
+            name: 'ด.ญ. พิมพ์ชนก แสงสี',
+            classRoom: 'ม.1/1',
+            scanTime: '08:35:10',
+            status: 'มาเรียน',
+            homeworkStatus: 'ส่งงานแล้ว (รอตรวจ)',
+            submissionId: 'art-102'
+        },
+        {
+            studentId: '69105',
+            name: 'ด.ช. ศุภกร ลายเส้น',
+            classRoom: 'ม.1/1',
+            scanTime: '08:36:45',
+            status: 'มาสาย',
+            homeworkStatus: 'กำลังทำใบงาน',
+            submissionId: null
+        },
+        {
+            studentId: '69106',
+            name: 'ด.ญ. ชนิกานต์ ทัศนธาตุ',
+            classRoom: 'ม.1/1',
+            scanTime: '08:31:50',
+            status: 'มาเรียน',
+            homeworkStatus: 'ส่งงานแล้ว (20/20)',
+            submissionId: 'art-101'
+        }
+    ];
+
     activeSubmissions = [...defaultSubmissions];
     schoolAssets = [...defaultInventory];
+    qrAttendanceList = [...defaultQrRoster];
 
-    // 4. Initialize Leaflet School Campus & Portfolio Map
-    function initMap() {
-        map = L.map('emergencyMap', {
-            center: [currentPos.lat, currentPos.lng],
-            zoom: 16,
-            zoomControl: true
-        });
-
-        streetTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap & EDU-CRAFT Smart School Map',
-            maxZoom: 20
-        }).addTo(map);
-
-        satelliteTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: '&copy; Esri World Imagery',
-            maxZoom: 19
-        });
-
-        markersLayer.addTo(map);
-        assetsMapLayer.addTo(map);
-
-        // User / Teacher Marker
-        const teacherIcon = L.divIcon({
-            className: 'teacher-gps-icon',
-            html: `<div style="background:#2563eb; color:#fff; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; border:3px solid #fff; box-shadow:0 4px 12px rgba(37,99,235,0.5);">👩‍🏫</div>`,
-            iconSize: [36, 36],
-            iconAnchor: [18, 18]
-        });
-
-        userMarker = L.marker([currentPos.lat, currentPos.lng], { icon: teacherIcon })
-            .addTo(map)
-            .bindPopup('<b>👩‍🏫 ตำแหน่งครูผู้สอน / อาคารเรียนหลัก</b><br>พร้อมรับส่งงานศิลปะและตรวจเช็คพัสดุ');
-
+    // 4. Initialize Smart QR Code Classroom & Attendance Hub (Replaces Map)
+    function initQrClassroomHub() {
+        updateQrCodeDisplay();
+        renderQrAttendanceTable();
         renderIncidents();
-        renderInventoryMapMarkers();
+
+        // Check if student opened URL via QR Code scan (?action=checkin or ?action=homework)
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('action') === 'homework') {
+            setTimeout(() => openCitizenReportModal(), 500);
+        } else if (params.get('action') === 'checkin') {
+            setTimeout(() => simulateStudentQrScan(), 500);
+        }
     }
 
-    // 5. GPS Tracking
-    function startGpsTracking() {
-        if ('geolocation' in navigator) {
-            navigator.geolocation.watchPosition(
-                (pos) => {
-                    currentPos = {
-                        lat: pos.coords.latitude,
-                        lng: pos.coords.longitude,
-                        accuracy: pos.coords.accuracy || 5
-                    };
-                    if (gpsCoordsText) {
-                        gpsCoordsText.textContent = `${currentPos.lat.toFixed(4)}°N, ${currentPos.lng.toFixed(4)}°E`;
-                    }
-                    if (userMarker) {
-                        userMarker.setLatLng([currentPos.lat, currentPos.lng]);
-                    }
-                },
-                () => {
-                    if (gpsCoordsText) {
-                        gpsCoordsText.textContent = `${currentPos.lat.toFixed(4)}°N, ${currentPos.lng.toFixed(4)}°E (พิกัดโรงเรียน)`;
-                    }
-                },
-                { enableHighAccuracy: true, maximumAge: 10000 }
-            );
+    function updateQrCodeDisplay() {
+        const classVal = document.getElementById('qrClassSelect')?.value || 'ม.1/1';
+        const topicVal = document.getElementById('qrSessionTopicInput')?.value || 'ปฏิบัติการทัศนศิลป์';
+        const qrImg = document.getElementById('qrCodeImage');
+        const qrClassTitle = document.getElementById('qrDisplayClassTitle');
+        const qrTopicTitle = document.getElementById('qrDisplayTopicTitle');
+        const qrPinText = document.getElementById('qrPinCodeText');
+        const qrModeBadge = document.getElementById('qrModeBadge');
+
+        if (qrClassTitle) qrClassTitle.textContent = `ห้อง ${classVal} • วิชาทัศนศิลป์`;
+        if (qrTopicTitle) qrTopicTitle.textContent = topicVal;
+        if (qrPinText) qrPinText.textContent = currentSessionPin;
+        if (gpsCoordsText) gpsCoordsText.textContent = `${currentSessionPin} (${classVal})`;
+
+        if (qrModeBadge) {
+            if (currentQrMode === 'attend') {
+                qrModeBadge.textContent = '📲 สแกน QR เช็คชื่อเข้าเรียนสด';
+                qrModeBadge.style.background = '#dbeafe';
+                qrModeBadge.style.color = '#1d4ed8';
+            } else {
+                qrModeBadge.textContent = '🎨 สแกน QR ส่งผลงานศิลปะ/การบ้าน';
+                qrModeBadge.style.background = '#fce7f3';
+                qrModeBadge.style.color = '#be185d';
+            }
+        }
+
+        const baseOrigin = window.location.origin.includes('localhost')
+            ? 'https://jangsos.onrender.com'
+            : window.location.origin;
+        const actionType = currentQrMode === 'attend' ? 'checkin' : 'homework';
+        const qrDataUrl = `${baseOrigin}/?action=${actionType}&pin=${encodeURIComponent(currentSessionPin)}&class=${encodeURIComponent(classVal)}`;
+
+        if (qrImg) {
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(qrDataUrl)}`;
+        }
+    }
+
+    function renderQrAttendanceTable() {
+        const tbody = document.getElementById('qrAttendanceTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        let presentCount = 0;
+        let submittedCount = 0;
+
+        qrAttendanceList.forEach((st, index) => {
+            if (st.status === 'มาเรียน' || st.status === 'มาสาย') presentCount++;
+            if (st.homeworkStatus && st.homeworkStatus.includes('ส่งงานแล้ว')) submittedCount++;
+
+            const statusBadge = st.status === 'มาเรียน'
+                ? `<span style="background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:12px; font-weight:700; font-size:11px;">✅ มาเรียน</span>`
+                : st.status === 'มาสาย'
+                ? `<span style="background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:12px; font-weight:700; font-size:11px;">⏰ มาสาย</span>`
+                : `<span style="background:#f1f5f9; color:#475569; padding:2px 8px; border-radius:12px; font-weight:700; font-size:11px;">📝 ${st.status}</span>`;
+
+            const hwColor = st.homeworkStatus.includes('ส่งงานแล้ว') ? '#be185d' : '#64748b';
+
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #e2e8f0';
+            tr.innerHTML = `
+                <td style="padding:8px 10px; font-family:monospace; font-weight:700; color:#1e40af;">${st.studentId}</td>
+                <td style="padding:8px 10px; font-weight:700; color:#0f172a;">${st.name} <span style="font-size:10px; color:#64748b;">(${st.classRoom})</span></td>
+                <td style="padding:8px 10px; font-family:monospace; color:#475569;">📲 ${st.scanTime}</td>
+                <td style="padding:8px 10px;">${statusBadge}</td>
+                <td style="padding:8px 10px; font-weight:700; color:${hwColor};">${st.homeworkStatus}</td>
+                <td style="padding:8px 10px; text-align:center;">
+                    <button type="button" class="btn-view-student-work" data-idx="${index}" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">
+                        🎨 ดูงาน/ให้คะแนน
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        const presentEl = document.getElementById('qrPresentSummary');
+        const submittedEl = document.getElementById('qrSubmittedSummary');
+        const tacAttendEl = document.getElementById('tacAttendanceCount');
+
+        if (presentEl) presentEl.textContent = `มาเรียน: ${presentCount} คน`;
+        if (submittedEl) submittedEl.textContent = `ส่งงานแล้ว: ${submittedCount} คน`;
+        if (tacAttendEl) tacAttendEl.textContent = `${presentCount} คน (100%)`;
+
+        tbody.querySelectorAll('.btn-view-student-work').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = Number(btn.dataset.idx);
+                const st = qrAttendanceList[idx];
+                const foundWork = activeSubmissions.find(s => s.id === st.submissionId) || activeSubmissions[0];
+                if (foundWork) {
+                    openStreamViewer(foundWork);
+                } else {
+                    openCitizenReportModal();
+                }
+            });
+        });
+    }
+
+    function simulateStudentQrScan() {
+        const sampleNames = [
+            'ด.ช. กิตติกวิน วาดศิลป์',
+            'ด.ญ. ณัฐณิชา สีน้ำ',
+            'ด.ช. ปัณณวิชญ์ เส้นสร้างสรรค์',
+            'ด.ญ. วรัญญา ทัศนศิลป์',
+            'นาย ธนภัทร ศิลปกรรม'
+        ];
+        const randomName = sampleNames[Math.floor(Math.random() * sampleNames.length)];
+        const randomId = String(69100 + qrAttendanceList.length + 1);
+        const classVal = document.getElementById('qrClassSelect')?.value || 'ม.1/1';
+        const nowTime = new Date().toLocaleTimeString('th-TH');
+
+        if (currentQrMode === 'homework') {
+            const nameInput = document.getElementById('reportNameInput');
+            const gradeInput = document.getElementById('reportGradeInput');
+            if (nameInput) nameInput.value = `${randomName} (รหัส ${randomId})`;
+            if (gradeInput) gradeInput.value = classVal;
+            openCitizenReportModal();
+            speakThaiText(`นักเรียน ${randomName} สแกนคิวอาร์โค้ดเพื่อส่งผลงานศิลปะค่ะ`);
+        } else {
+            qrAttendanceList.unshift({
+                studentId: randomId,
+                name: randomName,
+                classRoom: classVal,
+                scanTime: nowTime,
+                status: 'มาเรียน',
+                homeworkStatus: 'ส่งงานแล้ว (ผ่าน QR)',
+                submissionId: 'art-101'
+            });
+            renderQrAttendanceTable();
+            speakThaiText(`เช็คชื่อสำเร็จ ${randomName} รหัส ${randomId} เข้าเรียนเรียบร้อยแล้วค่ะ`);
         }
     }
 
@@ -273,7 +407,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderIncidents() {
         if (!incidentsList) return;
         incidentsList.innerHTML = '';
-        markersLayer.clearLayers();
 
         const filtered = activeSubmissions.filter(item => {
             if (currentFilter === 'all') return true;
@@ -308,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h4 style="font-size:13px; font-weight:800; color:#0f172a; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</h4>
                         <p style="font-size:11px; color:#475569; margin-bottom:4px;">👤 ${item.studentName || item.reporter || 'นักเรียน'} • <b>${item.grade || 'ม.1'}</b></p>
                         <div style="font-size:10px; color:#64748b; display:flex; justify-content:space-between;">
-                            <span>📍 ${item.locationName || item.address || 'อาคารศิลปะ'}</span>
+                            <span>📲 ส่งผ่าน QR: ${item.locationName || item.address || 'ห้องเรียนศิลปะ'}</span>
                             <span style="color:#2563eb; font-weight:700;">คลิกดูรูป/ให้คะแนน &rarr;</span>
                         </div>
                     </div>
@@ -316,25 +449,10 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             card.addEventListener('click', () => {
-                map.flyTo([item.lat, item.lng], 17, { duration: 0.8 });
                 openStreamViewer(item);
             });
 
             incidentsList.appendChild(card);
-
-            // Add Marker to Map if enabled
-            if (isArtPinsVisible) {
-                const pinIcon = L.divIcon({
-                    className: 'art-pin-marker',
-                    html: `<div style="background:${meta.color}; color:#fff; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; border:2px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,0.25);">${meta.emoji}</div>`,
-                    iconSize: [34, 34],
-                    iconAnchor: [17, 17]
-                });
-
-                const marker = L.marker([item.lat, item.lng], { icon: pinIcon });
-                marker.on('click', () => openStreamViewer(item));
-                markersLayer.addLayer(marker);
-            }
         });
     }
 
@@ -434,32 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderInventoryMapMarkers() {
-        if (!assetsMapLayer) return;
-        assetsMapLayer.clearLayers();
-        if (!isAssetPinsVisible) return;
-
-        schoolAssets.forEach(asset => {
-            const lat = asset.lat || (currentPos.lat + (Math.random() - 0.5) * 0.003);
-            const lng = asset.lng || (currentPos.lng + (Math.random() - 0.5) * 0.003);
-
-            const assetIcon = L.divIcon({
-                className: 'school-asset-marker',
-                html: `<div style="background:#ffffff; color:#b45309; border:2px solid #d97706; border-radius:8px; padding:2px 6px; font-size:11px; font-weight:800; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,0.18);">📦 ${asset.availableQty}/${asset.totalQty}</div>`,
-                iconSize: [68, 24],
-                iconAnchor: [34, 12]
-            });
-
-            const m = L.marker([lat, lng], { icon: assetIcon });
-            m.bindPopup(`
-                <div style="font-family:'Sarabun',sans-serif; min-width:210px;">
-                    <div style="font-size:11px; font-weight:700; color:#d97706;">📦 ทะเบียนคุมพัสดุ: ${asset.code}</div>
-                    <div style="font-size:13px; font-weight:800; color:#0f172a; margin:4px 0;">${asset.name}</div>
-                    <div style="font-size:12px; color:#334155;">📍 ห้องเก็บ: ${asset.room}</div>
-                    <div style="font-size:12px; color:#059669; font-weight:700; margin-top:4px;">คงเหลือพร้อมใช้: ${asset.availableQty} / ${asset.totalQty} ${asset.unit || 'ชิ้น'}</div>
-                </div>
-            `);
-            assetsMapLayer.addLayer(m);
-        });
+        // Map removed; inventory is managed directly via the School Inventory & Asset Table
     }
 
     // Add New Asset Form Handler
@@ -1030,16 +1123,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const coords = selectedPinCoords || currentPos;
 
         const newEntry = {
-            id: 'pin-' + Date.now(),
+            id: 'qr-work-' + Date.now(),
             title,
             studentName,
             grade,
             category,
             status: 'pending',
             score: category === 'asset-check' ? 'ตรวจเช็คพัสดุแล้ว' : 'รอครูตรวจให้คะแนน',
-            lat: coords.lat,
-            lng: coords.lng,
-            locationName: `พิกัดโรงเรียน (${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)})`,
+            lat: currentPos.lat,
+            lng: currentPos.lng,
+            locationName: `ส่งผ่าน QR รหัส ${currentSessionPin} (${grade})`,
             time: new Date().toISOString(),
             description,
             mediaUrl: currentReportMedia ? currentReportMedia.url : 'assets/art_elements.jpg',
@@ -1053,7 +1146,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         activeSubmissions.unshift(newEntry);
+        qrAttendanceList.unshift({
+            studentId: String(69100 + qrAttendanceList.length + 1),
+            name: studentName,
+            classRoom: grade,
+            scanTime: new Date().toLocaleTimeString('th-TH'),
+            status: 'มาเรียน',
+            homeworkStatus: 'ส่งงานแล้ว (รอตรวจ)',
+            submissionId: newEntry.id
+        });
         renderIncidents();
+        renderQrAttendanceTable();
         citizenReportModal.classList.add('hidden');
         citizenReportForm.reset();
         mediaPreviewWrapper.style.display = 'none';
@@ -1062,7 +1165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (startLive) {
             startCameraBroadcast();
         } else {
-            speakThaiText(`บันทึกปักหมุด ${title} บนแผนที่เรียบร้อยแล้วค่ะ`);
+            speakThaiText(`บันทึกการส่งงาน ${title} ของ ${studentName} ผ่านระบบ QR Code เรียบร้อยแล้วค่ะ`);
         }
     }
 
@@ -1077,15 +1180,21 @@ document.addEventListener('DOMContentLoaded', () => {
         submitPinEntry(true);
     });
 
-    // 13. Export CSV Reports (ปพ.5 คะแนนผลงานศิลปะ + ทะเบียนคุมพัสดุโรงเรียน)
+    // 13. Export CSV Reports (ปพ.5 เช็คชื่อ QR Code + คะแนนผลงานศิลปะ + ทะเบียนคุมพัสดุโรงเรียน)
     function exportSchoolCsvReport() {
-        let csv = '\uFEFF=== ส่วนที่ 1: รายงานคะแนนผลงานศิลปะและการส่งงานนักเรียน (ปพ.5) ===\n';
-        csv += 'รหัสรายการ,ชื่อผลงาน/กิจกรรม,ชื่อนักเรียน/ผู้รับผิดชอบ,ระดับชั้น,หมวดหมู่,ผลการประเมิน/คะแนน,พิกัดละติจูด,พิกัดลองจิจูด\n';
-        activeSubmissions.forEach(s => {
-            csv += `"${s.id}","${s.title}","${s.studentName || ''}","${s.grade || ''}","${s.category}","${s.score || ''}",${s.lat},${s.lng}\n`;
+        let csv = '\uFEFF=== ส่วนที่ 1: รายงานการเช็คชื่อเข้าเรียนและการส่งงานผ่าน QR Code (ปพ.5) ===\n';
+        csv += 'รหัสประจำตัว,ชื่อ-นามสกุลนักเรียน,ห้องเรียน,เวลาสแกน QR,สถานะการมาเรียน,สถานะการส่งงานศิลปะ\n';
+        qrAttendanceList.forEach(st => {
+            csv += `"${st.studentId}","${st.name}","${st.classRoom}","${st.scanTime}","${st.status}","${st.homeworkStatus}"\n`;
         });
 
-        csv += '\n=== ส่วนที่ 2: ทะเบียนคุมทรัพย์สิน พัสดุ และครุภัณฑ์โรงเรียน (หมวดศิลปะและอาคารเรียน) ===\n';
+        csv += '\n=== ส่วนที่ 2: รายงานคะแนนผลงานศิลปะและการส่งงานนักเรียน ===\n';
+        csv += 'รหัสรายการ,ชื่อผลงาน/กิจกรรม,ชื่อนักเรียน/ผู้รับผิดชอบ,ระดับชั้น,หมวดหมู่,ผลการประเมิน/คะแนน\n';
+        activeSubmissions.forEach(s => {
+            csv += `"${s.id}","${s.title}","${s.studentName || ''}","${s.grade || ''}","${s.category}","${s.score || ''}"\n`;
+        });
+
+        csv += '\n=== ส่วนที่ 3: ทะเบียนคุมทรัพย์สิน พัสดุ และครุภัณฑ์โรงเรียน (หมวดศิลปะและอาคารเรียน) ===\n';
         csv += 'รหัสพัสดุ,ชื่อรายการวัสดุ/ครุภัณฑ์,หมวดหมู่,สถานที่จัดเก็บ,จำนวนทั้งหมด,คงเหลือพร้อมใช้,จำนวนถูกยืม,ราคาต่อหน่วย(บาท),มูลค่ารวม(บาท),สถานะล่าสุด\n';
         schoolAssets.forEach(a => {
             const totalVal = Number(a.totalQty) * Number(a.pricePerUnit);
@@ -1096,7 +1205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `รายงานผลการเรียนศิลปะ_และทะเบียนพัสดุโรงเรียน_${new Date().toISOString().slice(0, 10)}.csv`;
+        link.download = `รายงานเช็คชื่อQR_ผลการเรียนศิลปะ_และพัสดุโรงเรียน_${new Date().toISOString().slice(0, 10)}.csv`;
         link.click();
     }
 
@@ -1491,50 +1600,82 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('btnQuickCheckAttendance')?.addEventListener('click', () => {
-        const countEl = document.getElementById('tacAttendanceCount');
-        if (countEl) countEl.textContent = '100%';
-        speakThaiText('เช็คชื่อนักเรียนชั้นมัธยมศึกษาเข้าเรียนวิชาศิลปะครบ 100 เปอร์เซ็นต์เรียบร้อยแล้วค่ะ');
-        alert('✅ เช็คชื่อนักเรียนเข้าเรียนวิชาศิลปะ และพร้อมเบิกอุปกรณ์การเรียนครบ 100% เรียบร้อยแล้ว!');
+        simulateStudentQrScan();
     });
 
-    // Map Floating Controls
-    document.getElementById('btnCenterUser')?.addEventListener('click', () => {
-        map.flyTo([currentPos.lat, currentPos.lng], 17, { duration: 0.8 });
-    });
+    // QR Code Hub Event Listeners
+    const btnModeQrAttend = document.getElementById('btnModeQrAttend');
+    const btnModeQrHomework = document.getElementById('btnModeQrHomework');
 
-    const btnToggleArtPins = document.getElementById('btnToggleArtPins');
-    if (btnToggleArtPins) {
-        btnToggleArtPins.addEventListener('click', () => {
-            isArtPinsVisible = !isArtPinsVisible;
-            btnToggleArtPins.textContent = isArtPinsVisible ? '🎨 หมุดผลงานศิลปะ (เปิด)' : '🎨 หมุดผลงานศิลปะ (ปิด)';
-            btnToggleArtPins.classList.toggle('active-layer', isArtPinsVisible);
-            renderIncidents();
+    if (btnModeQrAttend && btnModeQrHomework) {
+        btnModeQrAttend.addEventListener('click', () => {
+            currentQrMode = 'attend';
+            btnModeQrAttend.style.background = '#2563eb';
+            btnModeQrAttend.style.color = '#fff';
+            btnModeQrHomework.style.background = 'transparent';
+            btnModeQrHomework.style.color = '#db2777';
+            updateQrCodeDisplay();
+        });
+
+        btnModeQrHomework.addEventListener('click', () => {
+            currentQrMode = 'homework';
+            btnModeQrHomework.style.background = '#db2777';
+            btnModeQrHomework.style.color = '#fff';
+            btnModeQrAttend.style.background = 'transparent';
+            btnModeQrAttend.style.color = '#2563eb';
+            btnModeQrAttend.style.border = '1px solid #2563eb';
+            updateQrCodeDisplay();
         });
     }
 
-    const btnToggleAssetPins = document.getElementById('btnToggleAssetPins');
-    if (btnToggleAssetPins) {
-        btnToggleAssetPins.addEventListener('click', () => {
-            isAssetPinsVisible = !isAssetPinsVisible;
-            btnToggleAssetPins.textContent = isAssetPinsVisible ? '📦 จุดตรวจพัสดุ/อาคารเรียน (เปิด)' : '📦 จุดตรวจพัสดุ/อาคารเรียน (ปิด)';
-            btnToggleAssetPins.classList.toggle('active-layer', isAssetPinsVisible);
-            renderInventoryMapMarkers();
-        });
-    }
+    document.getElementById('qrClassSelect')?.addEventListener('change', updateQrCodeDisplay);
+    document.getElementById('qrSessionTopicInput')?.addEventListener('input', updateQrCodeDisplay);
 
-    const btnToggleTraffic = document.getElementById('btnToggleTraffic');
-    if (btnToggleTraffic) {
-        btnToggleTraffic.addEventListener('click', () => {
-            isSatelliteView = !isSatelliteView;
-            if (isSatelliteView) {
-                map.removeLayer(streetTileLayer);
-                satelliteTileLayer.addTo(map);
-                btnToggleTraffic.classList.add('active-layer');
-            } else {
-                map.removeLayer(satelliteTileLayer);
-                streetTileLayer.addTo(map);
-                btnToggleTraffic.classList.remove('active-layer');
-            }
+    document.getElementById('btnGenerateNewQr')?.addEventListener('click', () => {
+        const randNum = Math.floor(1000 + Math.random() * 9000);
+        currentSessionPin = `ART-${randNum}`;
+        updateQrCodeDisplay();
+        speakThaiText(`สร้างรหัส QR Code ใหม่ประจำคาบเรียน รหัส ${currentSessionPin} เรียบร้อยแล้วค่ะ`);
+    });
+
+    document.getElementById('btnSimulateStudentScan')?.addEventListener('click', () => {
+        simulateStudentQrScan();
+    });
+
+    document.getElementById('btnOpenDirectSubmitModal')?.addEventListener('click', () => {
+        openCitizenReportModal();
+    });
+
+    document.getElementById('btnFullscreenQr')?.addEventListener('click', () => {
+        const qrImg = document.getElementById('qrCodeImage');
+        if (qrImg && qrImg.requestFullscreen) {
+            qrImg.requestFullscreen().catch(() => {});
+        } else {
+            window.open(qrImg?.src, '_blank');
+        }
+    });
+
+    const manualCheckinForm = document.getElementById('manualCheckinForm');
+    if (manualCheckinForm) {
+        manualCheckinForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const stdId = document.getElementById('stdIdInput')?.value.trim() || '69199';
+            const stdName = document.getElementById('stdNameInput')?.value.trim() || 'นักเรียน ม.1';
+            const stdStatus = document.getElementById('stdStatusInput')?.value || 'มาเรียน';
+            const classVal = document.getElementById('qrClassSelect')?.value || 'ม.1/1';
+
+            qrAttendanceList.unshift({
+                studentId: stdId,
+                name: stdName,
+                classRoom: classVal,
+                scanTime: new Date().toLocaleTimeString('th-TH'),
+                status: stdStatus,
+                homeworkStatus: 'ส่งงานแล้ว (รอตรวจ)',
+                submissionId: 'art-101'
+            });
+            renderQrAttendanceTable();
+            manualCheckinForm.reset();
+            speakThaiText(`บันทึกเช็คชื่อ ${stdName} สถานะ ${stdStatus} เรียบร้อยแล้วค่ะ`);
         });
     }
 
@@ -1556,7 +1697,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 17. WebSocket Real-Time Sync + Map Pin Picker
+    // 17. WebSocket Real-Time Sync
     function setupWebSocket() {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         ws = new WebSocket(`${protocol}//${window.location.host}`);
@@ -1572,7 +1713,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.assets && data.assets.length > 0) {
                         schoolAssets = data.assets;
                         renderInventoryTable();
-                        renderInventoryMapMarkers();
                     }
                 } else if (data.type === 'NEW_ALERT' && data.alert) {
                     const exists = activeSubmissions.some(a => a.id === data.alert.id);
@@ -1585,37 +1725,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (idx >= 0) schoolAssets[idx] = data.asset;
                     else schoolAssets.unshift(data.asset);
                     renderInventoryTable();
-                    renderInventoryMapMarkers();
                 }
             } catch (e) {}
         };
     }
 
     // Init Everything
-    initMap();
-    startGpsTracking();
+    initQrClassroomHub();
     renderInventoryTable();
     setupWebSocket();
-
-    // Map Click for Pin Picker
-    if (map) {
-        map.on('click', (e) => {
-            if (isPickingPinOnMap) {
-                selectedPinCoords = { lat: e.latlng.lat, lng: e.latlng.lng };
-                isPickingPinOnMap = false;
-
-                if (tempPinMarker) map.removeLayer(tempPinMarker);
-                const tempIcon = L.divIcon({
-                    className: 'user-pin-picker',
-                    html: `<div style="background:#db2777; color:#fff; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; font-size:18px; border:2px solid #fff; box-shadow:0 0 12px rgba(219,39,119,0.6);">📍</div>`,
-                    iconSize: [32, 32],
-                    iconAnchor: [16, 16]
-                });
-                tempPinMarker = L.marker([selectedPinCoords.lat, selectedPinCoords.lng], { icon: tempIcon }).addTo(map);
-                openCitizenReportModal();
-            }
-        });
-    }
 
     // PWA Service Worker
     if ('serviceWorker' in navigator) {

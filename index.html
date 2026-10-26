@@ -13,13 +13,12 @@
     <meta name="apple-mobile-web-app-title" content="EduCraftAI">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135755.png">
 
-    <!-- Google Fonts & Leaflet Maps CSS -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <link rel="stylesheet" href="styles.css?v=19">
+    <link rel="stylesheet" href="styles.css?v=21">
 </head>
 <body>
     <div class="guardian-app">
@@ -38,10 +37,10 @@
 
             <div class="header-center">
                 <div class="gps-status-badge card-glass" id="userGpsStatus">
-                    <span class="icon-gps">📍</span>
+                    <span class="icon-gps">📲</span>
                     <div class="gps-text">
-                        <span class="label">พิกัดโรงเรียน/จุดตรวจงาน:</span>
-                        <span id="gpsCoordsText" class="val">กำลังระบุพิกัด GPS...</span>
+                        <span class="label">รหัสห้องเรียน QR Code สด:</span>
+                        <span id="gpsCoordsText" class="val">ART-2569 (พร้อมสแกน)</span>
                     </div>
                 </div>
 
@@ -50,7 +49,7 @@
                     <span class="icon-weather" id="hdrWeatherIcon">🏫</span>
                     <div class="gps-text">
                         <span class="label">สถานะภาคเรียน & อาคารศิลปะ:</span>
-                        <span id="hdrWeatherText" class="val">ภาคเรียนที่ 2 • ห้องศิลปะพร้อมใช้งาน</span>
+                        <span id="hdrWeatherText" class="val">ภาคเรียนที่ 2 • เช็คชื่อ & ส่งงานผ่าน QR</span>
                     </div>
                 </div>
             </div>
@@ -132,10 +131,10 @@
                         </div>
                     </button>
 
-                    <!-- Action Buttons: Pin Student Art / Procurement Law -->
+                    <!-- Action Buttons: QR Submit Student Art / Procurement Law -->
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top: 10px;">
                         <button id="btnReportIncident" class="btn btn-primary" style="padding: 10px 8px; background: linear-gradient(135deg, #db2777, #9333ea); border: none; font-weight: 700; font-size: 12px; border-radius: 10px; color:#fff; cursor:pointer;">
-                            📌 ปักหมุดส่งงานศิลปะ / พัสดุ
+                            📲 ส่งงานศิลปะ / แจ้งตรวจพัสดุ
                         </button>
                         <button id="btnQuickOpenProcurement" class="btn btn-primary" style="padding: 10px 8px; background: linear-gradient(135deg, #059669, #0d9488); border: none; font-weight: 700; font-size: 12px; border-radius: 10px; color:#fff; cursor:pointer;">
                             ⚖️ จัดซื้อจัดจ้าง & กฎหมายพัสดุ
@@ -143,7 +142,7 @@
                     </div>
                     <div style="margin-top:6px;">
                         <button id="btnQuickCheckAttendance" class="btn btn-secondary" style="width:100%; padding: 8px; border-color: #2563eb; color: #2563eb; font-weight: 700; font-size: 12px; border-radius: 8px; cursor:pointer;">
-                            📋 เช็คชื่อนักเรียนเข้าเรียน (ม.1 - ม.6)
+                            📲 เปิดสแกน QR เช็คชื่อนักเรียนเข้าเรียน (ม.1 - ม.6)
                         </button>
                     </div>
                 </div>
@@ -191,27 +190,134 @@
                 </div>
             </aside>
 
-            <!-- Right Map & Interactive Teaching Canvas -->
-            <section class="map-container-section card-glass" style="position:relative; padding:0; overflow:hidden; display:flex; flex-direction:column;">
-                <div id="emergencyMap" class="emergency-map" style="flex:1; width:100%; height:100%;"></div>
+            <!-- Right Panel: Smart QR Code Attendance & Homework Submission Hub (Replaced Map) -->
+            <section class="map-container-section card-glass" style="position:relative; padding:18px; overflow-y:auto; display:flex; flex-direction:column; gap:16px; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
+                <!-- Header Bar of QR Hub -->
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:28px;">📲</span>
+                        <div>
+                            <h2 style="font-size:18px; font-weight:800; color:#0f172a; margin:0;">ระบบเช็คชื่อเข้าเรียน & ส่งงานศิลปะผ่าน QR Code</h2>
+                            <p style="font-size:12px; color:#64748b; margin:0;">นักเรียนใช้มือถือสแกน QR Code บนหน้าจอเพื่อเช็คชื่อเข้าเรียน หรืออัปโหลดภาพถ่าย/คลิปผลงานส่งครูได้ทันที</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button id="btnModeQrAttend" class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;">
+                            📋 โหมด QR เช็คชื่อเข้าเรียน
+                        </button>
+                        <button id="btnModeQrHomework" class="btn btn-secondary btn-sm" style="border-color:#db2777; color:#db2777; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;">
+                            🎨 โหมด QR ส่งงานศิลปะ/การบ้าน
+                        </button>
+                        <button id="btnOpenWhiteboardModal" class="btn btn-secondary btn-sm" style="background:linear-gradient(135deg,#db2777,#7c3aed); color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;">
+                            🖌️ กระดานไวท์บอร์ดสาธิต
+                        </button>
+                    </div>
+                </div>
 
-                <!-- Map Floating Controls -->
-                <div class="map-floating-controls">
-                    <button id="btnCenterUser" class="map-btn" title="ไปยังพิกัดโรงเรียน/ตำแหน่งของคุณ">
-                        🎯 พิกัดโรงเรียน
+                <!-- Classroom Selector & Active Session Configuration -->
+                <div style="display:grid; grid-template-columns: 1fr 1.5fr auto; gap:10px; background:#f1f5f9; padding:12px; border-radius:12px; border:1px solid #cbd5e1; align-items:end;">
+                    <div>
+                        <label style="font-size:11px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">🏫 เลือกห้องเรียน / ระดับชั้น:</label>
+                        <select id="qrClassSelect" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13px; font-weight:700; color:#0f172a; background:#fff;">
+                            <option value="ม.1/1">ชั้นมัธยมศึกษาปีที่ 1/1 (ทัศนศิลป์พื้นฐาน)</option>
+                            <option value="ม.1/2">ชั้นมัธยมศึกษาปีที่ 1/2 (ทัศนธาตุทั้ง 7)</option>
+                            <option value="ม.2/1">ชั้นมัธยมศึกษาปีที่ 2/1 (การออกแบบและสี)</option>
+                            <option value="ม.3/1">ชั้นมัธยมศึกษาปีที่ 3/1 (ศิลปะไทยและภูมิปัญญา)</option>
+                            <option value="ม.4/1">ชั้นมัธยมศึกษาปีที่ 4/1 (องค์ประกอบศิลป์และเส้น)</option>
+                            <option value="ม.5/1">ชั้นมัธยมศึกษาปีที่ 5/1 (จิตรกรรมสีน้ำ-อะคริลิก)</option>
+                            <option value="ม.6/1">ชั้นมัธยมศึกษาปีที่ 6/1 (แฟ้มสะสมงานศิลปะ Portfolio)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:11px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">📝 หัวข้อคาบเรียน / ชิ้นงานที่เปิดรับส่ง:</label>
+                        <input type="text" id="qrSessionTopicInput" value="คาบเรียนที่ 1: ปฏิบัติการวาดเส้นและระบายสีทัศนธาตุทั้ง 7" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13px; background:#fff;">
+                    </div>
+                    <button type="button" id="btnGenerateNewQr" class="btn btn-primary" style="background:linear-gradient(135deg,#2563eb,#7c3aed); color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap;">
+                        🔄 สร้าง QR Code ใหม่
                     </button>
-                    <button id="btnToggleArtPins" class="map-btn active-layer" title="แสดงหมุดผลงานศิลปะนักเรียน">
-                        🎨 หมุดผลงานศิลปะ (เปิด)
-                    </button>
-                    <button id="btnToggleAssetPins" class="map-btn active-layer" title="แสดงจุดเก็บครุภัณฑ์และพัสดุโรงเรียน">
-                        📦 จุดตรวจพัสดุ/อาคารเรียน (เปิด)
-                    </button>
-                    <button id="btnOpenWhiteboardModal" class="map-btn" style="background:linear-gradient(135deg,#db2777,#7c3aed); color:#fff; border:none;">
-                        🖌️ กระดานไวท์บอร์ดสาธิตศิลปะ
-                    </button>
-                    <button id="btnToggleTraffic" class="map-btn" title="สลับแผนที่ดาวเทียม/แผนผังโรงเรียน">
-                        🗺️ แผนที่ดาวเทียมโรงเรียน
-                    </button>
+                </div>
+
+                <!-- Main Split Grid: Left = QR Code Display Card, Right = Student Roster & Check-in Table -->
+                <div style="display:grid; grid-template-columns: 300px 1fr; gap:16px; flex:1; min-height:380px;">
+                    <!-- Left Card: QR Code Generator & Student Scan Simulator -->
+                    <div style="background:#ffffff; border:2px solid #bfdbfe; border-radius:14px; padding:16px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; box-shadow:0 4px 14px rgba(37,99,235,0.08);">
+                        <div>
+                            <span id="qrModeBadge" style="background:#dbeafe; color:#1d4ed8; font-size:11px; font-weight:800; padding:4px 10px; border-radius:20px; display:inline-block; margin-bottom:6px;">
+                                📲 สแกนเช็คชื่อเข้าเรียนสด
+                            </span>
+                            <h3 id="qrDisplayClassTitle" style="font-size:15px; font-weight:800; color:#0f172a; margin:0 0 4px 0;">ห้อง ม.1/1 • วิชาทัศนศิลป์</h3>
+                            <p id="qrDisplayTopicTitle" style="font-size:11px; color:#64748b; margin:0 0 10px 0;">คาบเรียนที่ 1: ปฏิบัติการวาดเส้นและระบายสี</p>
+                        </div>
+
+                        <!-- Dynamic QR Code Image Box -->
+                        <div style="background:#ffffff; padding:12px; border:3px solid #2563eb; border-radius:14px; position:relative; box-shadow:0 4px 12px rgba(37,99,235,0.12);">
+                            <img id="qrCodeImage" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://jangsos.onrender.com/?action=checkin%26class=M1-1" alt="QR Code สำหรับนักเรียนสแกน" style="width:190px; height:190px; display:block; margin:0 auto;" />
+                            <div style="font-family:monospace; font-size:11px; font-weight:800; color:#1e40af; margin-top:6px;">
+                                รหัสคาบเรียน: <span id="qrPinCodeText">ART-2569</span>
+                            </div>
+                        </div>
+
+                        <div style="width:100%; display:flex; flex-direction:column; gap:6px; margin-top:10px;">
+                            <button type="button" id="btnSimulateStudentScan" class="btn btn-primary" style="width:100%; background:#059669; color:#fff; border:none; padding:9px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">
+                                📱 จำลองนักเรียนสแกน QR เช็คชื่อ/ส่งงาน
+                            </button>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                                <button type="button" id="btnFullscreenQr" class="btn btn-secondary btn-sm" style="font-size:11px; border-color:#2563eb; color:#2563eb;">
+                                    🔍 ขยายเต็มจอทีวี
+                                </button>
+                                <button type="button" id="btnOpenDirectSubmitModal" class="btn btn-secondary btn-sm" style="font-size:11px; border-color:#db2777; color:#db2777;">
+                                    📤 ฟอร์มส่งงาน
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Card: Live Student Attendance & Homework Submission Roster -->
+                    <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:14px; padding:14px; display:flex; flex-direction:column; overflow:hidden;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                            <div>
+                                <h3 style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">👨‍🎓 รายชื่อนักเรียนที่สแกน QR เช็คชื่อและส่งงานแล้ว</h3>
+                                <span style="font-size:11px; color:#64748b;">อัปเดตสถานะการมาเรียนและสถานะการส่งชิ้นงานศิลปะแบบเรียลไทม์</span>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <span id="qrPresentSummary" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:800;">มาเรียน: 8 คน</span>
+                                <span id="qrSubmittedSummary" style="background:#fdf2f8; color:#be185d; border:1px solid #fbcfe8; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:800;">ส่งงานแล้ว: 6 คน</span>
+                            </div>
+                        </div>
+
+                        <!-- Quick Manual Student Check-in Bar -->
+                        <form id="manualCheckinForm" style="display:grid; grid-template-columns: 0.8fr 1.6fr 1fr auto; gap:6px; margin-bottom:10px; background:#f8fafc; padding:8px; border-radius:8px; border:1px solid #e2e8f0;">
+                            <input type="text" id="stdIdInput" placeholder="เลขประจำตัว (เช่น 69109)" required style="padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                            <input type="text" id="stdNameInput" placeholder="ชื่อ-นามสกุล นักเรียน" required style="padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                            <select id="stdStatusInput" style="padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                                <option value="มาเรียน">✅ มาเรียนปกติ</option>
+                                <option value="มาสาย">⏰ มาสาย</option>
+                                <option value="ลาป่วย/ลากิจ">📝 ลาป่วย/ลากิจ</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer;">
+                                + เช็คชื่อ
+                            </button>
+                        </form>
+
+                        <!-- Student Attendance & Homework Table -->
+                        <div style="flex:1; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px;">
+                            <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left;">
+                                <thead style="background:#f1f5f9; color:#334155; position:sticky; top:0;">
+                                    <tr>
+                                        <th style="padding:8px 10px;">เลขที่ / รหัส</th>
+                                        <th style="padding:8px 10px;">ชื่อ-นามสกุล นักเรียน</th>
+                                        <th style="padding:8px 10px;">เวลาสแกน QR</th>
+                                        <th style="padding:8px 10px;">สถานะเข้าเรียน</th>
+                                        <th style="padding:8px 10px;">การส่งงานศิลปะ</th>
+                                        <th style="padding:8px 10px; text-align:center;">จัดการ / ดูงาน</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="qrAttendanceTableBody">
+                                    <!-- Populated dynamically by app.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -564,21 +670,21 @@
         </div>
 
         <!-- ==============================================================
-             MODAL 7: PIN ARTWORK / SUBMIT HOMEWORK / ASSET CHECK FORM
+             MODAL 7: QR HOMEWORK SUBMISSION / ASSET CHECK FORM
              ============================================================== -->
         <div id="citizenReportModal" class="modal-overlay hidden">
             <div class="modal-content report-modal card-glass" style="max-width: 600px;">
                 <div class="studio-header">
                     <div class="live-indicator">
-                        <span style="font-size:22px;">📌</span>
-                        <h2>ปักหมุดส่งผลงานศิลปะ / รายงานจุดตรวจพัสดุโรงเรียน</h2>
+                        <span style="font-size:22px;">📲</span>
+                        <h2>ส่งผลงานศิลปะ / รายงานการตรวจพัสดุผ่านระบบ QR Code</h2>
                     </div>
                     <button id="btnCloseCitizenReport" class="btn-close">&times;</button>
                 </div>
 
                 <form id="citizenReportForm" class="citizen-form">
                     <div class="form-group">
-                        <label>เลือกหมวดหมู่การปักหมุด:</label>
+                        <label>เลือกประเภทการส่งข้อมูล:</label>
                         <div class="report-cat-grid">
                             <label class="cat-option">
                                 <input type="radio" name="reportCat" value="art-work" checked>
@@ -586,7 +692,7 @@
                             </label>
                             <label class="cat-option">
                                 <input type="radio" name="reportCat" value="field-project">
-                                <span class="cat-box">🌳 ศิลปะภาคสนาม</span>
+                                <span class="cat-box">🌳 โครงงานศิลปะ</span>
                             </label>
                             <label class="cat-option">
                                 <input type="radio" name="reportCat" value="asset-check">
@@ -597,18 +703,19 @@
 
                     <div class="form-group" style="display:grid; grid-template-columns: 2fr 1fr; gap:8px;">
                         <div>
-                            <label>👤 ชื่อนักเรียน / ครูผู้รับผิดชอบพัสดุ:</label>
-                            <input type="text" id="reportNameInput" placeholder="เช่น ด.ช. ธนดล ม.2/1 หรือ ครูกิตติพงศ์" class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
+                            <label>👤 ชื่อนักเรียน / รหัสประจำตัว:</label>
+                            <input type="text" id="reportNameInput" placeholder="เช่น ด.ช. ธนดล (รหัส 69105)" class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
                         </div>
                         <div>
                             <label>🎓 ระดับชั้น / หมวด:</label>
                             <select id="reportGradeInput" class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
-                                <option value="ม.1">ชั้น ม.1</option>
-                                <option value="ม.2">ชั้น ม.2</option>
-                                <option value="ม.3">ชั้น ม.3</option>
-                                <option value="ม.4">ชั้น ม.4</option>
-                                <option value="ม.5">ชั้น ม.5</option>
-                                <option value="ม.6">ชั้น ม.6</option>
+                                <option value="ม.1/1">ชั้น ม.1/1</option>
+                                <option value="ม.1/2">ชั้น ม.1/2</option>
+                                <option value="ม.2/1">ชั้น ม.2/1</option>
+                                <option value="ม.3/1">ชั้น ม.3/1</option>
+                                <option value="ม.4/1">ชั้น ม.4/1</option>
+                                <option value="ม.5/1">ชั้น ม.5/1</option>
+                                <option value="ม.6/1">ชั้น ม.6/1</option>
                                 <option value="งานพัสดุ">งานพัสดุโรงเรียน</option>
                             </select>
                         </div>
@@ -638,21 +745,16 @@
                     </div>
 
                     <div class="form-group">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <label style="margin-bottom:0;">📍 พิกัดอาคารเรียน / จุดสร้างสรรค์ผลงาน:</label>
-                            <button type="button" id="btnPickMapPin" class="btn btn-secondary btn-sm" style="border-color:#2563eb; color:#2563eb; font-size:11px;">
-                                🎯 คลิกเลือกจุดบนแผนผังโรงเรียน
-                            </button>
-                        </div>
+                        <label>📲 รหัสคาบเรียน QR Code อ้างอิง:</label>
                         <div class="gps-location-preview">
                             <span class="icon">🏫</span>
-                            <span id="reportGpsText" class="gps-val">กำลังดึงพิกัด GPS ปัจจุบัน...</span>
+                            <span id="reportGpsText" class="gps-val">รหัสคาบเรียน: ART-2569 (ยืนยันการส่งงานผ่าน QR Code)</span>
                         </div>
                     </div>
 
                     <div class="action-buttons-group">
                         <button type="submit" id="btnSubmitReportOnly" class="btn btn-primary flex-1" style="background:linear-gradient(135deg, #2563eb, #7c3aed); color:#fff; border:none; padding:10px; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer;">
-                            📌 บันทึกปักหมุดส่งงาน / พัสดุ
+                            📲 ยืนยันการส่งงาน / บันทึกเช็คชื่อทันที
                         </button>
                         <button type="button" id="btnSubmitAndLive" class="btn btn-danger btn-pulse flex-1" style="font-size:13px; padding:10px; border-radius:8px; cursor:pointer;">
                             🎥 🔴 ส่งงาน + เริ่มไลฟ์สดนำเสนอ
@@ -929,8 +1031,6 @@
         </div>
     </div>
 
-    <!-- Leaflet JS Library -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="app.js?v=20"></script>
+    <script src="app.js?v=21"></script>
 </body>
 </html>
