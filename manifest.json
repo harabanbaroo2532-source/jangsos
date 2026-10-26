@@ -1,21 +1,21 @@
 {
-  "name": "GUARDIAN LIVE SOS - แอปเตือนภัยและแชร์ไลฟ์สดระบุพิกัด",
-  "short_name": "GuardianLive",
-  "description": "ระบบเตือนภัยและแชร์ไลฟ์สดระบุพิกัดฉุกเฉินเรียลไทม์ ฟรีทุกอุปกรณ์",
+  "name": "EDU-CRAFT AI - ระบบช่วยสอนครูมัธยมศึกษา (วิชาศิลปะ & พัสดุโรงเรียน)",
+  "short_name": "EduCraftAI",
+  "description": "ระบบช่วยสอนครูมัธยมศึกษา AI สร้างแผนการสอน ส่งงานศิลปะ และบริหารพัสดุโรงเรียน",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#07090e",
-  "theme_color": "#ef4444",
+  "background_color": "#f1f5f9",
+  "theme_color": "#2563eb",
   "orientation": "any",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2560/2560548.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135755.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2560/2560548.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135755.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

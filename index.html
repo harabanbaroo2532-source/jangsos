@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>GUARDIAN LIVE - แอปพลิเคชันเตือนภัยและแชร์วิดีโอไลฟ์สดระบุพิกัดฉุกเฉิน</title>
+    <title>EDU-CRAFT AI | ระบบช่วยสอนครูมัธยมศึกษา (วิชาศิลปะ & บริหารพัสดุโรงเรียน)</title>
     
-    <!-- PWA & Mobile Meta Tags (100% Free Mobile App Ready) -->
+    <!-- PWA & Mobile Meta Tags -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ef4444">
+    <meta name="theme-color" content="#2563eb">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="GuardianLive">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2560/2560548.png">
+    <meta name="apple-mobile-web-app-title" content="EduCraftAI">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135755.png">
 
     <!-- Google Fonts & Leaflet Maps CSS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="stylesheet" href="styles.css?v=19">
 </head>
 <body>
     <div class="guardian-app">
@@ -27,12 +27,12 @@
         <header class="app-header">
             <div class="brand">
                 <div class="logo-shield">
-                    <span class="shield-icon">🛡️</span>
-                    <span class="pulse-beacon"></span>
+                    <span class="shield-icon">🎨</span>
+                    <span class="pulse-beacon" style="background: rgba(37, 99, 235, 0.3);"></span>
                 </div>
                 <div class="brand-info">
-                    <h1>GUARDIAN <span class="badge-live">LIVE SOS</span></h1>
-                    <p>ระบบเตือนภัยและแชร์ไลฟ์สดระบุพิกัดฉุกเฉินเรียลไทม์</p>
+                    <h1>EDU-CRAFT <span class="badge-live" style="background: linear-gradient(135deg, #2563eb, #9333ea);">TEACHER AI</span></h1>
+                    <p>ระบบช่วยสอนครูมัธยมศึกษา (ม.1-ม.6) • กลุ่มสาระศิลปะ & ระบบบริหารพัสดุโรงเรียน</p>
                 </div>
             </div>
 
@@ -40,432 +40,666 @@
                 <div class="gps-status-badge card-glass" id="userGpsStatus">
                     <span class="icon-gps">📍</span>
                     <div class="gps-text">
-                        <span class="label">พิกัดปัจจุบันของคุณ:</span>
-                        <span id="gpsCoordsText" class="val">กำลังระบุตำแหน่ง GPS...</span>
+                        <span class="label">พิกัดโรงเรียน/จุดตรวจงาน:</span>
+                        <span id="gpsCoordsText" class="val">กำลังระบุพิกัด GPS...</span>
                     </div>
                 </div>
 
-                <!-- Live Weather Summary Header Widget -->
+                <!-- School Semester & Active Period Badge -->
                 <div class="weather-header-badge card-glass" id="weatherHeaderBadge">
-                    <span class="icon-weather" id="hdrWeatherIcon">🌧️</span>
+                    <span class="icon-weather" id="hdrWeatherIcon">🏫</span>
                     <div class="gps-text">
-                        <span class="label">สภาพอากาศสด:</span>
-                        <span id="hdrWeatherText" class="val">31°C ฝนตกหนัก (PM2.5: 28)</span>
+                        <span class="label">สถานะภาคเรียน & อาคารศิลปะ:</span>
+                        <span id="hdrWeatherText" class="val">ภาคเรียนที่ 2 • ห้องศิลปะพร้อมใช้งาน</span>
                     </div>
                 </div>
             </div>
 
             <div class="header-right">
-                <button id="btnExportReport" class="btn btn-secondary" style="border-color: rgba(16, 185, 129, 0.4); color: #10b981;">
-                    <span class="icon">📄</span> Export รายงาน CSV
+                <button id="btnOpenAiGenerator" class="btn btn-primary" style="background: linear-gradient(135deg, #7c3aed, #2563eb); color:#fff; font-weight:700;">
+                    <span class="icon">🤖</span> AI สร้างแผนการสอน/ข้อสอบ
                 </button>
-                <button id="btnAiSpeech" class="btn btn-secondary" style="border-color: rgba(168, 85, 247, 0.4); color: #a855f7;">
-                    <span class="icon">🗣️</span> เสียงอ่านเตือนภัย AI
+                <button id="btnOpenInventoryModal" class="btn btn-secondary" style="border-color: rgba(217, 119, 6, 0.6); color: #d97706; font-weight:700;">
+                    <span class="icon">📦</span> ทะเบียนพัสดุโรงเรียน
                 </button>
-                <button id="btnToggleAudioFx" class="btn btn-secondary" style="border-color: rgba(56, 189, 248, 0.4); color: #2563eb;">
-                    <span class="icon">🔊</span> เสียงศูนย์บัญชาการ
+                <button id="btnOpenVideoLibrary" class="btn btn-secondary" style="border-color: rgba(236, 72, 153, 0.6); color: #db2777; font-weight:700;">
+                    <span class="icon">🎬</span> สื่อวิดีโอสอนศิลปะ
                 </button>
-                <button id="btnToggleSiren" class="btn btn-warning">
-                    <span class="icon">🚨</span> ไซเรนเตือนภัย
+                <button id="btnExportReport" class="btn btn-secondary" style="border-color: rgba(16, 185, 129, 0.5); color: #059669;">
+                    <span class="icon">📄</span> Export ปพ.5 / พัสดุ CSV
                 </button>
-                <button id="btnStartBroadcasting" class="btn btn-danger btn-pulse">
-                    <span class="icon">🎥</span> 🔴 ถ่ายทอดสดเตือนภัย
+                <button id="btnAiSpeech" class="btn btn-secondary" style="border-color: rgba(37, 99, 235, 0.4); color: #2563eb;">
+                    <span class="icon">🗣️</span> เสียงบรรยายครู AI
+                </button>
+                <button id="btnStartBroadcasting" class="btn btn-danger btn-pulse" style="background: linear-gradient(135deg, #e11d48, #db2777);">
+                    <span class="icon">🎥</span> 🔴 ไลฟ์สดสาธิตวาดภาพ
                 </button>
             </div>
         </header>
 
-        <!-- Tactical Command Stats & AI Threat Level Meter (Better than Osiris AI) -->
+        <!-- Smart School Stats & Curriculum Progress Bar -->
         <div class="command-tactical-bar card-glass">
             <div class="threat-meter-box">
-                <span class="threat-label">🛡️ AI DANGER INDEX:</span>
-                <span class="threat-badge defcon-3" id="aiThreatBadge">DEFCON 3 • ELEVATED (68/100)</span>
+                <span class="threat-label">🎓 หลักสูตรแกนกลาง สพฐ. (ศ 1.1 - ศ 3.2):</span>
+                <span class="threat-badge" id="aiThreatBadge" style="background: rgba(16, 185, 129, 0.15); color: #047857; border: 1px solid rgba(16, 185, 129, 0.4);">ACTIVE • แผนการสอน & พัสดุครบถ้วน 100%</span>
             </div>
             <div class="tactical-stats-grid">
                 <div class="tac-stat-item">
-                    <span class="tac-icon">🚨</span>
-                    <span class="tac-val" id="tacAlertsCount">5</span>
-                    <span class="tac-lbl">เหตุฉุกเฉินสด</span>
+                    <span class="tac-icon">🎨</span>
+                    <span class="tac-val" id="tacAlertsCount">3</span>
+                    <span class="tac-lbl">ผลงานศิลปะ/การบ้าน</span>
                 </div>
                 <div class="tac-stat-item">
-                    <span class="tac-icon">📹</span>
-                    <span class="tac-val" id="tacCctvCount">6</span>
-                    <span class="tac-lbl">กล้อง CCTV</span>
+                    <span class="tac-icon">📦</span>
+                    <span class="tac-val" id="tacAssetCount">5</span>
+                    <span class="tac-lbl">รายการพัสดุ/ครุภัณฑ์</span>
                 </div>
                 <div class="tac-stat-item">
-                    <span class="tac-icon">🚁</span>
-                    <span class="tac-val" id="tacFlightCount">3</span>
-                    <span class="tac-lbl">เรดาร์การบินกู้ภัย</span>
+                    <span class="tac-icon">🎬</span>
+                    <span class="tac-val" id="tacVideoCount">3</span>
+                    <span class="tac-lbl">วิดีโอบทเรียนศิลปะ</span>
                 </div>
                 <div class="tac-stat-item">
-                    <span class="tac-icon">🌋</span>
-                    <span class="tac-val" id="tacSeismicCount">LIVE</span>
-                    <span class="tac-lbl">แผ่นดินไหว USGS</span>
+                    <span class="tac-icon">✅</span>
+                    <span class="tac-val" id="tacAttendanceCount">98%</span>
+                    <span class="tac-lbl">การเข้าเรียน ม.1-ม.6</span>
                 </div>
                 <div class="tac-stat-item">
-                    <span class="tac-icon">🌊</span>
-                    <span class="tac-val" id="tacWaterCount">4</span>
-                    <span class="tac-lbl">สถานีน้ำท่วม</span>
+                    <span class="tac-icon">💰</span>
+                    <span class="tac-val" id="tacBudgetVal">฿392K</span>
+                    <span class="tac-lbl">มูลค่าครุภัณฑ์หมวดศิลปะ</span>
                 </div>
+                <button id="btnVerifyDataSources" class="btn btn-secondary btn-sm" style="border-color:#059669; color:#059669; font-weight:700;">
+                    🛡️ มาตรฐานหลักสูตร & พัสดุ
+                </button>
             </div>
         </div>
 
-        <!-- Main Emergency Dashboard -->
+        <!-- Main Workspace Grid -->
         <main class="dashboard-grid">
-            <!-- Left Side Control Panel & Alert Feed -->
-            <aside class="left-panel sidebar-glass">
-                <!-- SOS Big Trigger Button -->
-                <div class="sos-trigger-card card-glass">
-                    <button id="btnSosTrigger" class="btn-sos-pulse">
+            <!-- Left Sidebar: Quick Actions, Submissions & Inventory Feed -->
+            <aside class="left-panel">
+                <!-- Primary Teacher Action Card -->
+                <div class="sos-trigger-card card-glass" style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
+                    <button id="btnSosTrigger" class="btn-sos-pulse" style="background: linear-gradient(135deg, #2563eb, #7c3aed); border-color: #4f46e5; box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);">
                         <div class="sos-inner">
-                            <span class="sos-icon">🚨</span>
-                            <span class="sos-text">กดขอความช่วยเหลือ</span>
-                            <span class="sos-sub">EMERGENCY SOS</span>
+                            <span class="sos-icon">🤖</span>
+                            <span class="sos-text" style="font-size:18px; font-weight:800;">เปิดผู้ช่วย AI สร้างแผนการสอน & ข้อสอบ</span>
+                            <span class="sos-sub" style="font-size:11px; opacity:0.9;">สร้างแผนการสอน 8 กลุ่มสาระ (เน้นทัศนศิลป์/ดนตรี/นาฏศิลป์ ม.1-ม.6)</span>
                         </div>
                     </button>
-                    <p class="sos-help-note">กดปุ่ม SOS ค้างไว้ 1.5 วินาที เพื่อกระจายพิกัดและสัญญาณฉุกเฉินไปยังผู้ใช้รอบข้าง</p>
-                </div>
 
-                <!-- Emergency Hotlines Quick Dial Bar -->
-                <div class="hotlines-section card-glass">
-                    <h3>📞 สายด่วนฉุกเฉินไทย (Quick Hotlines)</h3>
-                    <div class="hotline-grid">
-                        <a href="tel:191" class="hotline-btn police">
-                            <span class="num">191</span>
-                            <span class="txt">เหตุด่วนเหตุร้าย</span>
-                        </a>
-                        <a href="tel:1669" class="hotline-btn medical">
-                            <span class="num">1669</span>
-                            <span class="txt">การแพทย์ฉุกเฉิน</span>
-                        </a>
-                        <a href="tel:199" class="hotline-btn fire">
-                            <span class="num">199</span>
-                            <span class="txt">ดับเพลิงกู้ภัย</span>
-                        </a>
-                        <a href="tel:1554" class="hotline-btn rescue">
-                            <span class="num">1554</span>
-                            <span class="txt">ศูนย์กู้ชีพ</span>
-                        </a>
+                    <!-- Action Buttons: Pin Student Art / Pin Asset Check -->
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top: 10px;">
+                        <button id="btnReportIncident" class="btn btn-primary" style="padding: 10px 8px; background: linear-gradient(135deg, #db2777, #9333ea); border: none; font-weight: 700; font-size: 12px; border-radius: 10px; color:#fff; cursor:pointer;">
+                            📌 ปักหมุดส่งงานศิลปะ / พัสดุ
+                        </button>
+                        <button id="btnQuickCheckAttendance" class="btn btn-secondary" style="padding: 10px 8px; border-color: #2563eb; color: #2563eb; font-weight: 700; font-size: 12px; border-radius: 10px; cursor:pointer;">
+                            📋 เช็คชื่อนักเรียนเข้าเรียน
+                        </button>
                     </div>
                 </div>
 
-                <!-- Public CCTV Cameras Panel -->
-                <div class="cctv-panel-section card-glass">
-                    <div class="water-section-header">
-                        <h3>📹 กล้องวงจรปิดสาธารณะสด (Public CCTV Cams)</h3>
-                        <span class="badge-live-sm" style="background:rgba(16, 185, 129, 0.25); color:#10b981; border-color:rgba(16, 185, 129, 0.4);">LIVE CCTV</span>
+                <!-- Filter Tabs for Left Feed -->
+                <div class="feed-section card-glass" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+                    <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="font-size:14px; font-weight:800; color:#0f172a;">🎨 ผลงานนักเรียน & จุดตรวจพัสดุสด</h3>
+                        <span class="badge-count" id="activeAlertCount" style="background:#2563eb; color:#fff; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">3 รายการ</span>
                     </div>
-                    <div id="cctvListContainer" class="water-stations-list">
-                        <!-- Rendered dynamically via app.js -->
+
+                    <div class="category-filter-bar" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:8px; border-bottom:1px solid #e2e8f0;">
+                        <button class="filter-chip active" data-filter="all">ทั้งหมด</button>
+                        <button class="filter-chip" data-filter="art-work">🎨 งานทัศนศิลป์</button>
+                        <button class="filter-chip" data-filter="field-project">🌳 ศิลปะภาคสนาม</button>
+                        <button class="filter-chip" data-filter="asset-check">📦 พัสดุโรงเรียน</button>
+                    </div>
+
+                    <div id="incidentsList" class="incidents-list" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
+                        <!-- Dynamic Student Artworks & Asset Pins rendered here -->
                     </div>
                 </div>
 
-                <!-- Flood & Sea Level Water Gauge Stations Section -->
-                <div class="water-stations-section card-glass">
-                    <div class="water-section-header">
-                        <h3>🌊 ระดับน้ำท่วม & ระดับน้ำทะเลสด (Water Levels)</h3>
-                        <span class="badge-live-sm">LIVE GAUGE</span>
+                <!-- School Department Quick Contacts / Resources -->
+                <div class="hotlines-card card-glass">
+                    <h4 style="font-size:12px; color:#475569; margin-bottom:8px;">🏫 ระบบงานวิชาการและพัสดุโรงเรียนมัธยม</h4>
+                    <div class="hotline-grid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:6px;">
+                        <button type="button" class="hotline-item" id="btnQuickArtVideo1" style="border:1px solid #cbd5e1; background:#f8fafc; padding:6px 8px; border-radius:8px; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items:center;">
+                            <span class="hl-name" style="font-size:11px; font-weight:600;">🎬 ทัศนธาตุ ม.1</span>
+                            <span class="hl-num" style="font-size:10px; color:#2563eb; font-weight:700;">เปิดดู</span>
+                        </button>
+                        <button type="button" class="hotline-item" id="btnQuickArtVideo2" style="border:1px solid #cbd5e1; background:#f8fafc; padding:6px 8px; border-radius:8px; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items:center;">
+                            <span class="hl-name" style="font-size:11px; font-weight:600;">✏️ เรื่องเส้น (Line)</span>
+                            <span class="hl-num" style="font-size:10px; color:#db2777; font-weight:700;">เปิดดู</span>
+                        </button>
+                        <button type="button" class="hotline-item" id="btnQuickBorrowAsset" style="border:1px solid #cbd5e1; background:#f8fafc; padding:6px 8px; border-radius:8px; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items:center;">
+                            <span class="hl-name" style="font-size:11px; font-weight:600;">📦 เบิก/ยืมพัสดุ</span>
+                            <span class="hl-num" style="font-size:10px; color:#d97706; font-weight:700;">จัดการ</span>
+                        </button>
+                        <button type="button" class="hotline-item" id="btnQuickWhiteboard" style="border:1px solid #cbd5e1; background:#f8fafc; padding:6px 8px; border-radius:8px; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items:center;">
+                            <span class="hl-name" style="font-size:11px; font-weight:600;">🖌️ กระดานวาดสี</span>
+                            <span class="hl-num" style="font-size:10px; color:#059669; font-weight:700;">วาดสด</span>
+                        </button>
                     </div>
-                    <div id="waterStationsList" class="water-stations-list">
-                        <!-- Rendered dynamically via app.js -->
-                    </div>
-                </div>
-
-                <!-- Global Seismic & Earthquake Radar Panel (USGS Live Feed) -->
-                <div class="water-stations-section card-glass">
-                    <div class="water-section-header">
-                        <h3>🌋 แผ่นดินไหวสดทั่วโลก (USGS Earthquakes)</h3>
-                        <span class="badge-live-sm" style="background:rgba(239, 68, 68, 0.25); color:#ef4444; border-color:rgba(239, 68, 68, 0.4);">USGS LIVE</span>
-                    </div>
-                    <div id="earthquakeListContainer" class="water-stations-list">
-                        <!-- Rendered dynamically via app.js -->
-                    </div>
-                </div>
-
-                <!-- Category Filters -->
-                <div class="filter-section">
-                    <h3>📌 กรองประเภทเหตุการณ์ฉุกเฉิน</h3>
-                    <div class="category-pills">
-                        <button class="pill active" data-cat="all">ทั้งหมด (All)</button>
-                        <button class="pill" data-cat="accident">🚗 อุบัติเหตุ</button>
-                        <button class="pill" data-cat="fire">🔥 อัคคีภัย</button>
-                        <button class="pill" data-cat="crime">🚨 อาชญากรรม</button>
-                        <button class="pill" data-cat="disaster">🌊 ภัยธรรมชาติ</button>
-                        <button class="pill" data-cat="medical">🚑 แพทย์ฉุกเฉิน</button>
-                    </div>
-                </div>
-
-                <!-- Active Alert Incident Cards Stream -->
-                <div class="incidents-feed-header">
-                    <h3>📡 เหตุการณ์ฉุกเฉินสดในพื้นที่ (<span id="alertCountLabel">0</span>)</h3>
-                </div>
-                <div id="incidentsFeed" class="incidents-feed-list">
-                    <!-- Dynamic Alert Cards rendered via app.js -->
                 </div>
             </aside>
 
-            <!-- Center Interactive Map Center -->
-            <section class="map-container-section card-glass">
-                <div id="map" class="map-viewport"></div>
+            <!-- Right Map & Interactive Teaching Canvas -->
+            <section class="map-container-section card-glass" style="position:relative; padding:0; overflow:hidden; display:flex; flex-direction:column;">
+                <div id="emergencyMap" class="emergency-map" style="flex:1; width:100%; height:100%;"></div>
 
-                <!-- Floating Map Controls -->
+                <!-- Map Floating Controls -->
                 <div class="map-floating-controls">
-                    <button id="btnToggleSatelliteMap" class="map-btn" title="สลับระหว่าง แผนที่ถนน / ภาพถ่ายดาวเทียม / 3D">
-                        🛰️ ภาพถ่ายดาวเทียม / ถนน
+                    <button id="btnCenterUser" class="map-btn" title="ไปยังพิกัดโรงเรียน/ตำแหน่งของคุณ">
+                        🎯 พิกัดโรงเรียน
                     </button>
-                    <button id="btnToggleFlightLayer" class="map-btn active-layer" title="เปิด/ปิด เรดาร์การบินและเฮลิคอปเตอร์กู้ภัยสด">
-                        🚁 เรดาร์การบินกู้ภัยสด
+                    <button id="btnToggleArtPins" class="map-btn active-layer" title="แสดงหมุดผลงานศิลปะนักเรียน">
+                        🎨 หมุดผลงานศิลปะ (เปิด)
                     </button>
-                    <button id="btnToggleSeismicLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลแผ่นดินไหว USGS & จุดความร้อนไฟป่า">
-                        🌋 เรดาร์แผ่นดินไหว USGS
+                    <button id="btnToggleAssetPins" class="map-btn active-layer" title="แสดงจุดเก็บครุภัณฑ์และพัสดุโรงเรียน">
+                        📦 จุดตรวจพัสดุ/อาคารเรียน (เปิด)
                     </button>
-                    <button id="btnToggleCctvLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลกล้องวงจรปิดสาธารณะสด">
-                        📹 กล้องสาธารณะสด
+                    <button id="btnOpenWhiteboardModal" class="map-btn" style="background:linear-gradient(135deg,#db2777,#7c3aed); color:#fff; border:none;">
+                        🖌️ กระดานไวท์บอร์ดสาธิตศิลปะ
                     </button>
-                    <button id="btnToggleWeatherLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลสภาพอากาศสดและเรดาร์ฝน">
-                        🌧️ สภาพอากาศสด
-                    </button>
-                    <button id="btnToggleWaterLayer" class="map-btn active-layer" title="เปิด/ปิด ชั้นข้อมูลระดับน้ำท่วมและน้ำทะเล">
-                        🌊 ระดับน้ำท่วมสด
-                    </button>
-                    <button id="btnRecenterGps" class="map-btn" title="กลับมาที่ตำแหน่งของฉัน">
-                        🎯 ตำแหน่งของฉัน
-                    </button>
-                    <button id="btnReportIncident" class="map-btn btn-primary-glass" title="แจ้งเหตุฉุกเฉินใหม่">
-                        ➕ แจ้งเหตุฉุกเฉินใหม่
+                    <button id="btnToggleTraffic" class="map-btn" title="สลับแผนที่ดาวเทียม/แผนผังโรงเรียน">
+                        🗺️ แผนที่ดาวเทียมโรงเรียน
                     </button>
                 </div>
             </section>
         </main>
 
-        <!-- Live Camera Broadcaster Studio Modal -->
+        <!-- ==============================================================
+             MODAL 1: AI LESSON PLAN, WORKSHEET & QUIZ GENERATOR (ม.1 - ม.6)
+             ============================================================== -->
+        <div id="aiGeneratorModal" class="modal-overlay hidden">
+            <div class="modal-content card-glass" style="max-width: 820px; width: 95%;">
+                <div class="studio-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:14px;">
+                    <div class="live-indicator" style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:24px;">🤖</span>
+                        <div>
+                            <h2 style="font-size:18px; color:#0f172a; margin:0;">AI ผู้ช่วยสร้างแผนการสอน ใบงาน และข้อสอบมัธยมศึกษา (ม.1 - ม.6)</h2>
+                            <p style="font-size:12px; color:#64748b; margin:0;">อ้างอิงตัวชี้วัดหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พ.ศ. 2551 (ฉบับปรับปรุง)</p>
+                        </div>
+                    </div>
+                    <button id="btnCloseAiGenerator" class="btn-close" style="font-size:24px; background:none; border:none; cursor:pointer;">&times;</button>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:12px;">
+                    <div>
+                        <label style="font-size:12px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">📚 กลุ่มสาระ / รายวิชา:</label>
+                        <select id="aiSubjectSelect" class="form-input" style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
+                            <option value="visual-art">🎨 ทัศนศิลป์ (Visual Arts)</option>
+                            <option value="Thai-art">🏛️ ศิลปะไทยและภูมิปัญญาท้องถิ่น</option>
+                            <option value="design-art">📐 การออกแบบและองค์ประกอบศิลป์</option>
+                            <option value="music-drama">🎵 ดนตรี-นาฏศิลป์</option>
+                            <option value="inventory-work">📦 การงานอาชีพ / การจัดการพัสดุในงานช่าง</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:12px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">🎓 ระดับชั้นมัธยมศึกษา:</label>
+                        <select id="aiGradeSelect" class="form-input" style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
+                            <option value="ม.1">มัธยมศึกษาปีที่ 1 (ม.1)</option>
+                            <option value="ม.2">มัธยมศึกษาปีที่ 2 (ม.2)</option>
+                            <option value="ม.3">มัธยมศึกษาปีที่ 3 (ม.3)</option>
+                            <option value="ม.4">มัธยมศึกษาปีที่ 4 (ม.4)</option>
+                            <option value="ม.5">มัธยมศึกษาปีที่ 5 (ม.5)</option>
+                            <option value="ม.6">มัธยมศึกษาปีที่ 6 (ม.6)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:12px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">📝 ประเภทเอกสารที่ต้องการ:</label>
+                        <select id="aiDocTypeSelect" class="form-input" style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
+                            <option value="lesson-plan">📋 แผนการจัดการเรียนรู้ Active Learning (ครบ 5 ขั้น)</option>
+                            <option value="quiz">✍️ ข้อสอบปรนัย 4 ตัวเลือก พร้อมเฉลยและคำอธิบาย</option>
+                            <option value="worksheet">🎨 ใบงานปฏิบัติการศิลปะ + เกณฑ์การให้คะแนน (Rubric)</option>
+                            <option value="material-list">📦 ใบเบิกวัสดุ-อุปกรณ์ศิลปะประจำคาบเรียน</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-bottom:14px;">
+                    <input type="text" id="aiTopicInput" class="form-input" style="flex:1; padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1;" placeholder="ระบุหัวข้อเรื่อง เช่น ทัศนธาตุทั้ง 7, เส้นและอารมณ์, ทฤษฎีสีน้ำ, การสเก็ตช์ภาพทิวทัศน์..." value="ทัศนธาตุทั้ง 7 และการถ่ายทอดอารมณ์ด้วยเส้นและสี">
+                    <button id="btnGenerateAiContent" class="btn btn-primary" style="background:linear-gradient(135deg,#7c3aed,#2563eb); color:#fff; padding:10px 20px; border-radius:8px; border:none; font-weight:700; cursor:pointer;">
+                        ✨ สร้างเนื้อหาด้วย AI ทันที
+                    </button>
+                </div>
+
+                <!-- Output Box -->
+                <div id="aiOutputContainer" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:16px; max-height:380px; overflow-y:auto; font-size:13px; line-height:1.7; color:#1e293b;">
+                    <!-- Populated by AI Engine -->
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
+                    <div style="display:flex; gap:8px;">
+                        <button id="btnReadAiLesson" class="btn btn-secondary btn-sm" style="color:#7c3aed; border-color:#7c3aed;">
+                            🔊 ให้ AI อ่านออกเสียงสรุปบทเรียน
+                        </button>
+                        <button id="btnCopyAiLesson" class="btn btn-secondary btn-sm" style="color:#2563eb; border-color:#2563eb;">
+                            📋 คัดลอกเอกสาร
+                        </button>
+                    </div>
+                    <button id="btnDownloadAiDoc" class="btn btn-primary btn-sm" style="background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        📥 ดาวน์โหลดไฟล์เอกสาร (.txt / พิมพ์ใบงาน)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================================
+             MODAL 2: SCHOOL INVENTORY & ART SUPPLIES MANAGEMENT
+             ============================================================== -->
+        <div id="inventoryModal" class="modal-overlay hidden">
+            <div class="modal-content card-glass" style="max-width: 900px; width: 96%;">
+                <div class="studio-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:14px;">
+                    <div class="live-indicator" style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:24px;">📦</span>
+                        <div>
+                            <h2 style="font-size:18px; color:#0f172a; margin:0;">ระบบบริหารงานพัสดุและครุภัณฑ์โรงเรียน (เน้นหมวดศิลปะและอาคารเรียน)</h2>
+                            <p style="font-size:12px; color:#64748b; margin:0;">ทะเบียนคุมทรัพย์สิน เบิก-จ่ายวัสดุสิ้นเปลือง ยืม-คืนครุภัณฑ์ และส่งออกรายงานตามระเบียบพัสดุ</p>
+                        </div>
+                    </div>
+                    <button id="btnCloseInventoryModal" class="btn-close" style="font-size:24px; background:none; border:none; cursor:pointer;">&times;</button>
+                </div>
+
+                <!-- Summary Cards -->
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;">
+                    <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:10px; border-radius:10px; text-align:center;">
+                        <div style="font-size:11px; color:#1d4ed8; font-weight:700;">รายการพัสดุทั้งหมด</div>
+                        <div id="invTotalItems" style="font-size:20px; font-weight:900; color:#1e40af;">5 รายการ</div>
+                    </div>
+                    <div style="background:#ecfdf5; border:1px solid #a7f3d0; padding:10px; border-radius:10px; text-align:center;">
+                        <div style="font-size:11px; color:#047857; font-weight:700;">พร้อมใช้งานในคลัง</div>
+                        <div id="invAvailableCount" style="font-size:20px; font-weight:900; color:#065f46;">150 ชิ้น</div>
+                    </div>
+                    <div style="background:#fffbeb; border:1px solid #fde68a; padding:10px; border-radius:10px; text-align:center;">
+                        <div style="font-size:11px; color:#b45309; font-weight:700;">กำลังยืม / เบิกใช้งาน</div>
+                        <div id="invBorrowedCount" style="font-size:20px; font-weight:900; color:#92400e;">80 ชิ้น</div>
+                    </div>
+                    <div style="background:#fdf2f8; border:1px solid #fbcfe8; padding:10px; border-radius:10px; text-align:center;">
+                        <div style="font-size:11px; color:#be185d; font-weight:700;">มูลค่ารวมครุภัณฑ์</div>
+                        <div id="invTotalValue" style="font-size:20px; font-weight:900; color:#9d174d;">฿392,900</div>
+                    </div>
+                </div>
+
+                <!-- Add New Asset / Requisition Form -->
+                <form id="addAssetForm" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:14px;">
+                    <div style="font-size:13px; font-weight:800; color:#0f172a; margin-bottom:8px;">➕ ลงทะเบียนครุภัณฑ์ใหม่ / บันทึกการเบิก-ยืมพัสดุโรงเรียน</div>
+                    <div style="display:grid; grid-template-columns: 1.2fr 2fr 1.2fr 0.8fr 0.8fr auto; gap:8px; align-items:center;">
+                        <input type="text" id="assetCodeInput" placeholder="รหัสพัสดุ (เช่น ศป-69-030)" required style="padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <input type="text" id="assetNameInput" placeholder="ชื่อวัสดุ/ครุภัณฑ์ (เช่น พู่กันสีน้ำเบอร์ 12)" required style="padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <select id="assetCatInput" style="padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                            <option value="ครุภัณฑ์ศิลปะ">ครุภัณฑ์ศิลปะ</option>
+                            <option value="วัสดุสิ้นเปลืองศิลปะ">วัสดุสิ้นเปลืองศิลปะ</option>
+                            <option value="ครุภัณฑ์ดนตรี-นาฏศิลป์">ครุภัณฑ์ดนตรี-นาฏศิลป์</option>
+                            <option value="ครุภัณฑ์โสตทัศนูปกรณ์">ครุภัณฑ์โสตทัศนูปกรณ์</option>
+                        </select>
+                        <input type="number" id="assetQtyInput" placeholder="จำนวน" value="10" min="1" required style="padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <input type="number" id="assetPriceInput" placeholder="ราคา/หน่วย" value="250" min="0" required style="padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <button type="submit" class="btn btn-primary" style="background:#2563eb; color:#fff; border:none; padding:8px 14px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
+                            + เพิ่มพัสดุ
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Inventory Table -->
+                <div style="max-height:300px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:10px;">
+                    <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left;">
+                        <thead style="background:#f1f5f9; color:#334155; position:sticky; top:0;">
+                            <tr>
+                                <th style="padding:10px;">รหัสพัสดุ</th>
+                                <th style="padding:10px;">รายการวัสดุ / ครุภัณฑ์</th>
+                                <th style="padding:10px;">สถานที่เก็บ / ห้องเรียน</th>
+                                <th style="padding:10px; text-align:center;">คงเหลือ / ทั้งหมด</th>
+                                <th style="padding:10px;">สถานะ / ผู้เบิกยืม</th>
+                                <th style="padding:10px; text-align:center;">จัดการเบิก-คืน</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+                    <span style="font-size:11px; color:#64748b;">💡 คลิกปุ่ม <strong>"เบิก/ยืม"</strong> หรือ <strong>"รับคืน"</strong> เพื่ออัปเดตยอดคงเหลือแบบเรียลไทม์พร้อมปักหมุดพิกัดห้องเก็บพัสดุ</span>
+                    <button id="btnExportInventoryCsv" class="btn btn-primary" style="background:#d97706; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">
+                        📊 ส่งออกทะเบียนคุมพัสดุ (Excel CSV)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================================
+             MODAL 3: BUILT-IN ART LESSON VIDEO LIBRARY & INTERACTIVE QUIZ
+             ============================================================== -->
+        <div id="videoLibraryModal" class="modal-overlay hidden">
+            <div class="modal-content card-glass" style="max-width: 860px; width: 95%;">
+                <div class="studio-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px;">
+                    <div class="live-indicator" style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:24px;">🎬</span>
+                        <div>
+                            <h2 style="font-size:18px; color:#0f172a; margin:0;">คลังสื่อวิดีโอช่วยสอนวิชาทัศนศิลป์ มัธยมศึกษา</h2>
+                            <p style="font-size:12px; color:#64748b; margin:0;">วิดีโอบทเรียนความละเอียดสูง (Full HD) พร้อมบทพากย์ภาษาไทยและสไลด์ประกอบการสอน</p>
+                        </div>
+                    </div>
+                    <button id="btnCloseVideoLibrary" class="btn-close" style="font-size:24px; background:none; border:none; cursor:pointer;">&times;</button>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:12px;">
+                    <button type="button" class="video-lesson-tab active" data-video="art_lesson_full_video.mp4" data-title="บทเรียนที่ 1: ทัศนธาตุทั้ง 7 (องค์ประกอบพื้นฐานของศิลปะ ม.1)" style="padding:10px; border:2px solid #2563eb; background:#eff6ff; border-radius:10px; cursor:pointer; text-align:left;">
+                        <div style="font-weight:800; color:#1d4ed8; font-size:13px;">🎨 บทที่ 1: ทัศนธาตุทั้ง 7 (Full)</div>
+                        <div style="font-size:11px; color:#475569;">จุด เส้น รูปร่าง รูปทรง น้ำหนัก สี พื้นผิว</div>
+                    </button>
+                    <button type="button" class="video-lesson-tab" data-video="line_lesson_video.mp4" data-title="บทเรียนที่ 2: พลังแห่งเส้นและการสื่ออารมณ์ความรู้สึก (Line Element)" style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; border-radius:10px; cursor:pointer; text-align:left;">
+                        <div style="font-weight:800; color:#db2777; font-size:13px;">✏️ บทที่ 2: กำเนิดจากจุดสู่เส้น</div>
+                        <div style="font-size:11px; color:#475569;">เส้นตั้ง เส้นนอน เส้นโค้ง เส้นซิกแซก 10 ฉาก</div>
+                    </button>
+                    <button type="button" class="video-lesson-tab" data-video="art_lesson_video.mp4" data-title="บทเรียนที่ 3: สรุปวิเคราะห์งานทัศนศิลป์และกิจกรรมฝึกทักษะ" style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; border-radius:10px; cursor:pointer; text-align:left;">
+                        <div style="font-weight:800; color:#059669; font-size:13px;">🖼️ บทที่ 3: วิเคราะห์งานทัศนศิลป์</div>
+                        <div style="font-size:11px; color:#475569;">สรุปสาระสำคัญและเวิร์กชอปวาดภาพ</div>
+                    </button>
+                </div>
+
+                <div style="background:#000; border-radius:12px; overflow:hidden; position:relative;">
+                    <video id="eduLessonVideoPlayer" src="art_lesson_full_video.mp4" controls style="width:100%; max-height:420px; display:block;"></video>
+                </div>
+
+                <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:10px; border:1px solid #cbd5e1;">
+                    <div>
+                        <strong id="currentVideoLessonTitle" style="font-size:13px; color:#0f172a;">กำลังเล่น: บทเรียนที่ 1: ทัศนธาตุทั้ง 7 (องค์ประกอบพื้นฐานของศิลปะ ม.1)</strong>
+                        <p style="font-size:11px; color:#64748b; margin:0;">ครูสามารถเปิดขึ้นจอโปรเจคเตอร์หน้าห้องเรียน หรือให้นักเรียนสแกนดูทบทวนได้ทันที</p>
+                    </div>
+                    <button id="btnGenerateQuizFromVideo" class="btn btn-primary" style="background:#7c3aed; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">
+                        ✍️ สร้างแบบทดสอบท้ายคลิปนี้
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================================
+             MODAL 4: INTERACTIVE ART WHITEBOARD STUDIO (กระดานวาดภาพสอนสด)
+             ============================================================== -->
+        <div id="whiteboardModal" class="modal-overlay hidden">
+            <div class="modal-content card-glass" style="max-width: 860px; width: 96%;">
+                <div class="studio-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:10px;">
+                    <div class="live-indicator" style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:24px;">🖌️</span>
+                        <div>
+                            <h2 style="font-size:18px; color:#0f172a; margin:0;">กระดานไวท์บอร์ดสาธิตวาดภาพและทฤษฎีสี (Interactive Art Canvas)</h2>
+                            <p style="font-size:12px; color:#64748b; margin:0;">ใช้วาดสาธิตเรื่องเส้น รูปร่าง รูปทรง แสงเงา หรือตรวจแก้ไขงานศิลปะบนหน้าจอ</p>
+                        </div>
+                    </div>
+                    <button id="btnCloseWhiteboard" class="btn-close" style="font-size:24px; background:none; border:none; cursor:pointer;">&times;</button>
+                </div>
+
+                <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px; background:#f8fafc; padding:8px 12px; border-radius:8px; border:1px solid #cbd5e1;">
+                    <label style="font-size:12px; font-weight:700;">🎨 สีพู่กัน:</label>
+                    <input type="color" id="wbColorPicker" value="#2563eb" style="width:36px; height:30px; border:none; cursor:pointer;">
+                    <label style="font-size:12px; font-weight:700;">📏 ขนาดเส้น:</label>
+                    <input type="range" id="wbBrushSize" min="2" max="30" value="5" style="width:100px;">
+                    <button type="button" id="btnWbTemplateGrid" class="btn btn-secondary btn-sm" style="font-size:11px;">📐 ตารางทัศนียภาพ (Perspective)</button>
+                    <button type="button" id="btnWbColorWheel" class="btn btn-secondary btn-sm" style="font-size:11px;">🌈 วงจรสีธรรมชาติ</button>
+                    <button type="button" id="btnWbClear" class="btn btn-secondary btn-sm" style="color:#ef4444; border-color:#ef4444; font-size:11px;">🗑️ ล้างกระดาน</button>
+                    <button type="button" id="btnWbSavePin" class="btn btn-primary btn-sm" style="background:#059669; color:#fff; border:none; font-size:11px; margin-left:auto;">📌 บันทึกภาพปักหมุดลงแผนที่</button>
+                </div>
+
+                <div style="border:2px solid #cbd5e1; border-radius:12px; overflow:hidden; background:#ffffff; text-align:center;">
+                    <canvas id="artWhiteboardCanvas" width="780" height="400" style="width:100%; height:380px; cursor:crosshair; touch-action:none; display:block;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================================
+             MODAL 5: LIVE CAMERA BROADCASTER STUDIO (ไลฟ์สดสาธิตวาดภาพ/ตรวจพัสดุ)
+             ============================================================== -->
         <div id="broadcasterModal" class="modal-overlay hidden">
-            <div class="modal-content live-studio-card card-glass">
+            <div class="modal-content studio-modal card-glass">
                 <div class="studio-header">
                     <div class="live-indicator">
-                        <span class="dot-live"></span>
-                        <h2>🔴 ถ่ายทอดสดเตือนภัย (LIVE BROADCAST STUDIO)</h2>
+                        <span class="red-dot"></span>
+                        <h2>🔴 LIVE ART STUDIO - ไลฟ์สดสาธิตการสอนศิลปะ / ตรวจเช็คพัสดุ</h2>
                     </div>
                     <button id="btnCloseStudio" class="btn-close">&times;</button>
                 </div>
 
-                <div class="video-preview-wrapper">
-                    <!-- Live Camera Feed -->
-                    <video id="liveCameraVideo" autoplay playsinline muted></video>
-
-                    <!-- Burned-in Real-time GPS & HUD Overlay -->
-                    <div class="video-hud-overlay">
+                <div class="video-viewport">
+                    <video id="localVideoPreview" autoplay playsinline muted></video>
+                    <div class="camera-hud-overlay">
                         <div class="hud-top">
-                            <span class="hud-tag">📹 GUARDIAN LIVE CAMERA HUD</span>
-                            <span id="hudTimestamp" class="hud-time">--:--:--</span>
+                            <span class="hud-tag">🏫 ห้องเรียนศิลปะถ่ายทอดสด</span>
+                            <span id="hudClock" class="hud-tag">00:00:00</span>
                         </div>
                         <div class="hud-bottom">
-                            <div class="hud-stat">
-                                <span class="lbl">LAT / LNG:</span>
-                                <span id="hudCoords" class="val">13.7563° N, 100.5018° E</span>
-                            </div>
-                            <div class="hud-stat">
-                                <span class="lbl">ACCURACY:</span>
-                                <span id="hudAccuracy" class="val">±5.0m</span>
-                            </div>
-                            <div class="hud-stat">
-                                <span class="lbl">SPEED:</span>
-                                <span id="hudSpeed" class="val">0 km/h</span>
+                            <div class="hud-coords" id="hudGpsCoords">LAT: 13.7563, LNG: 100.5018</div>
+                            <div class="hud-metrics">
+                                <span>ความแม่นยำ: <b id="hudAccuracy">±5m</b></span>
+                                <span>สถานะ: <b id="hudSpeed">กำลังสอนสด</b></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="studio-controls-bar">
-                    <button id="btnFlipCamera" class="btn btn-secondary">
-                        🔄 สลับกล้อง (Front/Back)
-                    </button>
-                    <button id="btnToggleFlashlight" class="btn btn-secondary">
-                        💡 ไฟฉายฉุกเฉิน
-                    </button>
-                    <button id="btnToggleMic" class="btn btn-secondary">
-                        🎙️ ไมโครโฟน: เปิด
-                    </button>
-                    <button id="btnStopBroadcasting" class="btn btn-danger">
-                        ⏹️ ยุติการถ่ายทอดสด
-                    </button>
+                    <button id="btnFlipCamera" class="btn btn-secondary">🔄 สลับกล้องหน้า/หลัง (ส่องโต๊ะวาดภาพ)</button>
+                    <button id="btnToggleFlashlight" class="btn btn-secondary">💡 เปิดไฟส่องงานศิลปะ</button>
+                    <button id="btnToggleMic" class="btn btn-secondary">🎙️ ไมโครโฟนครู: เปิด</button>
+                    <button id="btnStopBroadcast" class="btn btn-danger">⏹️ ยุติการสอนสด</button>
                 </div>
             </div>
         </div>
 
-        <!-- Live Stream Viewer Modal -->
+        <!-- ==============================================================
+             MODAL 6: ARTWORK / ASSET PIN VIEWER & TEACHER GRADING MODAL
+             ============================================================== -->
         <div id="streamViewerModal" class="modal-overlay hidden">
-            <div class="modal-content stream-viewer-card card-glass">
+            <div class="modal-content viewer-modal card-glass" style="max-width: 820px;">
                 <div class="studio-header">
                     <div class="live-indicator">
-                        <span class="dot-live"></span>
-                        <h2 id="viewerStreamTitle">🔴 รับชมไลฟ์สดเหตุการณ์ฉุกเฉิน</h2>
+                        <span class="red-dot" style="background:#2563eb;"></span>
+                        <h2 id="viewerStreamTitle">🎨 รายละเอียดผลงานนักเรียน / จุดตรวจพัสดุ</h2>
                     </div>
                     <button id="btnCloseViewer" class="btn-close">&times;</button>
                 </div>
 
                 <div class="viewer-main-grid">
-                    <div class="viewer-video-container" style="position:relative;">
-                        <video id="viewerVideoPlayer" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; display:block;"></video>
-                        <canvas id="viewerCanvasOverlay" width="640" height="360" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:2; display:none;"></canvas>
-                        <div class="viewer-badge-bar" style="z-index:3;">
-                            <span class="badge-tag" id="viewerCategoryBadge">🚗 อุบัติเหตุ</span>
-                            <span class="badge-tag viewers" id="viewerCountBadge">👁️ 142 ผู้ชมสด</span>
+                    <div class="viewer-video-box" style="background:#0f172a; border-radius:12px; overflow:hidden; position:relative; min-height:280px; display:flex; align-items:center; justify-content:center;">
+                        <video id="viewerVideoPlayer" autoplay playsinline controls style="width:100%; max-height:360px; display:none;"></video>
+                        <img id="viewerImagePlayer" alt="ผลงานศิลปะ/พัสดุ" style="width:100%; max-height:360px; object-fit:contain; display:none;" />
+                        <canvas id="viewerCanvasOverlay" width="640" height="360" style="width:100%; height:100%; display:none;"></canvas>
+                        <div class="stream-badge-bar" style="position:absolute; top:10px; left:10px; display:flex; gap:6px;">
+                            <span id="viewerCountBadge" class="tag-viewers" style="background:rgba(15,23,42,0.8); color:#fff; padding:4px 8px; border-radius:6px; font-size:11px;">👁️ 12 เข้าชม</span>
+                            <span id="viewerCategoryBadge" class="tag-cat" style="background:#2563eb; color:#fff; padding:4px 8px; border-radius:6px; font-size:11px;">🎨 งานทัศนศิลป์</span>
                         </div>
                     </div>
 
-                    <div class="viewer-side-info card-glass">
-                        <div class="info-group">
-                            <label>📍 ตำแหน่งที่เกิดเหตุ (GPS Coordinates):</label>
-                            <p id="viewerAddressText" class="info-val">กำลังโหลด...</p>
-                            <a id="btnNavGoogleMaps" href="#" target="_blank" class="btn btn-primary w-100" style="margin-top:8px;">
-                                🗺️ นำทางไปยังจุดเกิดเหตุด้วย Google Maps
-                            </a>
-                        </div>
-
-                        <div class="chat-box">
-                            <h4>💬 แชตสดรายงานสถานการณ์</h4>
-                            <div id="chatMessagesList" class="chat-messages">
-                                <div class="chat-msg system">
-                                    <span class="user">ระบบ:</span> ยินดีต้อนรับสู่ห้องถ่ายทอดสดเหตุการณ์ฉุกเฉิน
+                    <div class="viewer-info-sidebar" style="display:flex; flex-direction:column; gap:10px;">
+                        <div class="location-info-card" style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #cbd5e1;">
+                            <h4 style="font-size:13px; color:#0f172a; margin-bottom:4px;">📍 สถานที่ส่งงาน / ห้องเก็บพัสดุ</h4>
+                            <p id="viewerAddressText" style="font-size:12px; color:#475569; margin-bottom:6px;">อาคารศิลปะ ชั้น 2</p>
+                            <p id="viewerDescText" style="font-size:12px; color:#1e293b; line-height:1.5; padding:8px; background:#ffffff; border-radius:8px; border:1px solid #e2e8f0;"></p>
+                            
+                            <!-- Teacher Grading Box -->
+                            <div style="margin-top:10px; padding-top:10px; border-top:1px solid #e2e8f0;">
+                                <label style="font-size:11px; font-weight:700; color:#1d4ed8; display:block; margin-bottom:4px;">✅ ครูประเมินผลการเรียน / ตรวจรับพัสดุ:</label>
+                                <div style="display:flex; gap:6px;">
+                                    <select id="teacherGradeSelect" style="flex:1; padding:6px; border-radius:6px; border:1px solid #cbd5e1; font-size:12px;">
+                                        <option value="20/20 (เกรด 4 ดีเยี่ยม)">🌟 20/20 (เกรด 4 ดีเยี่ยม)</option>
+                                        <option value="18/20 (เกรด 3.5 ดีมาก)">👍 18/20 (เกรด 3.5 ดีมาก)</option>
+                                        <option value="15/20 (เกรด 3 ดี)">✅ 15/20 (เกรด 3 ผ่านเกณฑ์)</option>
+                                        <option value="ตรวจเช็คพัสดุครบถ้วนสมบูรณ์">📦 พัสดุครบถ้วนสมบูรณ์</option>
+                                    </select>
+                                    <button type="button" id="btnSaveStudentGrade" class="btn btn-primary btn-sm" style="background:#059669; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer;">
+                                        บันทึกผล
+                                    </button>
                                 </div>
                             </div>
-                            <div class="chat-input-bar">
-                                <input type="text" id="chatInputText" placeholder="พิมพ์ข้อความรายงานสถานการณ์..." class="text-input">
-                                <button id="btnSendChat" class="btn btn-primary btn-sm">ส่ง</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Public CCTV Camera Player Modal -->
-        <div id="cctvPlayerModal" class="modal-overlay hidden">
-            <div class="modal-content stream-viewer-card card-glass" style="max-width: 780px;">
-                <div class="studio-header">
-                    <div class="live-indicator">
-                        <span class="dot-live" style="background:#10b981;"></span>
-                        <h2 id="cctvModalTitle">📹 รับชมกล้องวงจรปิดสาธารณะสด 24 ชม.</h2>
-                    </div>
-                    <button id="btnCloseCctvModal" class="btn-close">&times;</button>
-                </div>
-
-                <!-- Osiris AI Style Multi-Source Camera Switcher -->
-                <div class="cctv-source-selector-bar" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
-                    <button id="btnSrcLive" class="btn btn-sm btn-primary cctv-src-tab active" data-mode="live">
-                        🔴 สตรีมวิดีโอสด 24 ชม. (Live Stream)
-                    </button>
-                    <button id="btnSrcSnapshot" class="btn btn-sm btn-secondary cctv-src-tab" data-mode="snapshot">
-                        📸 ภาพสด กทม. Realtime (1-2s)
-                    </button>
-                    <button id="btnSrcBackup" class="btn btn-sm btn-secondary cctv-src-tab" data-mode="backup">
-                        🔄 สตรีมวิดีโอสำรอง (Google CDN)
-                    </button>
-                    <button id="btnSrcRadar" class="btn btn-sm btn-secondary cctv-src-tab" data-mode="radar">
-                        📹 เรดาร์การจราจรแบบแอคทีฟ (Tactical Radar)
-                    </button>
-                </div>
-
-                <div class="viewer-main-grid" style="grid-template-columns: 1fr 260px;">
-                    <div class="viewer-video-container" style="position:relative;">
-                        <video id="cctvVideoPlayer" autoplay playsinline muted loop webkit-playsinline crossorigin="anonymous" style="width:100%; height:100%; object-fit:cover; display:block;"></video>
-                        <img id="cctvSnapshotImg" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; display:none; z-index:1;" alt="CCTV Live Snapshot Feed">
-                        <canvas id="cctvCanvasOverlay" width="640" height="360" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:2; display:block;"></canvas>
-                        <div class="viewer-badge-bar" style="z-index:3;">
-                            <span class="badge-tag" id="cctvAgencyBadge">🏛️ กรุงเทพมหานคร (BMA CCTV)</span>
-                            <span class="badge-tag viewers" id="cctvStatusBadge" style="background:rgba(16, 185, 129, 0.8);">🟢 สด 24 ชั่วโมง</span>
-                        </div>
-                    </div>
-
-                    <div class="viewer-side-info card-glass" style="display:flex; flex-direction:column; justify:space-between;">
-                        <div class="info-group">
-                            <label>📍 ตำแหน่งกล้องวงจรปิด (Location):</label>
-                            <p id="cctvLocationText" class="info-val" style="margin-bottom:8px;">กำลังโหลด...</p>
-                            <label>📡 หน่วยงานดูแลรับผิดชอบ:</label>
-                            <p id="cctvAgencyText" class="info-val" style="color:#60a5fa; margin-bottom:12px;">กรุงเทพมหานคร (BMA)</p>
-                            <a id="btnNavCctvMaps" href="#" target="_blank" class="btn btn-primary w-100">
-                                🗺️ นำทางไปยังตำแหน่งกล้อง
+                            <a id="btnNavGoogleMaps" href="#" target="_blank" class="btn btn-primary btn-block" style="margin-top:8px; display:block; text-align:center; text-decoration:none; font-size:11px; padding:6px;">
+                                🗺️ เปิดพิกัดใน Google Maps
                             </a>
                         </div>
-                        <div style="font-size:10px; color:#94a3b8; text-align:center; padding-top:8px; border-top:1px solid var(--border-color);">
-                            📹 สตรีมสัญญาณกล้องจราจรและสาธารณะเพื่อความปลอดภัย
+
+                        <div class="live-chat-box" style="flex:1; display:flex; flex-direction:column; background:#f8fafc; padding:10px; border-radius:10px; border:1px solid #cbd5e1;">
+                            <h4 style="font-size:12px; margin-bottom:6px;">💬 ข้อเสนอแนะจากครูผู้สอน & เพื่อนร่วมชั้น</h4>
+                            <div id="chatMessages" class="chat-messages" style="flex:1; max-height:110px; overflow-y:auto; font-size:12px; margin-bottom:6px;">
+                                <div class="chat-msg"><b>ครูผู้สอนวิชาศิลปะ:</b> องค์ประกอบภาพและการลงน้ำหนักแสงเงาสวยงามมากครับ!</div>
+                            </div>
+                            <form id="chatForm" class="chat-input-row" style="display:flex; gap:6px;">
+                                <input type="text" id="chatInput" placeholder="พิมพ์คำชมหรือข้อเสนอแนะ..." required style="flex:1; padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                                <button type="submit" class="btn btn-primary" style="padding:6px 12px; font-size:12px;">ส่ง</button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Citizen Incident Reporting & Live Stream Modal -->
+        <!-- ==============================================================
+             MODAL 7: PIN ARTWORK / SUBMIT HOMEWORK / ASSET CHECK FORM
+             ============================================================== -->
         <div id="citizenReportModal" class="modal-overlay hidden">
-            <div class="modal-content citizen-report-card card-glass" style="max-width: 600px;">
+            <div class="modal-content report-modal card-glass" style="max-width: 600px;">
                 <div class="studio-header">
                     <div class="live-indicator">
-                        <span class="shield-icon">📢</span>
-                        <h2>ประชาชนแจ้งเหตุฉุกเฉิน & ไลฟ์สดสถานการณ์</h2>
+                        <span style="font-size:22px;">📌</span>
+                        <h2>ปักหมุดส่งผลงานศิลปะ / รายงานจุดตรวจพัสดุโรงเรียน</h2>
                     </div>
                     <button id="btnCloseCitizenReport" class="btn-close">&times;</button>
                 </div>
 
                 <form id="citizenReportForm" class="citizen-form">
                     <div class="form-group">
-                        <label>📌 เลือกประเภทเหตุการณ์ฉุกเฉิน:</label>
+                        <label>เลือกหมวดหมู่การปักหมุด:</label>
                         <div class="report-cat-grid">
                             <label class="cat-option">
-                                <input type="radio" name="reportCat" value="accident" checked>
-                                <span class="cat-box">🚗 อุบัติเหตุจราจร</span>
+                                <input type="radio" name="reportCat" value="art-work" checked>
+                                <span class="cat-box">🎨 ส่งงานทัศนศิลป์</span>
                             </label>
                             <label class="cat-option">
-                                <input type="radio" name="reportCat" value="fire">
-                                <span class="cat-box">🔥 อัคคีภัย/เพลิงไหม้</span>
+                                <input type="radio" name="reportCat" value="field-project">
+                                <span class="cat-box">🌳 ศิลปะภาคสนาม</span>
                             </label>
                             <label class="cat-option">
-                                <input type="radio" name="reportCat" value="crime">
-                                <span class="cat-box">🚨 อาชญากรรม/ปล้น</span>
-                            </label>
-                            <label class="cat-option">
-                                <input type="radio" name="reportCat" value="disaster">
-                                <span class="cat-box">🌊 ภัยธรรมชาติ/น้ำท่วม</span>
-                            </label>
-                            <label class="cat-option">
-                                <input type="radio" name="reportCat" value="medical">
-                                <span class="cat-box">🚑 เจ็บป่วยฉุกเฉิน</span>
+                                <input type="radio" name="reportCat" value="asset-check">
+                                <span class="cat-box">📦 ตรวจเช็คพัสดุ/ครุภัณฑ์</span>
                             </label>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="reportTitleInput">💬 หัวข้อเหตุการณ์ฉุกเฉิน:</label>
-                        <input type="text" id="reportTitleInput" placeholder="ตัวอย่าง: เพลิงไหม้อาคารพาณิชย์ หรือ เกิดอุบัติเหตุชนซ้อนทับ..." class="text-input" required>
+                    <div class="form-group" style="display:grid; grid-template-columns: 2fr 1fr; gap:8px;">
+                        <div>
+                            <label>👤 ชื่อนักเรียน / ครูผู้รับผิดชอบพัสดุ:</label>
+                            <input type="text" id="reportNameInput" placeholder="เช่น ด.ช. ธนดล ม.2/1 หรือ ครูกิตติพงศ์" class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
+                        </div>
+                        <div>
+                            <label>🎓 ระดับชั้น / หมวด:</label>
+                            <select id="reportGradeInput" class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
+                                <option value="ม.1">ชั้น ม.1</option>
+                                <option value="ม.2">ชั้น ม.2</option>
+                                <option value="ม.3">ชั้น ม.3</option>
+                                <option value="ม.4">ชั้น ม.4</option>
+                                <option value="ม.5">ชั้น ม.5</option>
+                                <option value="ม.6">ชั้น ม.6</option>
+                                <option value="งานพัสดุ">งานพัสดุโรงเรียน</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="reportDescInput">📝 รายละเอียดเหตุการณ์เพิ่มเติม:</label>
-                        <textarea id="reportDescInput" rows="3" placeholder="ระบุรายละเอียด เช่น มีผู้บาดเจ็บ ควันไฟหนาแน่น ต้องการความช่วยเหลือด่วน..." class="text-input" style="resize:vertical;"></textarea>
+                        <label>📝 ชื่อผลงานศิลปะ / รายการพัสดุที่ตรวจเช็ค:</label>
+                        <input type="text" id="reportTitleInput" placeholder="เช่น ภาพวาดสีน้ำทัศนธาตุทั้ง 7 หรือ ตรวจเช็คขาตั้งวาดภาพห้องศิลปะ" required class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
                     </div>
 
                     <div class="form-group">
-                        <label>📍 ตำแหน่งพิกัด GPS อัตโนมัติ:</label>
+                        <label>📋 คำอธิบายเทคนิคที่ใช้ / สภาพพัสดุ:</label>
+                        <textarea id="reportDescInput" rows="2" placeholder="ระบุเทคนิคสีที่ใช้ แนวคิดผลงาน หรือจำนวนพัสดุคงเหลือ..." class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📸 แนบรูปภาพผลงานศิลปะ หรือ วิดีโอสั้นนำเสนอ (ไม่เกิน 1 นาที):</label>
+                        <input type="file" id="reportMediaInput" accept="image/*,video/*" class="form-input" style="padding: 8px; cursor: pointer; width:100%; border:1px dashed #2563eb; border-radius:8px;">
+                        <small style="color: #64748b; font-size: 11px; display: block; margin-top: 4px;">
+                            * รองรับภาพถ่ายผลงานศิลปะ ภาพถ่ายครุภัณฑ์ หรือคลิปวิดีโอนำเสนอผลงานความยาวไม่เกิน 60 วินาที
+                        </small>
+                        <div id="mediaPreviewWrapper" style="display:none; margin-top:10px; position:relative; border-radius:12px; overflow:hidden; background:#000; text-align:center; max-height:200px;">
+                            <img id="mediaPreviewImg" style="max-height:200px; width:100%; object-fit:contain; display:none;" />
+                            <video id="mediaPreviewVid" controls style="max-height:200px; width:100%; object-fit:contain; display:none;"></video>
+                            <button type="button" id="btnRemoveMedia" style="position:absolute; top:6px; right:6px; background:rgba(239,68,68,0.85); color:#fff; border:none; border-radius:50%; width:28px; height:28px; font-weight:bold; cursor:pointer;">&times;</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <label style="margin-bottom:0;">📍 พิกัดอาคารเรียน / จุดสร้างสรรค์ผลงาน:</label>
+                            <button type="button" id="btnPickMapPin" class="btn btn-secondary btn-sm" style="border-color:#2563eb; color:#2563eb; font-size:11px;">
+                                🎯 คลิกเลือกจุดบนแผนผังโรงเรียน
+                            </button>
+                        </div>
                         <div class="gps-location-preview">
-                            <span class="icon">🛰️</span>
-                            <span id="reportGpsText" class="gps-val">กำลังดึงพิกัดละติจูด/ลองจิจูด...</span>
+                            <span class="icon">🏫</span>
+                            <span id="reportGpsText" class="gps-val">กำลังดึงพิกัด GPS ปัจจุบัน...</span>
                         </div>
                     </div>
 
                     <div class="action-buttons-group">
-                        <button type="button" id="btnSubmitAndLive" class="btn btn-danger btn-pulse flex-1">
-                            🎥 🔴 ส่งแจ้งเหตุ + เริ่มไลฟ์สดทันที
+                        <button type="submit" id="btnSubmitReportOnly" class="btn btn-primary flex-1" style="background:linear-gradient(135deg, #2563eb, #7c3aed); color:#fff; border:none; padding:10px; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer;">
+                            📌 บันทึกปักหมุดส่งงาน / พัสดุ
                         </button>
-                        <button type="submit" id="btnSubmitReportOnly" class="btn btn-primary flex-1">
-                            📌 ปักหมุดแจ้งเหตุฉุกเฉิน
+                        <button type="button" id="btnSubmitAndLive" class="btn btn-danger btn-pulse flex-1" style="font-size:13px; padding:10px; border-radius:8px; cursor:pointer;">
+                            🎥 🔴 ส่งงาน + เริ่มไลฟ์สดนำเสนอ
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- ==============================================================
+             MODAL 8: CURRICULUM & PROCUREMENT COMPLIANCE AUDIT MODAL
+             ============================================================== -->
+        <div id="verifyModal" class="modal-overlay hidden">
+            <div class="modal-content card-glass" style="max-width: 680px;">
+                <div class="studio-header">
+                    <div class="live-indicator">
+                        <span class="shield-icon" style="color:#059669;">🛡️</span>
+                        <h2>มาตรฐานหลักสูตรแกนกลาง สพฐ. และระเบียบพัสดุโรงเรียน</h2>
+                    </div>
+                    <button id="btnCloseVerifyModal" class="btn-close">&times;</button>
+                </div>
+
+                <div style="padding:16px; color:#334155; font-size:13px; line-height:1.6;">
+                    <div style="background:rgba(16, 185, 129, 0.1); border:1px solid #10b981; border-radius:8px; padding:12px; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:24px;">✅</span>
+                        <div>
+                            <strong style="color:#047857; font-size:14px;">รับรองมาตรฐานสื่อการสอนและระบบทะเบียนคุมพัสดุโรงเรียนมัธยมศึกษา</strong><br>
+                            <span style="font-size:11px; color:#065f46;">สอดคล้องกับตัวชี้วัดกลุ่มสาระการเรียนรู้ศิลปะ (สพฐ.) และระเบียบกระทรวงการคลังว่าด้วยการบริหารพัสดุภาครัฐ</span>
+                        </div>
+                    </div>
+
+                    <ul style="list-style:none; padding:0; margin:0 0 16px 0; display:flex; flex-direction:column; gap:10px;">
+                        <li style="background:#f8fafc; padding:10px; border-radius:6px; border-left:4px solid #2563eb;">
+                            <strong>🎨 มาตรฐาน ศ 1.1 และ ศ 1.2 (ทัศนศิลป์ ม.1 - ม.6):</strong><br>
+                            <span style="font-size:12px;">ครอบคลุมความเข้าใจเรื่องทัศนธาตุทั้ง 7 (จุด เส้น รูปร่าง รูปทรง น้ำหนัก สี บริเวณว่าง พื้นผิว) การวิเคราะห์งานศิลปะ และการสร้างสรรค์ผลงาน</span>
+                        </li>
+                        <li style="background:#f8fafc; padding:10px; border-radius:6px; border-left:4px solid #d97706;">
+                            <strong>📦 ระบบทะเบียนคุมทรัพย์สินและพัสดุโรงเรียน:</strong><br>
+                            <span style="font-size:12px;">รองรับการกำหนดรหัสครุภัณฑ์ ตรวจสอบยอดคงเหลือ การเบิก-จ่ายวัสดุสิ้นเปลือง และการส่งออกไฟล์ CSV สำหรับงานพัสดุประจำปีงบประมาณ</span>
+                        </li>
+                        <li style="background:#f8fafc; padding:10px; border-radius:6px; border-left:4px solid #7c3aed;">
+                            <strong>🤖 ระบบ AI ช่วยสอนและประเมินผลตามสภาพจริง (Authentic Assessment):</strong><br>
+                            <span style="font-size:12px;">ช่วยครูสร้างแผนการสอน Active Learning 5 ขั้นตอน เกณฑ์ Rubric และตรวจให้คะแนนผลงานนักเรียนพร้อมพิกัด GPS จริง</span>
+                        </li>
+                    </ul>
+
+                    <div style="text-align:center; padding-top:10px; border-top:1px solid #e2e8f0;">
+                        <button id="btnConfirmVerify" class="btn btn-primary" style="background:#059669; color:#fff; border:none; padding:8px 24px; border-radius:8px; font-weight:700; cursor:pointer;">รับทราบข้อมูลมาตรฐาน</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Leaflet JS Library -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=19"></script>
 </body>
 </html>
