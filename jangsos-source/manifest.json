@@ -1,11 +1,11 @@
 {
-  "name": "EDU-CRAFT AI - ระบบช่วยสอนครูมัธยมศึกษา (วิชาศิลปะ & พัสดุโรงเรียน)",
-  "short_name": "EduCraftAI",
-  "description": "ระบบช่วยสอนครูมัธยมศึกษา AI สร้างแผนการสอน ส่งงานศิลปะ และบริหารพัสดุโรงเรียน",
+  "name": "ระบบจัดการชั้นเรียนและงานพัสดุโรงเรียน",
+  "short_name": "ระบบชั้นเรียน-พัสดุ",
+  "description": "ระบบบริหารจัดการชั้นเรียน ส่งงานผ่าน QR Code และงานพัสดุโรงเรียนมัธยมศึกษา",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f1f5f9",
-  "theme_color": "#2563eb",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f172a",
   "orientation": "any",
   "icons": [
     {

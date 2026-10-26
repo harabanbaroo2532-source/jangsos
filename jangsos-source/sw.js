@@ -1,9 +1,8 @@
 /**
- * GUARDIAN LIVE - Progressive Web App Service Worker
- * Handles offline caching, asset prefetching, and PWA cross-device support.
+ * Service Worker - Minimal Classroom & Inventory System (v22)
  */
 
-const CACHE_NAME = 'educraft-ai-v21';
+const CACHE_NAME = 'school-minimal-v22';
 
 self.addEventListener('fetch', (event) => {
     event.respondWith(

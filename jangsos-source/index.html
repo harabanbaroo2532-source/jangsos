@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>EDU-CRAFT AI | ระบบช่วยสอนครูมัธยมศึกษา (วิชาศิลปะ & บริหารพัสดุโรงเรียน)</title>
+    <title>ระบบจัดการชั้นเรียนและงานพัสดุ | กลุ่มสาระการเรียนรู้ศิลปะ</title>
     
     <!-- PWA & Mobile Meta Tags -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="EduCraftAI">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135755.png">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ระบบงานวิชาการ-พัสดุ">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="styles.css?v=21">
+    <link rel="stylesheet" href="styles.css?v=22">
 </head>
 <body>
     <div class="guardian-app">
@@ -26,123 +25,108 @@
         <header class="app-header">
             <div class="brand">
                 <div class="logo-shield">
-                    <span class="shield-icon">🎨</span>
-                    <span class="pulse-beacon" style="background: rgba(37, 99, 235, 0.3);"></span>
+                    <span class="shield-icon" style="font-size:15px; font-weight:700; color:#334155;">ศป</span>
                 </div>
                 <div class="brand-info">
-                    <h1>EDU-CRAFT <span class="badge-live" style="background: linear-gradient(135deg, #2563eb, #9333ea);">TEACHER AI</span></h1>
-                    <p>ระบบช่วยสอนครูมัธยมศึกษา (ม.1-ม.6) • กลุ่มสาระศิลปะ & ระบบบริหารพัสดุโรงเรียน</p>
+                    <h1>ระบบจัดการชั้นเรียนและงานพัสดุ <span class="badge-live">มัธยมศึกษา</span></h1>
+                    <p>กลุ่มสาระการเรียนรู้ศิลปะ (ม.1 - ม.6) • ทะเบียนพัสดุและระเบียบการจัดซื้อจัดจ้าง</p>
                 </div>
             </div>
 
             <div class="header-center">
                 <div class="gps-status-badge card-glass" id="userGpsStatus">
-                    <span class="icon-gps">📲</span>
                     <div class="gps-text">
-                        <span class="label">รหัสห้องเรียน QR Code สด:</span>
-                        <span id="gpsCoordsText" class="val">ART-2569 (พร้อมสแกน)</span>
+                        <span class="label">รหัสห้องเรียน QR</span>
+                        <span id="gpsCoordsText" class="val">ART-2569</span>
                     </div>
                 </div>
 
-                <!-- School Semester & Active Period Badge -->
                 <div class="weather-header-badge card-glass" id="weatherHeaderBadge">
-                    <span class="icon-weather" id="hdrWeatherIcon">🏫</span>
                     <div class="gps-text">
-                        <span class="label">สถานะภาคเรียน & อาคารศิลปะ:</span>
-                        <span id="hdrWeatherText" class="val">ภาคเรียนที่ 2 • เช็คชื่อ & ส่งงานผ่าน QR</span>
+                        <span class="label">ระบบงานปัจจุบัน</span>
+                        <span id="hdrWeatherText" class="val">เช็คชื่อและส่งงานผ่าน QR Code</span>
                     </div>
                 </div>
             </div>
 
             <div class="header-right">
-                <button id="btnOpenAiGenerator" class="btn btn-primary" style="background: linear-gradient(135deg, #7c3aed, #2563eb); color:#fff; font-weight:700;">
-                    <span class="icon">🤖</span> AI สร้างแผนการสอน/ข้อสอบ
+                <button id="btnOpenAiGenerator" class="btn btn-primary">
+                    จัดทำแผนการสอน / ข้อสอบ
                 </button>
-                <button id="btnOpenProcurementModal" class="btn btn-primary" style="background: linear-gradient(135deg, #059669, #0d9488); color:#fff; font-weight:700;">
-                    <span class="icon">⚖️</span> ระบบจัดซื้อจัดจ้าง & กฎหมายพัสดุ
+                <button id="btnOpenProcurementModal" class="btn btn-secondary">
+                    ระเบียบพัสดุ & จัดซื้อจัดจ้าง
                 </button>
-                <button id="btnOpenInventoryModal" class="btn btn-secondary" style="border-color: rgba(217, 119, 6, 0.6); color: #d97706; font-weight:700;">
-                    <span class="icon">📦</span> ทะเบียนพัสดุโรงเรียน
+                <button id="btnOpenInventoryModal" class="btn btn-secondary">
+                    ทะเบียนพัสดุ
                 </button>
-                <button id="btnOpenVideoLibrary" class="btn btn-secondary" style="border-color: rgba(236, 72, 153, 0.6); color: #db2777; font-weight:700;">
-                    <span class="icon">🎬</span> สื่อวิดีโอสอนศิลปะ
+                <button id="btnOpenVideoLibrary" class="btn btn-secondary">
+                    สื่อวิดีโอการสอน
                 </button>
-                <button id="btnExportReport" class="btn btn-secondary" style="border-color: rgba(16, 185, 129, 0.5); color: #059669;">
-                    <span class="icon">📄</span> Export ปพ.5 / พัสดุ CSV
+                <button id="btnExportReport" class="btn btn-secondary">
+                    ส่งออก CSV (ปพ.5 / พัสดุ)
                 </button>
-                <button id="btnAiSpeech" class="btn btn-secondary" style="border-color: rgba(37, 99, 235, 0.4); color: #2563eb;">
-                    <span class="icon">🗣️</span> เสียงบรรยายครู AI
+                <button id="btnAiSpeech" class="btn btn-secondary">
+                    อ่านออกเสียง
                 </button>
-                <button id="btnStartBroadcasting" class="btn btn-danger btn-pulse" style="background: linear-gradient(135deg, #e11d48, #db2777);">
-                    <span class="icon">🎥</span> 🔴 ไลฟ์สดสาธิตวาดภาพ
+                <button id="btnStartBroadcasting" class="btn btn-secondary">
+                    กล้องสาธิตการสอน
                 </button>
             </div>
         </header>
 
-        <!-- Smart School Stats & Curriculum Progress Bar -->
+        <!-- Minimal Summary Bar -->
         <div class="command-tactical-bar card-glass">
             <div class="threat-meter-box">
-                <span class="threat-label">🎓 หลักสูตรแกนกลาง สพฐ. (ศ 1.1 - ศ 3.2):</span>
-                <span class="threat-badge" id="aiThreatBadge" style="background: rgba(16, 185, 129, 0.15); color: #047857; border: 1px solid rgba(16, 185, 129, 0.4);">ACTIVE • แผนการสอน & พัสดุครบถ้วน 100%</span>
+                <span class="threat-label">มาตรฐานหลักสูตรแกนกลาง สพฐ. (ศ 1.1 - ศ 3.2):</span>
+                <span class="threat-badge" id="aiThreatBadge">พร้อมใช้งาน</span>
             </div>
             <div class="tactical-stats-grid">
                 <div class="tac-stat-item">
-                    <span class="tac-icon">🎨</span>
-                    <span class="tac-val" id="tacAlertsCount">3</span>
-                    <span class="tac-lbl">ผลงานศิลปะ/การบ้าน</span>
+                    <span class="tac-lbl">งานที่ส่งแล้ว</span>
+                    <span class="tac-val" id="tacAlertsCount">0</span>
                 </div>
                 <div class="tac-stat-item">
-                    <span class="tac-icon">📦</span>
-                    <span class="tac-val" id="tacAssetCount">5</span>
-                    <span class="tac-lbl">รายการพัสดุ/ครุภัณฑ์</span>
+                    <span class="tac-lbl">รายการพัสดุ</span>
+                    <span class="tac-val" id="tacAssetCount">0</span>
                 </div>
                 <div class="tac-stat-item">
-                    <span class="tac-icon">🎬</span>
+                    <span class="tac-lbl">สื่อวิดีโอ</span>
                     <span class="tac-val" id="tacVideoCount">3</span>
-                    <span class="tac-lbl">วิดีโอบทเรียนศิลปะ</span>
                 </div>
                 <div class="tac-stat-item">
-                    <span class="tac-icon">✅</span>
-                    <span class="tac-val" id="tacAttendanceCount">98%</span>
-                    <span class="tac-lbl">การเข้าเรียน ม.1-ม.6</span>
+                    <span class="tac-lbl">เข้าเรียนวันนี้</span>
+                    <span class="tac-val" id="tacAttendanceCount">0 คน</span>
                 </div>
                 <div class="tac-stat-item">
-                    <span class="tac-icon">💰</span>
-                    <span class="tac-val" id="tacBudgetVal">฿392K</span>
-                    <span class="tac-lbl">มูลค่าครุภัณฑ์หมวดศิลปะ</span>
+                    <span class="tac-lbl">มูลค่าพัสดุรวม</span>
+                    <span class="tac-val" id="tacBudgetVal">฿0</span>
                 </div>
-                <button id="btnVerifyDataSources" class="btn btn-secondary btn-sm" style="border-color:#059669; color:#059669; font-weight:700;">
-                    🛡️ มาตรฐานหลักสูตร & พัสดุ
+                <button id="btnVerifyDataSources" class="btn btn-secondary btn-sm">
+                    ข้อมูลหลักสูตร & ระเบียบ
                 </button>
             </div>
         </div>
 
         <!-- Main Workspace Grid -->
         <main class="dashboard-grid">
-            <!-- Left Sidebar: Quick Actions, Submissions & Inventory Feed -->
+            <!-- Left Sidebar: Quick Actions & Submissions List -->
             <aside class="left-panel">
                 <!-- Primary Teacher Action Card -->
-                <div class="sos-trigger-card card-glass" style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
-                    <button id="btnSosTrigger" class="btn-sos-pulse" style="background: linear-gradient(135deg, #2563eb, #7c3aed); border-color: #4f46e5; box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);">
+                <div class="sos-trigger-card card-glass">
+                    <button id="btnSosTrigger" class="btn-sos-pulse">
                         <div class="sos-inner">
-                            <span class="sos-icon">🤖</span>
-                            <span class="sos-text" style="font-size:18px; font-weight:800;">เปิดผู้ช่วย AI สร้างแผนการสอน & ข้อสอบ</span>
-                            <span class="sos-sub" style="font-size:11px; opacity:0.9;">สร้างแผนการสอน 8 กลุ่มสาระ (เน้นทัศนศิลป์/ดนตรี/นาฏศิลป์ ม.1-ม.6)</span>
+                            <span class="sos-text">ระบบจัดทำแผนการสอน ใบงาน และแบบทดสอบ</span>
+                            <span class="sos-sub">สร้างเอกสารการสอนรายวิชาทัศนศิลป์ ดนตรี นาฏศิลป์ (ม.1 - ม.6)</span>
                         </div>
                     </button>
 
-                    <!-- Action Buttons: QR Submit Student Art / Procurement Law -->
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top: 10px;">
-                        <button id="btnReportIncident" class="btn btn-primary" style="padding: 10px 8px; background: linear-gradient(135deg, #db2777, #9333ea); border: none; font-weight: 700; font-size: 12px; border-radius: 10px; color:#fff; cursor:pointer;">
-                            📲 ส่งงานศิลปะ / แจ้งตรวจพัสดุ
+                    <!-- Action Buttons -->
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-top: 8px;">
+                        <button id="btnReportIncident" class="btn btn-secondary" style="justify-content:center; padding:8px;">
+                            + ส่งงาน / บันทึกตรวจพัสดุ
                         </button>
-                        <button id="btnQuickOpenProcurement" class="btn btn-primary" style="padding: 10px 8px; background: linear-gradient(135deg, #059669, #0d9488); border: none; font-weight: 700; font-size: 12px; border-radius: 10px; color:#fff; cursor:pointer;">
-                            ⚖️ จัดซื้อจัดจ้าง & กฎหมายพัสดุ
-                        </button>
-                    </div>
-                    <div style="margin-top:6px;">
-                        <button id="btnQuickCheckAttendance" class="btn btn-secondary" style="width:100%; padding: 8px; border-color: #2563eb; color: #2563eb; font-weight: 700; font-size: 12px; border-radius: 8px; cursor:pointer;">
-                            📲 เปิดสแกน QR เช็คชื่อนักเรียนเข้าเรียน (ม.1 - ม.6)
+                        <button id="btnQuickOpenProcurement" class="btn btn-secondary" style="justify-content:center; padding:8px;">
+                            กฎหมายจัดซื้อจัดจ้าง
                         </button>
                     </div>
                 </div>
@@ -150,166 +134,161 @@
                 <!-- Filter Tabs for Left Feed -->
                 <div class="feed-section card-glass" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
                     <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <h3 style="font-size:14px; font-weight:800; color:#0f172a;">🎨 ผลงานนักเรียน & จุดตรวจพัสดุสด</h3>
-                        <span class="badge-count" id="activeAlertCount" style="background:#2563eb; color:#fff; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:700;">3 รายการ</span>
+                        <h3 style="font-size:13px; font-weight:600; color:#0f172a;">รายการส่งงานและตรวจพัสดุ</h3>
+                        <span class="badge-count" id="activeAlertCount">0 รายการ</span>
                     </div>
 
-                    <div class="category-filter-bar" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:8px; border-bottom:1px solid #e2e8f0;">
+                    <div class="category-filter-bar" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:8px; border-bottom:1px solid #f1f5f9;">
                         <button class="filter-chip active" data-filter="all">ทั้งหมด</button>
-                        <button class="filter-chip" data-filter="art-work">🎨 งานทัศนศิลป์</button>
-                        <button class="filter-chip" data-filter="field-project">🌳 ศิลปะภาคสนาม</button>
-                        <button class="filter-chip" data-filter="asset-check">📦 พัสดุโรงเรียน</button>
+                        <button class="filter-chip" data-filter="art-work">งานทัศนศิลป์</button>
+                        <button class="filter-chip" data-filter="field-project">โครงงาน</button>
+                        <button class="filter-chip" data-filter="asset-check">พัสดุ</button>
                     </div>
 
-                    <div id="incidentsList" class="incidents-list" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
-                        <!-- Dynamic Student Artworks & Asset Pins rendered here -->
+                    <div id="incidentsList" class="incidents-list" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+                        <!-- Dynamic Student Artworks & Asset Records rendered here -->
                     </div>
                 </div>
 
-                <!-- School Department Quick Contacts / Resources -->
+                <!-- School Department Quick Shortcuts -->
                 <div class="hotlines-card card-glass">
-                    <h4 style="font-size:12px; color:#475569; margin-bottom:8px;">🏫 ระบบงานวิชาการและพัสดุโรงเรียนมัธยม</h4>
+                    <h4 style="font-size:12px; font-weight:600; color:#475569; margin-bottom:8px;">เครื่องมือประกอบการสอน</h4>
                     <div class="hotline-grid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:6px;">
-                        <button type="button" class="hotline-item" id="btnQuickArtVideo1" style="border:1px solid #cbd5e1; background:#f8fafc; padding:6px 8px; border-radius:8px; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items:center;">
-                            <span class="hl-name" style="font-size:11px; font-weight:600;">🎬 ทัศนธาตุ ม.1</span>
-                            <span class="hl-num" style="font-size:10px; color:#2563eb; font-weight:700;">เปิดดู</span>
+                        <button type="button" class="hotline-item" id="btnQuickArtVideo1">
+                            <span class="hl-name">บทเรียนทัศนธาตุ</span>
+                            <span class="hl-num">ดูวิดีโอ</span>
                         </button>
-                        <button type="button" class="hotline-item" id="btnQuickArtVideo2" style="border:1px solid #cbd5e1; background:#f8fafc; padding:6px 8px; border-radius:8px; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items:center;">
-                            <span class="hl-name" style="font-size:11px; font-weight:600;">✏️ เรื่องเส้น (Line)</span>
-                            <span class="hl-num" style="font-size:10px; color:#db2777; font-weight:700;">เปิดดู</span>
+                        <button type="button" class="hotline-item" id="btnQuickArtVideo2">
+                            <span class="hl-name">บทเรียนเรื่องเส้น</span>
+                            <span class="hl-num">ดูวิดีโอ</span>
                         </button>
-                        <button type="button" class="hotline-item" id="btnQuickBorrowAsset" style="border:1px solid #cbd5e1; background:#f8fafc; padding:6px 8px; border-radius:8px; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items:center;">
-                            <span class="hl-name" style="font-size:11px; font-weight:600;">📦 เบิก/ยืมพัสดุ</span>
-                            <span class="hl-num" style="font-size:10px; color:#d97706; font-weight:700;">จัดการ</span>
+                        <button type="button" class="hotline-item" id="btnQuickBorrowAsset">
+                            <span class="hl-name">เบิก-ยืมพัสดุ</span>
+                            <span class="hl-num">จัดการ</span>
                         </button>
-                        <button type="button" class="hotline-item" id="btnQuickWhiteboard" style="border:1px solid #cbd5e1; background:#f8fafc; padding:6px 8px; border-radius:8px; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items:center;">
-                            <span class="hl-name" style="font-size:11px; font-weight:600;">🖌️ กระดานวาดสี</span>
-                            <span class="hl-num" style="font-size:10px; color:#059669; font-weight:700;">วาดสด</span>
+                        <button type="button" class="hotline-item" id="btnQuickWhiteboard">
+                            <span class="hl-name">กระดานวาดภาพ</span>
+                            <span class="hl-num">เปิด</span>
                         </button>
                     </div>
                 </div>
             </aside>
 
-            <!-- Right Panel: Smart QR Code Attendance & Homework Submission Hub (Replaced Map) -->
-            <section class="map-container-section card-glass" style="position:relative; padding:18px; overflow-y:auto; display:flex; flex-direction:column; gap:16px; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
+            <!-- Right Panel: Minimal QR Code Attendance & Homework Submission Hub -->
+            <section class="map-container-section card-glass" style="position:relative; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:16px; background:#ffffff;">
                 <!-- Header Bar of QR Hub -->
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:2px solid #e2e8f0; padding-bottom:12px;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:28px;">📲</span>
-                        <div>
-                            <h2 style="font-size:18px; font-weight:800; color:#0f172a; margin:0;">ระบบเช็คชื่อเข้าเรียน & ส่งงานศิลปะผ่าน QR Code</h2>
-                            <p style="font-size:12px; color:#64748b; margin:0;">นักเรียนใช้มือถือสแกน QR Code บนหน้าจอเพื่อเช็คชื่อเข้าเรียน หรืออัปโหลดภาพถ่าย/คลิปผลงานส่งครูได้ทันที</p>
-                        </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:1px solid #e2e8f0; padding-bottom:14px;">
+                    <div>
+                        <h2 style="font-size:16px; font-weight:600; color:#0f172a; margin:0 0 2px 0;">ระบบเช็คชื่อเข้าเรียนและส่งงานผ่าน QR Code</h2>
+                        <p style="font-size:12px; color:#64748b; margin:0;">แสดง QR Code บนหน้าจอให้นักเรียนสแกนเพื่อลงเวลาเรียนหรือส่งผลงาน</p>
                     </div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button id="btnModeQrAttend" class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;">
-                            📋 โหมด QR เช็คชื่อเข้าเรียน
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button id="btnModeQrAttend" class="btn btn-primary btn-sm">
+                            โหมดเช็คชื่อเข้าเรียน
                         </button>
-                        <button id="btnModeQrHomework" class="btn btn-secondary btn-sm" style="border-color:#db2777; color:#db2777; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;">
-                            🎨 โหมด QR ส่งงานศิลปะ/การบ้าน
+                        <button id="btnModeQrHomework" class="btn btn-secondary btn-sm">
+                            โหมดส่งงาน / การบ้าน
                         </button>
-                        <button id="btnOpenWhiteboardModal" class="btn btn-secondary btn-sm" style="background:linear-gradient(135deg,#db2777,#7c3aed); color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;">
-                            🖌️ กระดานไวท์บอร์ดสาธิต
+                        <button id="btnOpenWhiteboardModal" class="btn btn-secondary btn-sm">
+                            กระดานไวท์บอร์ด
                         </button>
                     </div>
                 </div>
 
                 <!-- Classroom Selector & Active Session Configuration -->
-                <div style="display:grid; grid-template-columns: 1fr 1.5fr auto; gap:10px; background:#f1f5f9; padding:12px; border-radius:12px; border:1px solid #cbd5e1; align-items:end;">
+                <div style="display:grid; grid-template-columns: 1fr 1.6fr auto; gap:10px; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0; align-items:end;">
                     <div>
-                        <label style="font-size:11px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">🏫 เลือกห้องเรียน / ระดับชั้น:</label>
-                        <select id="qrClassSelect" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13px; font-weight:700; color:#0f172a; background:#fff;">
-                            <option value="ม.1/1">ชั้นมัธยมศึกษาปีที่ 1/1 (ทัศนศิลป์พื้นฐาน)</option>
-                            <option value="ม.1/2">ชั้นมัธยมศึกษาปีที่ 1/2 (ทัศนธาตุทั้ง 7)</option>
-                            <option value="ม.2/1">ชั้นมัธยมศึกษาปีที่ 2/1 (การออกแบบและสี)</option>
-                            <option value="ม.3/1">ชั้นมัธยมศึกษาปีที่ 3/1 (ศิลปะไทยและภูมิปัญญา)</option>
-                            <option value="ม.4/1">ชั้นมัธยมศึกษาปีที่ 4/1 (องค์ประกอบศิลป์และเส้น)</option>
-                            <option value="ม.5/1">ชั้นมัธยมศึกษาปีที่ 5/1 (จิตรกรรมสีน้ำ-อะคริลิก)</option>
-                            <option value="ม.6/1">ชั้นมัธยมศึกษาปีที่ 6/1 (แฟ้มสะสมงานศิลปะ Portfolio)</option>
+                        <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">ระดับชั้น / ห้องเรียน</label>
+                        <select id="qrClassSelect" style="width:100%; padding:7px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:12.5px; color:#0f172a; background:#fff;">
+                            <option value="ม.1/1">ชั้นมัธยมศึกษาปีที่ 1/1</option>
+                            <option value="ม.1/2">ชั้นมัธยมศึกษาปีที่ 1/2</option>
+                            <option value="ม.2/1">ชั้นมัธยมศึกษาปีที่ 2/1</option>
+                            <option value="ม.3/1">ชั้นมัธยมศึกษาปีที่ 3/1</option>
+                            <option value="ม.4/1">ชั้นมัธยมศึกษาปีที่ 4/1</option>
+                            <option value="ม.5/1">ชั้นมัธยมศึกษาปีที่ 5/1</option>
+                            <option value="ม.6/1">ชั้นมัธยมศึกษาปีที่ 6/1</option>
                         </select>
                     </div>
                     <div>
-                        <label style="font-size:11px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">📝 หัวข้อคาบเรียน / ชิ้นงานที่เปิดรับส่ง:</label>
-                        <input type="text" id="qrSessionTopicInput" value="คาบเรียนที่ 1: ปฏิบัติการวาดเส้นและระบายสีทัศนธาตุทั้ง 7" style="width:100%; padding:8px 10px; border-radius:8px; border:1px solid #cbd5e1; font-size:13px; background:#fff;">
+                        <label style="font-size:11px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">หัวข้อคาบเรียน / ชิ้นงานที่เปิดรับ</label>
+                        <input type="text" id="qrSessionTopicInput" placeholder="ระบุหัวข้อคาบเรียนหรือชื่อชิ้นงาน..." value="ทัศนธาตุและการสร้างสรรค์งานทัศนศิลป์" style="width:100%; padding:7px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:12.5px; background:#fff;">
                     </div>
-                    <button type="button" id="btnGenerateNewQr" class="btn btn-primary" style="background:linear-gradient(135deg,#2563eb,#7c3aed); color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap;">
-                        🔄 สร้าง QR Code ใหม่
+                    <button type="button" id="btnGenerateNewQr" class="btn btn-secondary" style="padding:7px 14px;">
+                        เปลี่ยนรหัส QR
                     </button>
                 </div>
 
                 <!-- Main Split Grid: Left = QR Code Display Card, Right = Student Roster & Check-in Table -->
-                <div style="display:grid; grid-template-columns: 300px 1fr; gap:16px; flex:1; min-height:380px;">
-                    <!-- Left Card: QR Code Generator & Student Scan Simulator -->
-                    <div style="background:#ffffff; border:2px solid #bfdbfe; border-radius:14px; padding:16px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; box-shadow:0 4px 14px rgba(37,99,235,0.08);">
+                <div style="display:grid; grid-template-columns: 270px 1fr; gap:16px; flex:1; min-height:360px;">
+                    <!-- Left Card: Clean QR Code Display -->
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center;">
                         <div>
-                            <span id="qrModeBadge" style="background:#dbeafe; color:#1d4ed8; font-size:11px; font-weight:800; padding:4px 10px; border-radius:20px; display:inline-block; margin-bottom:6px;">
-                                📲 สแกนเช็คชื่อเข้าเรียนสด
+                            <span id="qrModeBadge" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-size:11px; font-weight:600; padding:3px 10px; border-radius:4px; display:inline-block; margin-bottom:8px;">
+                                สแกนเช็คชื่อเข้าเรียน
                             </span>
-                            <h3 id="qrDisplayClassTitle" style="font-size:15px; font-weight:800; color:#0f172a; margin:0 0 4px 0;">ห้อง ม.1/1 • วิชาทัศนศิลป์</h3>
-                            <p id="qrDisplayTopicTitle" style="font-size:11px; color:#64748b; margin:0 0 10px 0;">คาบเรียนที่ 1: ปฏิบัติการวาดเส้นและระบายสี</p>
+                            <h3 id="qrDisplayClassTitle" style="font-size:14px; font-weight:600; color:#0f172a; margin:0 0 2px 0;">ห้อง ม.1/1 • วิชาทัศนศิลป์</h3>
+                            <p id="qrDisplayTopicTitle" style="font-size:11.5px; color:#64748b; margin:0 0 10px 0;">ทัศนธาตุและการสร้างสรรค์งานทัศนศิลป์</p>
                         </div>
 
                         <!-- Dynamic QR Code Image Box -->
-                        <div style="background:#ffffff; padding:12px; border:3px solid #2563eb; border-radius:14px; position:relative; box-shadow:0 4px 12px rgba(37,99,235,0.12);">
-                            <img id="qrCodeImage" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://jangsos.onrender.com/?action=checkin%26class=M1-1" alt="QR Code สำหรับนักเรียนสแกน" style="width:190px; height:190px; display:block; margin:0 auto;" />
-                            <div style="font-family:monospace; font-size:11px; font-weight:800; color:#1e40af; margin-top:6px;">
+                        <div style="background:#ffffff; padding:12px; border:1px solid #cbd5e1; border-radius:8px;">
+                            <img id="qrCodeImage" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://jangsos.onrender.com/?action=checkin%26class=M1-1" alt="QR Code สำหรับนักเรียนสแกน" style="width:176px; height:176px; display:block; margin:0 auto;" />
+                            <div style="font-family:monospace; font-size:11px; font-weight:600; color:#475569; margin-top:8px;">
                                 รหัสคาบเรียน: <span id="qrPinCodeText">ART-2569</span>
                             </div>
                         </div>
 
-                        <div style="width:100%; display:flex; flex-direction:column; gap:6px; margin-top:10px;">
-                            <button type="button" id="btnSimulateStudentScan" class="btn btn-primary" style="width:100%; background:#059669; color:#fff; border:none; padding:9px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">
-                                📱 จำลองนักเรียนสแกน QR เช็คชื่อ/ส่งงาน
-                            </button>
+                        <div style="width:100%; display:flex; flex-direction:column; gap:6px; margin-top:12px;">
                             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
-                                <button type="button" id="btnFullscreenQr" class="btn btn-secondary btn-sm" style="font-size:11px; border-color:#2563eb; color:#2563eb;">
-                                    🔍 ขยายเต็มจอทีวี
+                                <button type="button" id="btnFullscreenQr" class="btn btn-secondary btn-sm" style="justify-content:center;">
+                                    ขยายเต็มจอ
                                 </button>
-                                <button type="button" id="btnOpenDirectSubmitModal" class="btn btn-secondary btn-sm" style="font-size:11px; border-color:#db2777; color:#db2777;">
-                                    📤 ฟอร์มส่งงาน
+                                <button type="button" id="btnOpenDirectSubmitModal" class="btn btn-primary btn-sm" style="justify-content:center;">
+                                    ฟอร์มส่งงาน
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Right Card: Live Student Attendance & Homework Submission Roster -->
-                    <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:14px; padding:14px; display:flex; flex-direction:column; overflow:hidden;">
+                    <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:14px; display:flex; flex-direction:column; overflow:hidden;">
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
                             <div>
-                                <h3 style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">👨‍🎓 รายชื่อนักเรียนที่สแกน QR เช็คชื่อและส่งงานแล้ว</h3>
-                                <span style="font-size:11px; color:#64748b;">อัปเดตสถานะการมาเรียนและสถานะการส่งชิ้นงานศิลปะแบบเรียลไทม์</span>
+                                <h3 style="font-size:13.5px; font-weight:600; color:#0f172a; margin:0;">รายชื่อการเช็คชื่อและส่งงาน</h3>
+                                <span style="font-size:11px; color:#64748b;">บันทึกข้อมูลเมื่อนักเรียนสแกน QR Code หรือครูลงชื่อให้</span>
                             </div>
-                            <div style="display:flex; gap:6px;">
-                                <span id="qrPresentSummary" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:800;">มาเรียน: 8 คน</span>
-                                <span id="qrSubmittedSummary" style="background:#fdf2f8; color:#be185d; border:1px solid #fbcfe8; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:800;">ส่งงานแล้ว: 6 คน</span>
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <span id="qrPresentSummary" style="background:#f8fafc; color:#334155; border:1px solid #e2e8f0; padding:3px 10px; border-radius:6px; font-size:11px; font-weight:600;">มาเรียน: 0 คน</span>
+                                <span id="qrSubmittedSummary" style="background:#f8fafc; color:#334155; border:1px solid #e2e8f0; padding:3px 10px; border-radius:6px; font-size:11px; font-weight:600;">ส่งงานแล้ว: 0 คน</span>
+                                <button type="button" id="btnClearRoster" class="btn btn-secondary btn-sm" style="padding:3px 8px; font-size:11px;">ล้างรายชื่อ</button>
                             </div>
                         </div>
 
                         <!-- Quick Manual Student Check-in Bar -->
-                        <form id="manualCheckinForm" style="display:grid; grid-template-columns: 0.8fr 1.6fr 1fr auto; gap:6px; margin-bottom:10px; background:#f8fafc; padding:8px; border-radius:8px; border:1px solid #e2e8f0;">
-                            <input type="text" id="stdIdInput" placeholder="เลขประจำตัว (เช่น 69109)" required style="padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <form id="manualCheckinForm" style="display:grid; grid-template-columns: 0.8fr 1.6fr 1fr auto; gap:6px; margin-bottom:10px; background:#f8fafc; padding:8px; border-radius:6px; border:1px solid #e2e8f0;">
+                            <input type="text" id="stdIdInput" placeholder="รหัสนักเรียน" required style="padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
                             <input type="text" id="stdNameInput" placeholder="ชื่อ-นามสกุล นักเรียน" required style="padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                            <select id="stdStatusInput" style="padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                                <option value="มาเรียน">✅ มาเรียนปกติ</option>
-                                <option value="มาสาย">⏰ มาสาย</option>
-                                <option value="ลาป่วย/ลากิจ">📝 ลาป่วย/ลากิจ</option>
+                            <select id="stdStatusInput" style="padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; background:#fff;">
+                                <option value="มาเรียน">มาเรียน</option>
+                                <option value="มาสาย">มาสาย</option>
+                                <option value="ลาป่วย/ลากิจ">ลาป่วย/ลากิจ</option>
                             </select>
-                            <button type="submit" class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer;">
-                                + เช็คชื่อ
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                + บันทึกชื่อ
                             </button>
                         </form>
 
                         <!-- Student Attendance & Homework Table -->
-                        <div style="flex:1; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px;">
+                        <div style="flex:1; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px;">
                             <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left;">
-                                <thead style="background:#f1f5f9; color:#334155; position:sticky; top:0;">
+                                <thead style="background:#f8fafc; color:#475569; position:sticky; top:0; border-bottom:1px solid #e2e8f0;">
                                     <tr>
-                                        <th style="padding:8px 10px;">เลขที่ / รหัส</th>
-                                        <th style="padding:8px 10px;">ชื่อ-นามสกุล นักเรียน</th>
-                                        <th style="padding:8px 10px;">เวลาสแกน QR</th>
-                                        <th style="padding:8px 10px;">สถานะเข้าเรียน</th>
-                                        <th style="padding:8px 10px;">การส่งงานศิลปะ</th>
-                                        <th style="padding:8px 10px; text-align:center;">จัดการ / ดูงาน</th>
+                                        <th style="padding:8px 10px; font-weight:600;">รหัสนักเรียน</th>
+                                        <th style="padding:8px 10px; font-weight:600;">ชื่อ-นามสกุล</th>
+                                        <th style="padding:8px 10px; font-weight:600;">เวลา</th>
+                                        <th style="padding:8px 10px; font-weight:600;">สถานะ</th>
+                                        <th style="padding:8px 10px; font-weight:600;">การส่งงาน</th>
+                                        <th style="padding:8px 10px; font-weight:600; text-align:center;">จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody id="qrAttendanceTableBody">
@@ -323,35 +302,32 @@
         </main>
 
         <!-- ==============================================================
-             MODAL 1: AI LESSON PLAN, WORKSHEET & QUIZ GENERATOR (ม.1 - ม.6)
+             MODAL 1: LESSON PLAN, WORKSHEET & QUIZ GENERATOR (ม.1 - ม.6)
              ============================================================== -->
         <div id="aiGeneratorModal" class="modal-overlay hidden">
-            <div class="modal-content card-glass" style="max-width: 820px; width: 95%;">
-                <div class="studio-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:14px;">
-                    <div class="live-indicator" style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:24px;">🤖</span>
-                        <div>
-                            <h2 style="font-size:18px; color:#0f172a; margin:0;">AI ผู้ช่วยสร้างแผนการสอน ใบงาน และข้อสอบมัธยมศึกษา (ม.1 - ม.6)</h2>
-                            <p style="font-size:12px; color:#64748b; margin:0;">อ้างอิงตัวชี้วัดหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พ.ศ. 2551 (ฉบับปรับปรุง)</p>
-                        </div>
+            <div class="modal-content card-glass" style="max-width: 800px; width: 95%;">
+                <div class="studio-header">
+                    <div>
+                        <h2 style="font-size:16px; font-weight:600; color:#0f172a; margin:0;">ระบบจัดทำแผนการจัดการเรียนรู้ ใบงาน และแบบทดสอบ (ม.1 - ม.6)</h2>
+                        <p style="font-size:12px; color:#64748b; margin:2px 0 0 0;">อ้างอิงตัวชี้วัดหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พ.ศ. 2551 (ฉบับปรับปรุง)</p>
                     </div>
-                    <button id="btnCloseAiGenerator" class="btn-close" style="font-size:24px; background:none; border:none; cursor:pointer;">&times;</button>
+                    <button id="btnCloseAiGenerator" class="btn-close">&times;</button>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:12px;">
                     <div>
-                        <label style="font-size:12px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">📚 กลุ่มสาระ / รายวิชา:</label>
-                        <select id="aiSubjectSelect" class="form-input" style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
-                            <option value="visual-art">🎨 ทัศนศิลป์ (Visual Arts)</option>
-                            <option value="Thai-art">🏛️ ศิลปะไทยและภูมิปัญญาท้องถิ่น</option>
-                            <option value="design-art">📐 การออกแบบและองค์ประกอบศิลป์</option>
-                            <option value="music-drama">🎵 ดนตรี-นาฏศิลป์</option>
-                            <option value="inventory-work">📦 การงานอาชีพ / การจัดการพัสดุในงานช่าง</option>
+                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">กลุ่มสาระ / รายวิชา</label>
+                        <select id="aiSubjectSelect" class="form-input" style="width:100%; padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
+                            <option value="visual-art">ทัศนศิลป์ (Visual Arts)</option>
+                            <option value="Thai-art">ศิลปะไทยและภูมิปัญญาท้องถิ่น</option>
+                            <option value="design-art">การออกแบบและองค์ประกอบศิลป์</option>
+                            <option value="music-drama">ดนตรี-นาฏศิลป์</option>
+                            <option value="inventory-work">การงานอาชีพ / งานพัสดุโรงเรียน</option>
                         </select>
                     </div>
                     <div>
-                        <label style="font-size:12px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">🎓 ระดับชั้นมัธยมศึกษา:</label>
-                        <select id="aiGradeSelect" class="form-input" style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
+                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">ระดับชั้นมัธยมศึกษา</label>
+                        <select id="aiGradeSelect" class="form-input" style="width:100%; padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
                             <option value="ม.1">มัธยมศึกษาปีที่ 1 (ม.1)</option>
                             <option value="ม.2">มัธยมศึกษาปีที่ 2 (ม.2)</option>
                             <option value="ม.3">มัธยมศึกษาปีที่ 3 (ม.3)</option>
@@ -361,40 +337,40 @@
                         </select>
                     </div>
                     <div>
-                        <label style="font-size:12px; font-weight:700; color:#334155; display:block; margin-bottom:4px;">📝 ประเภทเอกสารที่ต้องการ:</label>
-                        <select id="aiDocTypeSelect" class="form-input" style="width:100%; padding:8px; border-radius:8px; border:1px solid #cbd5e1;">
-                            <option value="lesson-plan">📋 แผนการจัดการเรียนรู้ Active Learning (ครบ 5 ขั้น)</option>
-                            <option value="quiz">✍️ ข้อสอบปรนัย 4 ตัวเลือก พร้อมเฉลยและคำอธิบาย</option>
-                            <option value="worksheet">🎨 ใบงานปฏิบัติการศิลปะ + เกณฑ์การให้คะแนน (Rubric)</option>
-                            <option value="material-list">📦 ใบเบิกวัสดุ-อุปกรณ์ศิลปะประจำคาบเรียน</option>
-                            <option value="procurement-law-quiz">⚖️ ข้อสอบและสรุปกฎหมายจัดซื้อจัดจ้าง พ.ร.บ. พัสดุ 2560</option>
+                        <label style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">ประเภทเอกสาร</label>
+                        <select id="aiDocTypeSelect" class="form-input" style="width:100%; padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
+                            <option value="lesson-plan">แผนการจัดการเรียนรู้ (5 ขั้นตอน)</option>
+                            <option value="quiz">แบบทดสอบปรนัย 4 ตัวเลือก พร้อมเฉลย</option>
+                            <option value="worksheet">ใบงานปฏิบัติการศิลปะ + เกณฑ์การให้คะแนน</option>
+                            <option value="material-list">ใบเบิกวัสดุ-อุปกรณ์ประจำคาบเรียน</option>
+                            <option value="procurement-law-quiz">สรุปและแนวข้อสอบ พ.ร.บ. พัสดุ 2560</option>
                         </select>
                     </div>
                 </div>
 
-                <div style="display:flex; gap:10px; margin-bottom:14px;">
-                    <input type="text" id="aiTopicInput" class="form-input" style="flex:1; padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1;" placeholder="ระบุหัวข้อเรื่อง เช่น ทัศนธาตุทั้ง 7, เส้นและอารมณ์, ทฤษฎีสีน้ำ, การสเก็ตช์ภาพทิวทัศน์..." value="ทัศนธาตุทั้ง 7 และการถ่ายทอดอารมณ์ด้วยเส้นและสี">
-                    <button id="btnGenerateAiContent" class="btn btn-primary" style="background:linear-gradient(135deg,#7c3aed,#2563eb); color:#fff; padding:10px 20px; border-radius:8px; border:none; font-weight:700; cursor:pointer;">
-                        ✨ สร้างเนื้อหาด้วย AI ทันที
+                <div style="display:flex; gap:8px; margin-bottom:14px;">
+                    <input type="text" id="aiTopicInput" class="form-input" style="flex:1; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;" placeholder="ระบุหัวข้อเรื่อง เช่น ทัศนธาตุทั้ง 7, เส้นและอารมณ์, ทฤษฎีสีน้ำ..." value="ทัศนธาตุทั้ง 7 และการถ่ายทอดอารมณ์ด้วยเส้นและสี">
+                    <button id="btnGenerateAiContent" class="btn btn-primary">
+                        จัดทำเอกสาร
                     </button>
                 </div>
 
                 <!-- Output Box -->
-                <div id="aiOutputContainer" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:16px; max-height:380px; overflow-y:auto; font-size:13px; line-height:1.7; color:#1e293b;">
-                    <!-- Populated by AI Engine -->
+                <div id="aiOutputContainer" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px; max-height:360px; overflow-y:auto; font-size:13px; line-height:1.7; color:#1e293b;">
+                    <!-- Populated by Generator -->
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
                     <div style="display:flex; gap:8px;">
-                        <button id="btnReadAiLesson" class="btn btn-secondary btn-sm" style="color:#7c3aed; border-color:#7c3aed;">
-                            🔊 ให้ AI อ่านออกเสียงสรุปบทเรียน
+                        <button id="btnReadAiLesson" class="btn btn-secondary btn-sm">
+                            อ่านออกเสียง
                         </button>
-                        <button id="btnCopyAiLesson" class="btn btn-secondary btn-sm" style="color:#2563eb; border-color:#2563eb;">
-                            📋 คัดลอกเอกสาร
+                        <button id="btnCopyAiLesson" class="btn btn-secondary btn-sm">
+                            คัดลอกข้อความ
                         </button>
                     </div>
-                    <button id="btnDownloadAiDoc" class="btn btn-primary btn-sm" style="background:#059669; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
-                        📥 ดาวน์โหลดไฟล์เอกสาร (.txt / พิมพ์ใบงาน)
+                    <button id="btnDownloadAiDoc" class="btn btn-primary btn-sm">
+                        ดาวน์โหลดเอกสาร (.txt)
                     </button>
                 </div>
             </div>
@@ -404,69 +380,66 @@
              MODAL 2: SCHOOL INVENTORY & ART SUPPLIES MANAGEMENT
              ============================================================== -->
         <div id="inventoryModal" class="modal-overlay hidden">
-            <div class="modal-content card-glass" style="max-width: 900px; width: 96%;">
-                <div class="studio-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:14px;">
-                    <div class="live-indicator" style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:24px;">📦</span>
-                        <div>
-                            <h2 style="font-size:18px; color:#0f172a; margin:0;">ระบบบริหารงานพัสดุและครุภัณฑ์โรงเรียน (เน้นหมวดศิลปะและอาคารเรียน)</h2>
-                            <p style="font-size:12px; color:#64748b; margin:0;">ทะเบียนคุมทรัพย์สิน เบิก-จ่ายวัสดุสิ้นเปลือง ยืม-คืนครุภัณฑ์ และส่งออกรายงานตามระเบียบพัสดุ</p>
-                        </div>
+            <div class="modal-content card-glass" style="max-width: 880px; width: 96%;">
+                <div class="studio-header">
+                    <div>
+                        <h2 style="font-size:16px; font-weight:600; color:#0f172a; margin:0;">ทะเบียนคุมทรัพย์สิน พัสดุ และครุภัณฑ์โรงเรียน</h2>
+                        <p style="font-size:12px; color:#64748b; margin:2px 0 0 0;">บันทึกการเบิก-จ่ายวัสดุสิ้นเปลือง ยืม-คืนครุภัณฑ์ และส่งออกรายงานตามระเบียบพัสดุ</p>
                     </div>
-                    <button id="btnCloseInventoryModal" class="btn-close" style="font-size:24px; background:none; border:none; cursor:pointer;">&times;</button>
+                    <button id="btnCloseInventoryModal" class="btn-close">&times;</button>
                 </div>
 
                 <!-- Summary Cards -->
                 <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:14px;">
-                    <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:10px; border-radius:10px; text-align:center;">
-                        <div style="font-size:11px; color:#1d4ed8; font-weight:700;">รายการพัสดุทั้งหมด</div>
-                        <div id="invTotalItems" style="font-size:20px; font-weight:900; color:#1e40af;">5 รายการ</div>
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:8px; text-align:center;">
+                        <div style="font-size:11px; color:#64748b; font-weight:500;">รายการพัสดุทั้งหมด</div>
+                        <div id="invTotalItems" style="font-size:18px; font-weight:700; color:#0f172a;">0 รายการ</div>
                     </div>
-                    <div style="background:#ecfdf5; border:1px solid #a7f3d0; padding:10px; border-radius:10px; text-align:center;">
-                        <div style="font-size:11px; color:#047857; font-weight:700;">พร้อมใช้งานในคลัง</div>
-                        <div id="invAvailableCount" style="font-size:20px; font-weight:900; color:#065f46;">150 ชิ้น</div>
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:8px; text-align:center;">
+                        <div style="font-size:11px; color:#64748b; font-weight:500;">คงเหลือพร้อมใช้</div>
+                        <div id="invAvailableCount" style="font-size:18px; font-weight:700; color:#0f172a;">0 ชิ้น</div>
                     </div>
-                    <div style="background:#fffbeb; border:1px solid #fde68a; padding:10px; border-radius:10px; text-align:center;">
-                        <div style="font-size:11px; color:#b45309; font-weight:700;">กำลังยืม / เบิกใช้งาน</div>
-                        <div id="invBorrowedCount" style="font-size:20px; font-weight:900; color:#92400e;">80 ชิ้น</div>
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:8px; text-align:center;">
+                        <div style="font-size:11px; color:#64748b; font-weight:500;">กำลังยืม / เบิกใช้งาน</div>
+                        <div id="invBorrowedCount" style="font-size:18px; font-weight:700; color:#0f172a;">0 ชิ้น</div>
                     </div>
-                    <div style="background:#fdf2f8; border:1px solid #fbcfe8; padding:10px; border-radius:10px; text-align:center;">
-                        <div style="font-size:11px; color:#be185d; font-weight:700;">มูลค่ารวมครุภัณฑ์</div>
-                        <div id="invTotalValue" style="font-size:20px; font-weight:900; color:#9d174d;">฿392,900</div>
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:8px; text-align:center;">
+                        <div style="font-size:11px; color:#64748b; font-weight:500;">มูลค่ารวม</div>
+                        <div id="invTotalValue" style="font-size:18px; font-weight:700; color:#0f172a;">฿0</div>
                     </div>
                 </div>
 
                 <!-- Add New Asset / Requisition Form -->
-                <form id="addAssetForm" style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:12px; margin-bottom:14px;">
-                    <div style="font-size:13px; font-weight:800; color:#0f172a; margin-bottom:8px;">➕ ลงทะเบียนครุภัณฑ์ใหม่ / บันทึกการเบิก-ยืมพัสดุโรงเรียน</div>
+                <form id="addAssetForm" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; margin-bottom:14px;">
+                    <div style="font-size:12.5px; font-weight:600; color:#0f172a; margin-bottom:8px;">ลงทะเบียนพัสดุ / ครุภัณฑ์ใหม่</div>
                     <div style="display:grid; grid-template-columns: 1.2fr 2fr 1.2fr 0.8fr 0.8fr auto; gap:8px; align-items:center;">
-                        <input type="text" id="assetCodeInput" placeholder="รหัสพัสดุ (เช่น ศป-69-030)" required style="padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                        <input type="text" id="assetNameInput" placeholder="ชื่อวัสดุ/ครุภัณฑ์ (เช่น พู่กันสีน้ำเบอร์ 12)" required style="padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                        <select id="assetCatInput" style="padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <input type="text" id="assetCodeInput" placeholder="รหัสพัสดุ (เช่น ศป-69-001)" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <input type="text" id="assetNameInput" placeholder="ชื่อวัสดุ/ครุภัณฑ์" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <select id="assetCatInput" style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; background:#fff;">
                             <option value="ครุภัณฑ์ศิลปะ">ครุภัณฑ์ศิลปะ</option>
                             <option value="วัสดุสิ้นเปลืองศิลปะ">วัสดุสิ้นเปลืองศิลปะ</option>
                             <option value="ครุภัณฑ์ดนตรี-นาฏศิลป์">ครุภัณฑ์ดนตรี-นาฏศิลป์</option>
                             <option value="ครุภัณฑ์โสตทัศนูปกรณ์">ครุภัณฑ์โสตทัศนูปกรณ์</option>
                         </select>
-                        <input type="number" id="assetQtyInput" placeholder="จำนวน" value="10" min="1" required style="padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                        <input type="number" id="assetPriceInput" placeholder="ราคา/หน่วย" value="250" min="0" required style="padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                        <button type="submit" class="btn btn-primary" style="background:#2563eb; color:#fff; border:none; padding:8px 14px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer;">
-                            + เพิ่มพัสดุ
+                        <input type="number" id="assetQtyInput" placeholder="จำนวน" min="1" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <input type="number" id="assetPriceInput" placeholder="ราคา/หน่วย" min="0" required style="padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            + เพิ่มรายการ
                         </button>
                     </div>
                 </form>
 
                 <!-- Inventory Table -->
-                <div style="max-height:300px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:10px;">
+                <div style="max-height:280px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px;">
                     <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left;">
-                        <thead style="background:#f1f5f9; color:#334155; position:sticky; top:0;">
+                        <thead style="background:#f8fafc; color:#475569; position:sticky; top:0; border-bottom:1px solid #e2e8f0;">
                             <tr>
-                                <th style="padding:10px;">รหัสพัสดุ</th>
-                                <th style="padding:10px;">รายการวัสดุ / ครุภัณฑ์</th>
-                                <th style="padding:10px;">สถานที่เก็บ / ห้องเรียน</th>
-                                <th style="padding:10px; text-align:center;">คงเหลือ / ทั้งหมด</th>
-                                <th style="padding:10px;">สถานะ / ผู้เบิกยืม</th>
-                                <th style="padding:10px; text-align:center;">จัดการเบิก-คืน</th>
+                                <th style="padding:10px; font-weight:600;">รหัสพัสดุ</th>
+                                <th style="padding:10px; font-weight:600;">รายการวัสดุ / ครุภัณฑ์</th>
+                                <th style="padding:10px; font-weight:600;">สถานที่จัดเก็บ</th>
+                                <th style="padding:10px; font-weight:600; text-align:center;">คงเหลือ / ทั้งหมด</th>
+                                <th style="padding:10px; font-weight:600;">สถานะ</th>
+                                <th style="padding:10px; font-weight:600; text-align:center;">จัดการ</th>
                             </tr>
                         </thead>
                         <tbody id="inventoryTableBody">
@@ -476,103 +449,96 @@
                 </div>
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
-                    <span style="font-size:11px; color:#64748b;">💡 คลิกปุ่ม <strong>"เบิก/ยืม"</strong> หรือ <strong>"รับคืน"</strong> เพื่ออัปเดตยอดคงเหลือแบบเรียลไทม์พร้อมปักหมุดพิกัดห้องเก็บพัสดุ</span>
-                    <button id="btnExportInventoryCsv" class="btn btn-primary" style="background:#d97706; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">
-                        📊 ส่งออกทะเบียนคุมพัสดุ (Excel CSV)
+                    <span style="font-size:11px; color:#64748b;">คลิกปุ่ม "เบิก/ยืม" หรือ "รับคืน" เพื่อปรับยอดคงเหลือในคลัง</span>
+                    <button id="btnExportInventoryCsv" class="btn btn-primary btn-sm">
+                        ส่งออกทะเบียนพัสดุ (CSV)
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- ==============================================================
-             MODAL 3: BUILT-IN ART LESSON VIDEO LIBRARY & INTERACTIVE QUIZ
+             MODAL 3: BUILT-IN ART LESSON VIDEO LIBRARY
              ============================================================== -->
         <div id="videoLibraryModal" class="modal-overlay hidden">
-            <div class="modal-content card-glass" style="max-width: 860px; width: 95%;">
-                <div class="studio-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px;">
-                    <div class="live-indicator" style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:24px;">🎬</span>
-                        <div>
-                            <h2 style="font-size:18px; color:#0f172a; margin:0;">คลังสื่อวิดีโอช่วยสอนวิชาทัศนศิลป์ มัธยมศึกษา</h2>
-                            <p style="font-size:12px; color:#64748b; margin:0;">วิดีโอบทเรียนความละเอียดสูง (Full HD) พร้อมบทพากย์ภาษาไทยและสไลด์ประกอบการสอน</p>
-                        </div>
-                    </div>
-                    <button id="btnCloseVideoLibrary" class="btn-close" style="font-size:24px; background:none; border:none; cursor:pointer;">&times;</button>
-                </div>
-
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:12px;">
-                    <button type="button" class="video-lesson-tab active" data-video="art_lesson_full_video.mp4" data-title="บทเรียนที่ 1: ทัศนธาตุทั้ง 7 (องค์ประกอบพื้นฐานของศิลปะ ม.1)" style="padding:10px; border:2px solid #2563eb; background:#eff6ff; border-radius:10px; cursor:pointer; text-align:left;">
-                        <div style="font-weight:800; color:#1d4ed8; font-size:13px;">🎨 บทที่ 1: ทัศนธาตุทั้ง 7 (Full)</div>
-                        <div style="font-size:11px; color:#475569;">จุด เส้น รูปร่าง รูปทรง น้ำหนัก สี พื้นผิว</div>
-                    </button>
-                    <button type="button" class="video-lesson-tab" data-video="line_lesson_video.mp4" data-title="บทเรียนที่ 2: พลังแห่งเส้นและการสื่ออารมณ์ความรู้สึก (Line Element)" style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; border-radius:10px; cursor:pointer; text-align:left;">
-                        <div style="font-weight:800; color:#db2777; font-size:13px;">✏️ บทที่ 2: กำเนิดจากจุดสู่เส้น</div>
-                        <div style="font-size:11px; color:#475569;">เส้นตั้ง เส้นนอน เส้นโค้ง เส้นซิกแซก 10 ฉาก</div>
-                    </button>
-                    <button type="button" class="video-lesson-tab" data-video="art_lesson_video.mp4" data-title="บทเรียนที่ 3: สรุปวิเคราะห์งานทัศนศิลป์และกิจกรรมฝึกทักษะ" style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; border-radius:10px; cursor:pointer; text-align:left;">
-                        <div style="font-weight:800; color:#059669; font-size:13px;">🖼️ บทที่ 3: วิเคราะห์งานทัศนศิลป์</div>
-                        <div style="font-size:11px; color:#475569;">สรุปสาระสำคัญและเวิร์กชอปวาดภาพ</div>
-                    </button>
-                </div>
-
-                <div style="background:#000; border-radius:12px; overflow:hidden; position:relative;">
-                    <video id="eduLessonVideoPlayer" src="art_lesson_full_video.mp4" controls style="width:100%; max-height:420px; display:block;"></video>
-                </div>
-
-                <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:10px; border:1px solid #cbd5e1;">
+            <div class="modal-content card-glass" style="max-width: 840px; width: 95%;">
+                <div class="studio-header">
                     <div>
-                        <strong id="currentVideoLessonTitle" style="font-size:13px; color:#0f172a;">กำลังเล่น: บทเรียนที่ 1: ทัศนธาตุทั้ง 7 (องค์ประกอบพื้นฐานของศิลปะ ม.1)</strong>
-                        <p style="font-size:11px; color:#64748b; margin:0;">ครูสามารถเปิดขึ้นจอโปรเจคเตอร์หน้าห้องเรียน หรือให้นักเรียนสแกนดูทบทวนได้ทันที</p>
+                        <h2 style="font-size:16px; font-weight:600; color:#0f172a; margin:0;">สื่อวิดีโอการสอนวิชาทัศนศิลป์</h2>
+                        <p style="font-size:12px; color:#64748b; margin:2px 0 0 0;">วิดีโอบทเรียนพร้อมเสียงบรรยายภาษาไทยสำหรับเปิดประกอบการสอนในชั้นเรียน</p>
                     </div>
-                    <button id="btnGenerateQuizFromVideo" class="btn btn-primary" style="background:#7c3aed; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">
-                        ✍️ สร้างแบบทดสอบท้ายคลิปนี้
+                    <button id="btnCloseVideoLibrary" class="btn-close">&times;</button>
+                </div>
+
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-bottom:12px;">
+                    <button type="button" class="video-lesson-tab active" data-video="art_lesson_full_video.mp4" data-title="บทเรียนที่ 1: ทัศนธาตุทั้ง 7 (องค์ประกอบพื้นฐานของศิลปะ ม.1)" style="padding:10px; border:1px solid #0f172a; background:#f8fafc; border-radius:6px; cursor:pointer; text-align:left;">
+                        <div style="font-weight:600; color:#0f172a; font-size:12.5px;">บทที่ 1: ทัศนธาตุทั้ง 7</div>
+                        <div style="font-size:11px; color:#64748b;">จุด เส้น รูปร่าง รูปทรง น้ำหนัก สี พื้นผิว</div>
+                    </button>
+                    <button type="button" class="video-lesson-tab" data-video="line_lesson_video.mp4" data-title="บทเรียนที่ 2: พลังแห่งเส้นและการสื่ออารมณ์ความรู้สึก (Line Element)" style="padding:10px; border:1px solid #e2e8f0; background:#ffffff; border-radius:6px; cursor:pointer; text-align:left;">
+                        <div style="font-weight:600; color:#0f172a; font-size:12.5px;">บทที่ 2: กำเนิดจากจุดสู่เส้น</div>
+                        <div style="font-size:11px; color:#64748b;">เส้นตั้ง เส้นนอน เส้นโค้ง เส้นซิกแซก</div>
+                    </button>
+                    <button type="button" class="video-lesson-tab" data-video="art_lesson_video.mp4" data-title="บทเรียนที่ 3: สรุปวิเคราะห์งานทัศนศิลป์และกิจกรรมฝึกทักษะ" style="padding:10px; border:1px solid #e2e8f0; background:#ffffff; border-radius:6px; cursor:pointer; text-align:left;">
+                        <div style="font-weight:600; color:#0f172a; font-size:12.5px;">บทที่ 3: วิเคราะห์งานทัศนศิลป์</div>
+                        <div style="font-size:11px; color:#64748b;">สรุปสาระสำคัญและเวิร์กชอปวาดภาพ</div>
+                    </button>
+                </div>
+
+                <div style="background:#000; border-radius:8px; overflow:hidden; position:relative;">
+                    <video id="eduLessonVideoPlayer" src="art_lesson_full_video.mp4" controls style="width:100%; max-height:400px; display:block;"></video>
+                </div>
+
+                <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:10px 14px; border-radius:8px; border:1px solid #e2e8f0;">
+                    <div>
+                        <strong id="currentVideoLessonTitle" style="font-size:12.5px; color:#0f172a;">กำลังเล่น: บทเรียนที่ 1: ทัศนธาตุทั้ง 7</strong>
+                    </div>
+                    <button id="btnGenerateQuizFromVideo" class="btn btn-primary btn-sm">
+                        สร้างแบบทดสอบจากบทเรียนนี้
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- ==============================================================
-             MODAL 4: INTERACTIVE ART WHITEBOARD STUDIO (กระดานวาดภาพสอนสด)
+             MODAL 4: INTERACTIVE ART WHITEBOARD STUDIO
              ============================================================== -->
         <div id="whiteboardModal" class="modal-overlay hidden">
-            <div class="modal-content card-glass" style="max-width: 860px; width: 96%;">
-                <div class="studio-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:10px;">
-                    <div class="live-indicator" style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:24px;">🖌️</span>
-                        <div>
-                            <h2 style="font-size:18px; color:#0f172a; margin:0;">กระดานไวท์บอร์ดสาธิตวาดภาพและทฤษฎีสี (Interactive Art Canvas)</h2>
-                            <p style="font-size:12px; color:#64748b; margin:0;">ใช้วาดสาธิตเรื่องเส้น รูปร่าง รูปทรง แสงเงา หรือตรวจแก้ไขงานศิลปะบนหน้าจอ</p>
-                        </div>
+            <div class="modal-content card-glass" style="max-width: 840px; width: 96%;">
+                <div class="studio-header">
+                    <div>
+                        <h2 style="font-size:16px; font-weight:600; color:#0f172a; margin:0;">กระดานไวท์บอร์ดสาธิตวาดภาพ</h2>
+                        <p style="font-size:12px; color:#64748b; margin:2px 0 0 0;">ใช้วาดสาธิตเรื่องเส้น รูปร่าง รูปทรง แสงเงา และทฤษฎีสี</p>
                     </div>
-                    <button id="btnCloseWhiteboard" class="btn-close" style="font-size:24px; background:none; border:none; cursor:pointer;">&times;</button>
+                    <button id="btnCloseWhiteboard" class="btn-close">&times;</button>
                 </div>
 
-                <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px; background:#f8fafc; padding:8px 12px; border-radius:8px; border:1px solid #cbd5e1;">
-                    <label style="font-size:12px; font-weight:700;">🎨 สีพู่กัน:</label>
-                    <input type="color" id="wbColorPicker" value="#2563eb" style="width:36px; height:30px; border:none; cursor:pointer;">
-                    <label style="font-size:12px; font-weight:700;">📏 ขนาดเส้น:</label>
-                    <input type="range" id="wbBrushSize" min="2" max="30" value="5" style="width:100px;">
-                    <button type="button" id="btnWbTemplateGrid" class="btn btn-secondary btn-sm" style="font-size:11px;">📐 ตารางทัศนียภาพ (Perspective)</button>
-                    <button type="button" id="btnWbColorWheel" class="btn btn-secondary btn-sm" style="font-size:11px;">🌈 วงจรสีธรรมชาติ</button>
-                    <button type="button" id="btnWbClear" class="btn btn-secondary btn-sm" style="color:#ef4444; border-color:#ef4444; font-size:11px;">🗑️ ล้างกระดาน</button>
-                    <button type="button" id="btnWbSavePin" class="btn btn-primary btn-sm" style="background:#059669; color:#fff; border:none; font-size:11px; margin-left:auto;">📌 บันทึกภาพปักหมุดลงแผนที่</button>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0;">
+                    <label style="font-size:12px; font-weight:500;">สีเส้น:</label>
+                    <input type="color" id="wbColorPicker" value="#0f172a" style="width:32px; height:28px; border:1px solid #cbd5e1; border-radius:4px; cursor:pointer;">
+                    <label style="font-size:12px; font-weight:500;">ขนาดเส้น:</label>
+                    <input type="range" id="wbBrushSize" min="2" max="30" value="4" style="width:100px;">
+                    <button type="button" id="btnWbTemplateGrid" class="btn btn-secondary btn-sm">เส้นทัศนียภาพ (Perspective)</button>
+                    <button type="button" id="btnWbColorWheel" class="btn btn-secondary btn-sm">วงจรสี</button>
+                    <button type="button" id="btnWbClear" class="btn btn-secondary btn-sm">ล้างกระดาน</button>
+                    <button type="button" id="btnWbSavePin" class="btn btn-primary btn-sm" style="margin-left:auto;">บันทึกภาพลงรายการ</button>
                 </div>
 
-                <div style="border:2px solid #cbd5e1; border-radius:12px; overflow:hidden; background:#ffffff; text-align:center;">
+                <div style="border:1px solid #cbd5e1; border-radius:8px; overflow:hidden; background:#ffffff; text-align:center;">
                     <canvas id="artWhiteboardCanvas" width="780" height="400" style="width:100%; height:380px; cursor:crosshair; touch-action:none; display:block;"></canvas>
                 </div>
             </div>
         </div>
 
         <!-- ==============================================================
-             MODAL 5: LIVE CAMERA BROADCASTER STUDIO (ไลฟ์สดสาธิตวาดภาพ/ตรวจพัสดุ)
+             MODAL 5: LIVE CAMERA BROADCASTER STUDIO
              ============================================================== -->
         <div id="broadcasterModal" class="modal-overlay hidden">
             <div class="modal-content studio-modal card-glass">
                 <div class="studio-header">
                     <div class="live-indicator">
                         <span class="red-dot"></span>
-                        <h2>🔴 LIVE ART STUDIO - ไลฟ์สดสาธิตการสอนศิลปะ / ตรวจเช็คพัสดุ</h2>
+                        <h2 style="font-size:16px; font-weight:600;">กล้องสาธิตการสอนสด / ตรวจพัสดุ</h2>
                     </div>
                     <button id="btnCloseStudio" class="btn-close">&times;</button>
                 </div>
@@ -581,87 +547,71 @@
                     <video id="localVideoPreview" autoplay playsinline muted></video>
                     <div class="camera-hud-overlay">
                         <div class="hud-top">
-                            <span class="hud-tag">🏫 ห้องเรียนศิลปะถ่ายทอดสด</span>
+                            <span class="hud-tag">ห้องเรียนศิลปะ</span>
                             <span id="hudClock" class="hud-tag">00:00:00</span>
-                        </div>
-                        <div class="hud-bottom">
-                            <div class="hud-coords" id="hudGpsCoords">LAT: 13.7563, LNG: 100.5018</div>
-                            <div class="hud-metrics">
-                                <span>ความแม่นยำ: <b id="hudAccuracy">±5m</b></span>
-                                <span>สถานะ: <b id="hudSpeed">กำลังสอนสด</b></span>
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="studio-controls-bar">
-                    <button id="btnFlipCamera" class="btn btn-secondary">🔄 สลับกล้องหน้า/หลัง (ส่องโต๊ะวาดภาพ)</button>
-                    <button id="btnToggleFlashlight" class="btn btn-secondary">💡 เปิดไฟส่องงานศิลปะ</button>
-                    <button id="btnToggleMic" class="btn btn-secondary">🎙️ ไมโครโฟนครู: เปิด</button>
-                    <button id="btnStopBroadcast" class="btn btn-danger">⏹️ ยุติการสอนสด</button>
+                <div class="studio-controls-bar" style="display:flex; gap:8px; margin-top:12px;">
+                    <button id="btnFlipCamera" class="btn btn-secondary">สลับกล้องหน้า/หลัง</button>
+                    <button id="btnToggleFlashlight" class="btn btn-secondary">เปิด/ปิดไฟส่องสว่าง</button>
+                    <button id="btnStopBroadcast" class="btn btn-danger" style="margin-left:auto;">ปิดกล้อง</button>
                 </div>
             </div>
         </div>
 
         <!-- ==============================================================
-             MODAL 6: ARTWORK / ASSET PIN VIEWER & TEACHER GRADING MODAL
+             MODAL 6: ARTWORK / ASSET VIEWER & TEACHER GRADING MODAL
              ============================================================== -->
         <div id="streamViewerModal" class="modal-overlay hidden">
-            <div class="modal-content viewer-modal card-glass" style="max-width: 820px;">
+            <div class="modal-content viewer-modal card-glass" style="max-width: 800px;">
                 <div class="studio-header">
-                    <div class="live-indicator">
-                        <span class="red-dot" style="background:#2563eb;"></span>
-                        <h2 id="viewerStreamTitle">🎨 รายละเอียดผลงานนักเรียน / จุดตรวจพัสดุ</h2>
-                    </div>
+                    <h2 id="viewerStreamTitle" style="font-size:16px; font-weight:600; margin:0;">รายละเอียดผลงานนักเรียน / รายการตรวจพัสดุ</h2>
                     <button id="btnCloseViewer" class="btn-close">&times;</button>
                 </div>
 
                 <div class="viewer-main-grid">
-                    <div class="viewer-video-box" style="background:#0f172a; border-radius:12px; overflow:hidden; position:relative; min-height:280px; display:flex; align-items:center; justify-content:center;">
-                        <video id="viewerVideoPlayer" autoplay playsinline controls style="width:100%; max-height:360px; display:none;"></video>
-                        <img id="viewerImagePlayer" alt="ผลงานศิลปะ/พัสดุ" style="width:100%; max-height:360px; object-fit:contain; display:none;" />
+                    <div class="viewer-video-box" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; position:relative; min-height:260px; display:flex; align-items:center; justify-content:center;">
+                        <video id="viewerVideoPlayer" autoplay playsinline controls style="width:100%; max-height:340px; display:none;"></video>
+                        <img id="viewerImagePlayer" alt="ผลงานนักเรียน" style="width:100%; max-height:340px; object-fit:contain; display:none;" />
                         <canvas id="viewerCanvasOverlay" width="640" height="360" style="width:100%; height:100%; display:none;"></canvas>
-                        <div class="stream-badge-bar" style="position:absolute; top:10px; left:10px; display:flex; gap:6px;">
-                            <span id="viewerCountBadge" class="tag-viewers" style="background:rgba(15,23,42,0.8); color:#fff; padding:4px 8px; border-radius:6px; font-size:11px;">👁️ 12 เข้าชม</span>
-                            <span id="viewerCategoryBadge" class="tag-cat" style="background:#2563eb; color:#fff; padding:4px 8px; border-radius:6px; font-size:11px;">🎨 งานทัศนศิลป์</span>
+                        <div class="stream-badge-bar" style="position:absolute; top:8px; left:8px; display:flex; gap:6px;">
+                            <span id="viewerCountBadge" class="tag-viewers" style="background:rgba(15,23,42,0.75); color:#fff; padding:3px 8px; border-radius:4px; font-size:11px;">เข้าชม</span>
+                            <span id="viewerCategoryBadge" class="tag-cat" style="background:#334155; color:#fff; padding:3px 8px; border-radius:4px; font-size:11px;">งานทัศนศิลป์</span>
                         </div>
                     </div>
 
                     <div class="viewer-info-sidebar" style="display:flex; flex-direction:column; gap:10px;">
-                        <div class="location-info-card" style="background:#f8fafc; padding:12px; border-radius:10px; border:1px solid #cbd5e1;">
-                            <h4 style="font-size:13px; color:#0f172a; margin-bottom:4px;">📍 สถานที่ส่งงาน / ห้องเก็บพัสดุ</h4>
-                            <p id="viewerAddressText" style="font-size:12px; color:#475569; margin-bottom:6px;">อาคารศิลปะ ชั้น 2</p>
-                            <p id="viewerDescText" style="font-size:12px; color:#1e293b; line-height:1.5; padding:8px; background:#ffffff; border-radius:8px; border:1px solid #e2e8f0;"></p>
+                        <div class="location-info-card" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
+                            <h4 style="font-size:12.5px; font-weight:600; color:#0f172a; margin-bottom:4px;">ข้อมูลการส่งงาน</h4>
+                            <p id="viewerAddressText" style="font-size:11.5px; color:#64748b; margin-bottom:6px;"></p>
+                            <div id="viewerDescText" style="font-size:12px; color:#1e293b; line-height:1.6; padding:8px; background:#ffffff; border-radius:6px; border:1px solid #e2e8f0;"></div>
                             
                             <!-- Teacher Grading Box -->
                             <div style="margin-top:10px; padding-top:10px; border-top:1px solid #e2e8f0;">
-                                <label style="font-size:11px; font-weight:700; color:#1d4ed8; display:block; margin-bottom:4px;">✅ ครูประเมินผลการเรียน / ตรวจรับพัสดุ:</label>
+                                <label style="font-size:11.5px; font-weight:600; color:#334155; display:block; margin-bottom:4px;">บันทึกผลการประเมิน / คะแนน</label>
                                 <div style="display:flex; gap:6px;">
-                                    <select id="teacherGradeSelect" style="flex:1; padding:6px; border-radius:6px; border:1px solid #cbd5e1; font-size:12px;">
-                                        <option value="20/20 (เกรด 4 ดีเยี่ยม)">🌟 20/20 (เกรด 4 ดีเยี่ยม)</option>
-                                        <option value="18/20 (เกรด 3.5 ดีมาก)">👍 18/20 (เกรด 3.5 ดีมาก)</option>
-                                        <option value="15/20 (เกรด 3 ดี)">✅ 15/20 (เกรด 3 ผ่านเกณฑ์)</option>
-                                        <option value="ตรวจเช็คพัสดุครบถ้วนสมบูรณ์">📦 พัสดุครบถ้วนสมบูรณ์</option>
+                                    <select id="teacherGradeSelect" style="flex:1; padding:6px; border-radius:6px; border:1px solid #cbd5e1; font-size:12px; background:#fff;">
+                                        <option value="20/20 (เกรด 4 ดีเยี่ยม)">20/20 (เกรด 4 ดีเยี่ยม)</option>
+                                        <option value="18/20 (เกรด 3.5 ดีมาก)">18/20 (เกรด 3.5 ดีมาก)</option>
+                                        <option value="15/20 (เกรด 3 ผ่านเกณฑ์)">15/20 (เกรด 3 ผ่านเกณฑ์)</option>
+                                        <option value="ตรวจเช็คพัสดุครบถ้วน">พัสดุครบถ้วนสมบูรณ์</option>
                                     </select>
-                                    <button type="button" id="btnSaveStudentGrade" class="btn btn-primary btn-sm" style="background:#059669; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer;">
+                                    <button type="button" id="btnSaveStudentGrade" class="btn btn-primary btn-sm">
                                         บันทึกผล
                                     </button>
                                 </div>
                             </div>
-
-                            <a id="btnNavGoogleMaps" href="#" target="_blank" class="btn btn-primary btn-block" style="margin-top:8px; display:block; text-align:center; text-decoration:none; font-size:11px; padding:6px;">
-                                🗺️ เปิดพิกัดใน Google Maps
-                            </a>
                         </div>
 
-                        <div class="live-chat-box" style="flex:1; display:flex; flex-direction:column; background:#f8fafc; padding:10px; border-radius:10px; border:1px solid #cbd5e1;">
-                            <h4 style="font-size:12px; margin-bottom:6px;">💬 ข้อเสนอแนะจากครูผู้สอน & เพื่อนร่วมชั้น</h4>
+                        <div class="live-chat-box" style="flex:1; display:flex; flex-direction:column; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+                            <h4 style="font-size:12px; font-weight:600; margin-bottom:6px;">ข้อเสนอแนะจากครูผู้สอน</h4>
                             <div id="chatMessages" class="chat-messages" style="flex:1; max-height:110px; overflow-y:auto; font-size:12px; margin-bottom:6px;">
-                                <div class="chat-msg"><b>ครูผู้สอนวิชาศิลปะ:</b> องค์ประกอบภาพและการลงน้ำหนักแสงเงาสวยงามมากครับ!</div>
                             </div>
                             <form id="chatForm" class="chat-input-row" style="display:flex; gap:6px;">
-                                <input type="text" id="chatInput" placeholder="พิมพ์คำชมหรือข้อเสนอแนะ..." required style="flex:1; padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                                <button type="submit" class="btn btn-primary" style="padding:6px 12px; font-size:12px;">ส่ง</button>
+                                <input type="text" id="chatInput" placeholder="พิมพ์ข้อเสนอแนะ..." required style="flex:1; padding:6px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                                <button type="submit" class="btn btn-primary btn-sm">บันทึก</button>
                             </form>
                         </div>
                     </div>
@@ -673,42 +623,39 @@
              MODAL 7: QR HOMEWORK SUBMISSION / ASSET CHECK FORM
              ============================================================== -->
         <div id="citizenReportModal" class="modal-overlay hidden">
-            <div class="modal-content report-modal card-glass" style="max-width: 600px;">
+            <div class="modal-content report-modal card-glass" style="max-width: 560px;">
                 <div class="studio-header">
-                    <div class="live-indicator">
-                        <span style="font-size:22px;">📲</span>
-                        <h2>ส่งผลงานศิลปะ / รายงานการตรวจพัสดุผ่านระบบ QR Code</h2>
-                    </div>
+                    <h2 style="font-size:16px; font-weight:600; margin:0;">ฟอร์มส่งผลงานนักเรียน / บันทึกการตรวจพัสดุ</h2>
                     <button id="btnCloseCitizenReport" class="btn-close">&times;</button>
                 </div>
 
                 <form id="citizenReportForm" class="citizen-form">
                     <div class="form-group">
-                        <label>เลือกประเภทการส่งข้อมูล:</label>
+                        <label>ประเภทข้อมูล</label>
                         <div class="report-cat-grid">
                             <label class="cat-option">
                                 <input type="radio" name="reportCat" value="art-work" checked>
-                                <span class="cat-box">🎨 ส่งงานทัศนศิลป์</span>
+                                <span class="cat-box">งานทัศนศิลป์</span>
                             </label>
                             <label class="cat-option">
                                 <input type="radio" name="reportCat" value="field-project">
-                                <span class="cat-box">🌳 โครงงานศิลปะ</span>
+                                <span class="cat-box">โครงงานศิลปะ</span>
                             </label>
                             <label class="cat-option">
                                 <input type="radio" name="reportCat" value="asset-check">
-                                <span class="cat-box">📦 ตรวจเช็คพัสดุ/ครุภัณฑ์</span>
+                                <span class="cat-box">ตรวจเช็คพัสดุ</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="form-group" style="display:grid; grid-template-columns: 2fr 1fr; gap:8px;">
                         <div>
-                            <label>👤 ชื่อนักเรียน / รหัสประจำตัว:</label>
-                            <input type="text" id="reportNameInput" placeholder="เช่น ด.ช. ธนดล (รหัส 69105)" class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
+                            <label>ชื่อ-นามสกุล / รหัสนักเรียน</label>
+                            <input type="text" id="reportNameInput" placeholder="ระบุชื่อ-นามสกุล และรหัสประจำตัว" required class="form-input">
                         </div>
                         <div>
-                            <label>🎓 ระดับชั้น / หมวด:</label>
-                            <select id="reportGradeInput" class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
+                            <label>ระดับชั้น / หมวด</label>
+                            <select id="reportGradeInput" class="form-input">
                                 <option value="ม.1/1">ชั้น ม.1/1</option>
                                 <option value="ม.1/2">ชั้น ม.1/2</option>
                                 <option value="ม.2/1">ชั้น ม.2/1</option>
@@ -722,42 +669,34 @@
                     </div>
 
                     <div class="form-group">
-                        <label>📝 ชื่อผลงานศิลปะ / รายการพัสดุที่ตรวจเช็ค:</label>
-                        <input type="text" id="reportTitleInput" placeholder="เช่น ภาพวาดสีน้ำทัศนธาตุทั้ง 7 หรือ ตรวจเช็คขาตั้งวาดภาพห้องศิลปะ" required class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;">
+                        <label>หัวข้อชิ้นงาน / รายการพัสดุ</label>
+                        <input type="text" id="reportTitleInput" placeholder="ระบุชื่อผลงานหรือรายการพัสดุ" required class="form-input">
                     </div>
 
                     <div class="form-group">
-                        <label>📋 คำอธิบายเทคนิคที่ใช้ / สภาพพัสดุ:</label>
-                        <textarea id="reportDescInput" rows="2" placeholder="ระบุเทคนิคสีที่ใช้ แนวคิดผลงาน หรือจำนวนพัสดุคงเหลือ..." class="form-input" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;"></textarea>
+                        <label>รายละเอียดเพิ่มเติม</label>
+                        <textarea id="reportDescInput" rows="2" placeholder="ระบุเทคนิคที่ใช้ แนวคิดผลงาน หรือผลการตรวจนับพัสดุ..." class="form-input"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label>📸 แนบรูปภาพผลงานศิลปะ หรือ วิดีโอสั้นนำเสนอ (ไม่เกิน 1 นาที):</label>
-                        <input type="file" id="reportMediaInput" accept="image/*,video/*" class="form-input" style="padding: 8px; cursor: pointer; width:100%; border:1px dashed #2563eb; border-radius:8px;">
-                        <small style="color: #64748b; font-size: 11px; display: block; margin-top: 4px;">
-                            * รองรับภาพถ่ายผลงานศิลปะ ภาพถ่ายครุภัณฑ์ หรือคลิปวิดีโอนำเสนอผลงานความยาวไม่เกิน 60 วินาที
-                        </small>
-                        <div id="mediaPreviewWrapper" style="display:none; margin-top:10px; position:relative; border-radius:12px; overflow:hidden; background:#000; text-align:center; max-height:200px;">
-                            <img id="mediaPreviewImg" style="max-height:200px; width:100%; object-fit:contain; display:none;" />
-                            <video id="mediaPreviewVid" controls style="max-height:200px; width:100%; object-fit:contain; display:none;"></video>
-                            <button type="button" id="btnRemoveMedia" style="position:absolute; top:6px; right:6px; background:rgba(239,68,68,0.85); color:#fff; border:none; border-radius:50%; width:28px; height:28px; font-weight:bold; cursor:pointer;">&times;</button>
+                        <label>แนบรูปภาพผลงาน หรือ วิดีโอสั้น (ไม่เกิน 1 นาที)</label>
+                        <input type="file" id="reportMediaInput" accept="image/*,video/*" class="form-input" style="padding: 7px; cursor: pointer;">
+                        <div id="mediaPreviewWrapper" style="display:none; margin-top:8px; position:relative; border-radius:8px; overflow:hidden; background:#f8fafc; border:1px solid #e2e8f0; text-align:center; max-height:190px;">
+                            <img id="mediaPreviewImg" style="max-height:190px; width:100%; object-fit:contain; display:none;" />
+                            <video id="mediaPreviewVid" controls style="max-height:190px; width:100%; object-fit:contain; display:none;"></video>
+                            <button type="button" id="btnRemoveMedia" style="position:absolute; top:6px; right:6px; background:#0f172a; color:#fff; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer;">&times;</button>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>📲 รหัสคาบเรียน QR Code อ้างอิง:</label>
                         <div class="gps-location-preview">
-                            <span class="icon">🏫</span>
-                            <span id="reportGpsText" class="gps-val">รหัสคาบเรียน: ART-2569 (ยืนยันการส่งงานผ่าน QR Code)</span>
+                            <span id="reportGpsText" class="gps-val">รหัสคาบเรียน: ART-2569</span>
                         </div>
                     </div>
 
                     <div class="action-buttons-group">
-                        <button type="submit" id="btnSubmitReportOnly" class="btn btn-primary flex-1" style="background:linear-gradient(135deg, #2563eb, #7c3aed); color:#fff; border:none; padding:10px; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer;">
-                            📲 ยืนยันการส่งงาน / บันทึกเช็คชื่อทันที
-                        </button>
-                        <button type="button" id="btnSubmitAndLive" class="btn btn-danger btn-pulse flex-1" style="font-size:13px; padding:10px; border-radius:8px; cursor:pointer;">
-                            🎥 🔴 ส่งงาน + เริ่มไลฟ์สดนำเสนอ
+                        <button type="submit" id="btnSubmitReportOnly" class="btn btn-primary flex-1" style="justify-content:center; padding:10px;">
+                            บันทึกการส่งงาน
                         </button>
                     </div>
                 </form>
@@ -768,218 +707,200 @@
              MODAL 8: SCHOOL PROCUREMENT & LEGAL COMPLIANCE SYSTEM (e-GP & พ.ร.บ. พัสดุ 2560)
              ============================================================== -->
         <div id="procurementModal" class="modal-overlay hidden">
-            <div class="modal-content card-glass" style="max-width: 940px; width: 96%;">
-                <div class="studio-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:12px;">
-                    <div class="live-indicator" style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:26px;">⚖️</span>
-                        <div>
-                            <h2 style="font-size:18px; color:#0f172a; margin:0;">ระบบจัดซื้อจัดจ้างภาครัฐในสถานศึกษา & กฎหมายระเบียบพัสดุ (e-GP School Compliance)</h2>
-                            <p style="font-size:12px; color:#64748b; margin:0;">อ้างอิง พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 • ระเบียบกระทรวงการคลัง พ.ศ. 2560 • หนังสือเวียน ว119</p>
-                        </div>
+            <div class="modal-content card-glass" style="max-width: 920px; width: 96%;">
+                <div class="studio-header">
+                    <div>
+                        <h2 style="font-size:16px; font-weight:600; color:#0f172a; margin:0;">ระบบจัดซื้อจัดจ้างภาครัฐในสถานศึกษา & ระเบียบกฎหมายพัสดุ</h2>
+                        <p style="font-size:12px; color:#64748b; margin:2px 0 0 0;">พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 • ระเบียบกระทรวงการคลัง พ.ศ. 2560 • หนังสือเวียน ว119</p>
                     </div>
-                    <button id="btnCloseProcurementModal" class="btn-close" style="font-size:24px; background:none; border:none; cursor:pointer;">&times;</button>
+                    <button id="btnCloseProcurementModal" class="btn-close">&times;</button>
                 </div>
 
                 <!-- Navigation Tabs inside Procurement Modal -->
                 <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:14px;">
-                    <button type="button" class="proc-tab-btn active" data-tab="proc-laws" style="padding:10px; border:2px solid #059669; background:#ecfdf5; color:#065f46; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">
-                        📚 1. กฎหมาย & ระเบียบข้อบังคับ
+                    <button type="button" class="proc-tab-btn active" data-tab="proc-laws" style="padding:9px; border:1px solid #0f172a; background:#0f172a; color:#ffffff; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">
+                        1. กฎหมายและระเบียบพัสดุ
                     </button>
-                    <button type="button" class="proc-tab-btn" data-tab="proc-calc" style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">
-                        🧮 2. คำนวณวิธีจัดซื้อ & ค่าปรับ
+                    <button type="button" class="proc-tab-btn" data-tab="proc-calc" style="padding:9px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">
+                        2. คำนวณวิธีจัดซื้อ & ค่าปรับ
                     </button>
-                    <button type="button" class="proc-tab-btn" data-tab="proc-docgen" style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">
-                        📄 3. ออกเอกสารจัดซื้ออัตโนมัติ
+                    <button type="button" class="proc-tab-btn" data-tab="proc-docgen" style="padding:9px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">
+                        3. ร่างหนังสือราชการพัสดุ
                     </button>
-                    <button type="button" class="proc-tab-btn" data-tab="proc-audit" style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">
-                        📋 4. ขั้นตอนตรวจสอบพัสดุประจำปี
+                    <button type="button" class="proc-tab-btn" data-tab="proc-audit" style="padding:9px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">
+                        4. ขั้นตอนตรวจสอบพัสดุ
                     </button>
                 </div>
 
                 <!-- TAB 1: LAWS & REGULATIONS KNOWLEDGE BASE -->
-                <div id="proc-laws" class="proc-tab-panel" style="display:block; max-height:430px; overflow-y:auto; padding-right:4px;">
+                <div id="proc-laws" class="proc-tab-panel" style="display:block; max-height:420px; overflow-y:auto; padding-right:4px;">
                     <div style="display:flex; gap:8px; margin-bottom:12px;">
-                        <input type="text" id="lawSearchInput" placeholder="🔍 ค้นหาข้อกฎหมาย เช่น มาตรา 55, วงเงิน 500,000, ว119, คณะกรรมการตรวจรับ, ค่าปรับ, ครุภัณฑ์ต่ำกว่าเกณฑ์..." style="flex:1; padding:8px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:12px;">
-                        <button type="button" id="btnSpeakLawSummary" class="btn btn-secondary btn-sm" style="border-color:#059669; color:#059669; font-weight:700;">
-                            🔊 AI อธิบายกฎหมายพัสดุ
+                        <input type="text" id="lawSearchInput" placeholder="ค้นหาข้อกฎหมาย เช่น มาตรา 55, วงเงิน 500,000, ว119, ค่าปรับ..." style="flex:1; padding:8px 12px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        <button type="button" id="btnSpeakLawSummary" class="btn btn-secondary btn-sm">
+                            อ่านออกเสียงสรุป
                         </button>
                     </div>
 
                     <div id="lawCardsList" style="display:flex; flex-direction:column; gap:10px; font-size:12.5px; line-height:1.6;">
-                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #059669; padding:12px; border-radius:8px;">
-                            <div style="font-weight:800; color:#065f46; font-size:14px;">⚖️ 1. พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 (มาตรา 55 และ มาตรา 56)</div>
+                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:8px;">
+                            <div style="font-weight:600; color:#0f172a; font-size:13.5px;">1. พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 (มาตรา 55 และ มาตรา 56)</div>
                             <div style="color:#334155; margin-top:4px;">
                                 • <b>มาตรา 55 (3 วิธีการจัดซื้อจัดจ้างหลัก):</b><br>
-                                &nbsp;&nbsp;1) <b>วิธีประกาศเชิญชวนทั่วไป (e-Market / e-Bidding / สอบราคา):</b> ใช้กับวงเงินเกิน 500,000 บาท โดยเชิญชวนผู้ประกอบการทั่วไปที่มีคุณสมบัติตรงตามเงื่อนไขเข้ายื่นข้อเสนอ<br>
-                                &nbsp;&nbsp;2) <b>วิธีคัดเลือก:</b> เชิญชวนเฉพาะผู้ประกอบการที่มีคุณสมบัติตรงตามเงื่อนไขไม่น้อยกว่า 3 ราย (เช่น กรณีมีข้อจำกัดทางเทคนิค หรือเป็นงานศิลปกรรมเฉพาะทาง)<br>
-                                &nbsp;&nbsp;3) <b>วิธีเฉพาะเจาะจง (มาตรา 56 วรรคหนึ่ง (2)(ข)):</b> การจัดซื้อจัดจ้างพัสดุทั่วไปที่มีวงเงินครั้งหนึ่ง <b>ไม่เกิน 500,000 บาท</b> (ซึ่งโรงเรียนมัธยมศึกษาใช้บ่อยที่สุดในการซื้อวัสดุการสอนและครุภัณฑ์หมวดศิลปะ/วิชาการ)
+                                &nbsp;&nbsp;1) <b>วิธีประกาศเชิญชวนทั่วไป (e-Market / e-Bidding / สอบราคา):</b> ใช้กับวงเงินเกิน 500,000 บาท<br>
+                                &nbsp;&nbsp;2) <b>วิธีคัดเลือก:</b> เชิญชวนผู้ประกอบการที่มีคุณสมบัติตรงตามเงื่อนไขไม่น้อยกว่า 3 ราย<br>
+                                &nbsp;&nbsp;3) <b>วิธีเฉพาะเจาะจง (มาตรา 56 วรรคหนึ่ง (2)(ข)):</b> การจัดซื้อจัดจ้างพัสดุทั่วไปที่มีวงเงินครั้งหนึ่ง <b>ไม่เกิน 500,000 บาท</b>
                             </div>
                         </div>
 
-                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #2563eb; padding:12px; border-radius:8px;">
-                            <div style="font-weight:800; color:#1e40af; font-size:14px;">📜 2. ระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</div>
+                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:8px;">
+                            <div style="font-weight:600; color:#0f172a; font-size:13.5px;">2. ระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</div>
                             <div style="color:#334155; margin-top:4px;">
-                                • <b>ข้อ 21 (การจัดทำร่างขอบเขตงาน TOR / รายละเอียดคุณลักษณะเฉพาะ):</b> ก่อนซื้อต้องแต่งตั้งคณะกรรมการหรือมอบหมายเจ้าหน้าที่กำหนดคุณลักษณะเฉพาะของพัสดุและราคากลาง<br>
-                                • <b>ข้อ 22 (การจัดทำรายงานขอซื้อขอจ้าง):</b> เจ้าหน้าที่พัสดุต้องจัดทำรายงานขอซื้อขอจ้างเสนอหัวหน้าหน่วยงานของรัฐ (ผู้อำนวยการโรงเรียน) เห็นชอบก่อนดำเนินการ<br>
-                                • <b>ข้อ 79 (กรณีวงเงินเล็กน้อยไม่เกิน 100,000 บาท):</b> กรณีจำเป็นเร่งด่วนหรือวงเงินไม่เกิน 100,000 บาท เจ้าหน้าที่พัสดุสามารถเจรจาตกลงราคากับผู้ขายโดยตรง แล้วทำรายงานขออนุมัติพร้อมหลักฐานใบเสร็จ/ใบส่งของ โดยตั้ง <b>ผู้ตรวจรับพัสดุ 1 คน</b> ได้<br>
-                                • <b>ข้อ 162 (การกำหนดอัตราค่าปรับกรณีส่งมอบล่าช้า):</b><br>
-                                &nbsp;&nbsp;- <b>งานซื้อครุภัณฑ์/วัสดุการสอน:</b> คิดค่าปรับเป็นรายวันในอัตราร้อยละ <b>0.20 (0.2%)</b> ของราคาสิ่งของที่ยังไม่ได้รับมอบ<br>
-                                &nbsp;&nbsp;- <b>งานจ้างทำของ/จ้างบริการ:</b> คิดค่าปรับเป็นรายวันในอัตราร้อยละ <b>0.10 (0.1%)</b> ของวงเงินค่าจ้าง (แต่ต้องไม่ต่ำกว่าวันละ 100 บาท)
+                                • <b>ข้อ 21 (การกำหนดคุณลักษณะเฉพาะ):</b> แต่งตั้งคณะกรรมการหรือมอบหมายเจ้าหน้าที่กำหนดคุณลักษณะเฉพาะและราคากลาง<br>
+                                • <b>ข้อ 22 (รายงานขอซื้อขอจ้าง):</b> เจ้าหน้าที่พัสดุจัดทำรายงานขอซื้อขอจ้างเสนอผู้อำนวยการโรงเรียนเห็นชอบก่อนดำเนินการ<br>
+                                • <b>ข้อ 79 วรรคสอง (วงเงินไม่เกิน 100,000 บาท):</b> เจ้าหน้าที่พัสดุเจรจาตกลงราคากับผู้ขายโดยตรง แล้วทำรายงานขออนุมัติ โดยตั้ง <b>ผู้ตรวจรับพัสดุ 1 คน</b> ได้<br>
+                                • <b>ข้อ 162 (อัตราค่าปรับกรณีส่งมอบล่าช้า):</b> งานซื้อคิดค่าปรับรายวันอัตราร้อยละ <b>0.20</b> ของราคาสิ่งของที่ยังไม่ได้รับมอบ / งานจ้างคิดอัตราร้อยละ <b>0.10</b> ของวงเงินค่าจ้าง (แต่ไม่ต่ำกว่าวันละ 100 บาท)
                             </div>
                         </div>
 
-                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #d97706; padding:12px; border-radius:8px;">
-                            <div style="font-weight:800; color:#b45309; font-size:14px;">📑 3. หนังสือเวียนกรมบัญชีกลาง ด่วนที่สุด ที่ กค (กวจ) 0405.2/ว 119 (แนวทางปฏิบัติค่าใช้จ่ายในการบริหารงาน)</div>
+                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:8px;">
+                            <div style="font-weight:600; color:#0f172a; font-size:13.5px;">3. หนังสือเวียนกรมบัญชีกลาง ด่วนที่สุด ที่ กค (กวจ) 0405.2/ว 119</div>
                             <div style="color:#334155; margin-top:4px;">
-                                • <b>วงเงินไม่เกิน 10,000 บาท (อนุโลมไม่ต้องทำข้อตกลงเป็นหนังสือ):</b> การจัดซื้อวัสดุสำนักงาน วัสดุการศึกษา หรือค่าใช้จ่ายในการจัดกิจกรรมนักเรียนที่วงเงินไม่เกิน 10,000 บาท สามารถดำเนินการจัดซื้อไปก่อนแล้วนำหลักฐานใบเสร็จรับเงิน/บิลเงินสดที่ถูกต้องมาเบิกจ่าย โดยให้มีผู้ตรวจรับ 1 คนลงนามตรวจรับในหลักฐานการจ่ายได้ทันที
+                                • <b>วงเงินไม่เกิน 10,000 บาท:</b> การจัดซื้อวัสดุสำนักงานหรือวัสดุการศึกษาในการจัดกิจกรรมที่วงเงินไม่เกิน 10,000 บาท สามารถจัดซื้อไปก่อนแล้วนำใบเสร็จรับเงินที่ถูกต้องมาเบิกจ่าย โดยมีผู้ตรวจรับ 1 คนลงนามตรวจรับในหลักฐานการจ่าย
                             </div>
                         </div>
 
-                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #7c3aed; padding:12px; border-radius:8px;">
-                            <div style="font-weight:800; color:#6d28d9; font-size:14px;">🏷️ 4. เกณฑ์การจำแนกประเภททรัพย์สิน: "วัสดุ" vs "ครุภัณฑ์" (หลักการจำแนกประเภทรายจ่ายตามงบประมาณ)</div>
+                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #e2e8f0; padding:12px; border-radius:8px;">
+                            <div style="font-weight:600; color:#0f172a; font-size:13.5px;">4. เกณฑ์การจำแนกประเภททรัพย์สิน: วัสดุ และ ครุภัณฑ์</div>
                             <div style="color:#334155; margin-top:4px;">
-                                • <b>วัสดุ (Consumables):</b> สิ่งของที่มีลักษณะใช้แล้วสิ้นเปลือง เสื่อมสภาพเร็ว หรือมีอายุการใช้งานไม่ยืนยาว เช่น สีน้ำ สีอะคริลิก กระดาษร้อยปอนด์ พู่กัน ดินสอ EE (ลงบัญชีวัสดุใช้ไป)<br>
-                                • <b>ครุภัณฑ์ต่ำกว่าเกณฑ์ (Low-Value Assets):</b> สิ่งของคงทนถาวรที่มีอายุการใช้งานเกิน 1 ปี และมีราคาต่อหน่วย <b>ต่ำกว่า 10,000 บาท</b> (เช่น ขาตั้งวาดภาพไม้บีชราคา 1,450 บาท, กีตาร์โปร่งราคา 4,200 บาท) <i>*ต้องลงทะเบียนคุมทรัพย์สินและติดรหัสพัสดุเพื่อตรวจสอบประจำปี แต่ไม่ต้องคำนวณค่าเสื่อมราคาในระบบ GFMIS*</i><br>
-                                • <b>ครุภัณฑ์ตามเกณฑ์ (Capital Assets):</b> สิ่งของคงทนถาวรที่มีอายุการใช้งานเกิน 1 ปี และมีราคาต่อหน่วย <b>ตั้งแต่ 10,000 บาทขึ้นไป</b> (เช่น เครื่องโปรเจคเตอร์ราคา 24,500 บาท) <i>*ต้องออกรหัสครุภัณฑ์ คำนวณค่าเสื่อมราคาประจำปี และตั้งกรรมการตรวจสอบพัสดุประจำปีตามระเบียบข้อ 213*</i>
-                            </div>
-                        </div>
-
-                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #db2777; padding:12px; border-radius:8px;">
-                            <div style="font-weight:800; color:#be185d; font-size:14px;">🏫 5. คำสั่ง สพฐ. เรื่องการมอบอำนาจเกี่ยวกับการจัดซื้อจัดจ้างและการบริหารพัสดุให้ผู้อำนวยการสถานศึกษา</div>
-                            <div style="color:#334155; margin-top:4px;">
-                                • ผู้อำนวยการโรงเรียนได้รับมอบอำนาจจากเลขาธิการ กพฐ. ให้มีอำนาจสั่งซื้อสั่งจ้างพัสดุในวงเงินงบประมาณและเงินนอกงบประมาณ (เงินอุดหนุนรายหัว / เงินเรียนฟรี 15 ปี / เงินรายได้สถานศึกษา)<br>
-                                • <b>ระเบียบข้อ 203 - 219 (การควบคุม การยืม และการจำหน่ายพัสดุ):</b> การยืมพัสดุไปใช้ในราชการต้องทำ <b>"ใบยืมพัสดุ"</b> และส่งคืนภายในกำหนด หากชำรุดเสื่อมสภาพต้องตั้งคณะกรรมการสอบหาข้อเท็จจริงและขออนุมัติจำหน่ายพัสดุออกจากบัญชี
+                                • <b>วัสดุ:</b> สิ่งของที่ใช้แล้วสิ้นเปลือง เช่น สีน้ำ กระดาษร้อยปอนด์ พู่กัน (ลงบัญชีวัสดุ)<br>
+                                • <b>ครุภัณฑ์ต่ำกว่าเกณฑ์:</b> สิ่งของคงทนถาวรอายุใช้งานเกิน 1 ปี ราคาต่อหน่วยต่ำกว่า 10,000 บาท (ลงทะเบียนคุมทรัพย์สิน)<br>
+                                • <b>ครุภัณฑ์ตามเกณฑ์:</b> สิ่งของคงทนถาวรอายุใช้งานเกิน 1 ปี ราคาต่อหน่วยตั้งแต่ 10,000 บาทขึ้นไป (ออกรหัสครุภัณฑ์ คำนวณค่าเสื่อมราคา และตรวจสอบประจำปีตามข้อ 213)
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- TAB 2: SMART PROCUREMENT METHOD & LATE PENALTY CALCULATOR -->
-                <div id="proc-calc" class="proc-tab-panel" style="display:none; max-height:430px; overflow-y:auto;">
+                <div id="proc-calc" class="proc-tab-panel" style="display:none; max-height:420px; overflow-y:auto;">
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
-                        <!-- Left Box: Procurement Threshold Analyzer -->
-                        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:14px;">
-                            <h4 style="color:#0f172a; margin-bottom:10px; font-size:14px;">🧮 วิเคราะห์วิธีการจัดซื้อจัดจ้างตามวงเงินงบประมาณ (มาตรา 55-56)</h4>
+                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px;">
+                            <h4 style="color:#0f172a; margin-bottom:10px; font-size:13.5px; font-weight:600;">วิเคราะห์วิธีการจัดซื้อจัดจ้างตามวงเงิน (มาตรา 55-56)</h4>
                             <div style="margin-bottom:10px;">
-                                <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">💰 ระบุวงเงินงบประมาณที่ต้องการจัดซื้อ/จัดจ้าง (บาท):</label>
-                                <input type="number" id="calcBudgetInput" value="45000" min="100" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; font-weight:700; color:#1e40af;">
+                                <label style="font-size:12px; font-weight:500; display:block; margin-bottom:4px;">วงเงินงบประมาณ (บาท)</label>
+                                <input type="number" id="calcBudgetInput" value="45000" min="100" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
                             </div>
                             <div style="margin-bottom:10px;">
-                                <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">📦 ประเภทพัสดุที่ต้องการจัดหา:</label>
-                                <select id="calcTypeSelect" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                                    <option value="buy">งานซื้อวัสดุการสอน / ครุภัณฑ์การศึกษา (อัตราค่าปรับ 0.20%/วัน)</option>
-                                    <option value="hire">งานจ้างทำของ / จ้างซ่อมแซมครุภัณฑ์ (อัตราค่าปรับ 0.10%/วัน)</option>
+                                <label style="font-size:12px; font-weight:500; display:block; margin-bottom:4px;">ประเภทการจัดหา</label>
+                                <select id="calcTypeSelect" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; background:#fff;">
+                                    <option value="buy">งานซื้อวัสดุการสอน / ครุภัณฑ์การศึกษา (ค่าปรับ 0.20%/วัน)</option>
+                                    <option value="hire">งานจ้างทำของ / จ้างซ่อมแซมครุภัณฑ์ (ค่าปรับ 0.10%/วัน)</option>
                                 </select>
                             </div>
-                            <button type="button" id="btnRunProcCalc" class="btn btn-primary" style="width:100%; background:#059669; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer;">
-                                🔍 วิเคราะห์ขั้นตอนตามระเบียบพัสดุ
+                            <button type="button" id="btnRunProcCalc" class="btn btn-primary" style="width:100%; justify-content:center;">
+                                วิเคราะห์ขั้นตอนตามระเบียบพัสดุ
                             </button>
 
-                            <div id="calcMethodResult" style="margin-top:12px; background:#ffffff; border:1px solid #a7f3d0; border-radius:8px; padding:12px; font-size:12px; line-height:1.6;">
-                                <!-- Populated by JS -->
+                            <div id="calcMethodResult" style="margin-top:12px; background:#ffffff; border:1px solid #e2e8f0; border-radius:6px; padding:12px; font-size:12px; line-height:1.6;">
                             </div>
                         </div>
 
-                        <!-- Right Box: Late Delivery Fine Calculator (ข้อ 162) -->
-                        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:14px;">
-                            <h4 style="color:#0f172a; margin-bottom:10px; font-size:14px;">⏱️ คำนวณค่าปรับกรณีผู้ขายส่งมอบพัสดุล่าช้า (ระเบียบฯ ข้อ 162)</h4>
+                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px;">
+                            <h4 style="color:#0f172a; margin-bottom:10px; font-size:13.5px; font-weight:600;">คำนวณค่าปรับกรณีส่งมอบพัสดุล่าช้า (ระเบียบฯ ข้อ 162)</h4>
                             <div style="margin-bottom:10px;">
-                                <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">💵 มูลค่าสิ่งของที่ส่งมอบล่าช้าตามใบสั่งซื้อ/สัญญา (บาท):</label>
-                                <input type="number" id="fineAmountInput" value="45000" min="100" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                                <label style="font-size:12px; font-weight:500; display:block; margin-bottom:4px;">มูลค่าสิ่งของที่ส่งมอบล่าช้า (บาท)</label>
+                                <input type="number" id="fineAmountInput" value="45000" min="100" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
                             </div>
                             <div style="margin-bottom:10px;">
-                                <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">📅 จำนวนวันที่ส่งมอบเกินกำหนด (วัน):</label>
-                                <input type="number" id="fineDaysInput" value="5" min="1" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                                <label style="font-size:12px; font-weight:500; display:block; margin-bottom:4px;">จำนวนวันที่เกินกำหนด (วัน)</label>
+                                <input type="number" id="fineDaysInput" value="5" min="1" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
                             </div>
-                            <button type="button" id="btnRunFineCalc" class="btn btn-primary" style="width:100%; background:#d97706; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer;">
-                                ⚖️ คำนวณค่าปรับตามระเบียบข้อ 162
+                            <button type="button" id="btnRunFineCalc" class="btn btn-primary" style="width:100%; justify-content:center;">
+                                คำนวณค่าปรับ
                             </button>
 
-                            <div id="calcFineResult" style="margin-top:12px; background:#ffffff; border:1px solid #fde68a; border-radius:8px; padding:12px; font-size:12px; line-height:1.6;">
-                                <!-- Populated by JS -->
+                            <div id="calcFineResult" style="margin-top:12px; background:#ffffff; border:1px solid #e2e8f0; border-radius:6px; padding:12px; font-size:12px; line-height:1.6;">
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- TAB 3: OFFICIAL GOVERNMENT PROCUREMENT DOCUMENT GENERATOR -->
-                <div id="proc-docgen" class="proc-tab-panel" style="display:none; max-height:430px; overflow-y:auto;">
+                <div id="proc-docgen" class="proc-tab-panel" style="display:none; max-height:420px; overflow-y:auto;">
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:10px;">
                         <div>
-                            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:3px;">📄 เลือกแบบฟอร์มราชการ:</label>
-                            <select id="govFormTypeSelect" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
-                                <option value="memo-buy">1. บันทึกข้อความรายงานขอซื้อขอจ้าง (ระเบียบฯ ข้อ 22)</option>
-                                <option value="appoint-comm">2. คำสั่งแต่งตั้งผู้ตรวจรับพัสดุ / คณะกรรมการตรวจรับ</option>
-                                <option value="inspect-cert">3. ใบตรวจรับพัสดุ (ระเบียบฯ ข้อ 175)</option>
-                                <option value="borrow-form">4. ใบยืมพัสดุใช้ในราชการโรงเรียน (ระเบียบฯ ข้อ 207)</option>
-                                <option value="annual-audit">5. รายงานผลการตรวจสอบพัสดุประจำปี (ระเบียบฯ ข้อ 213)</option>
+                            <label style="font-size:11px; font-weight:600; display:block; margin-bottom:3px;">เลือกแบบฟอร์มราชการ</label>
+                            <select id="govFormTypeSelect" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; background:#fff;">
+                                <option value="memo-buy">1. บันทึกข้อความรายงานขอซื้อขอจ้าง (ข้อ 22)</option>
+                                <option value="appoint-comm">2. คำสั่งแต่งตั้งผู้ตรวจรับพัสดุ</option>
+                                <option value="inspect-cert">3. ใบตรวจรับพัสดุ (ข้อ 175)</option>
+                                <option value="borrow-form">4. ใบยืมพัสดุใช้ในราชการโรงเรียน (ข้อ 207)</option>
+                                <option value="annual-audit">5. รายงานผลการตรวจสอบพัสดุประจำปี (ข้อ 213)</option>
                             </select>
                         </div>
                         <div>
-                            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:3px;">📦 โครงการ / รายการพัสดุที่จัดซื้อ:</label>
-                            <input type="text" id="govFormProjectInput" value="โครงการจัดซื้อวัสดุและครุภัณฑ์ฝึกปฏิบัติการทัศนศิลป์ ภาคเรียนที่ 2" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                            <label style="font-size:11px; font-weight:600; display:block; margin-bottom:3px;">ชื่อโครงการ / รายการที่จัดซื้อ</label>
+                            <input type="text" id="govFormProjectInput" value="โครงการจัดซื้อวัสดุและครุภัณฑ์ฝึกปฏิบัติการทัศนศิลป์" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
                         </div>
                         <div>
-                            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:3px;">💰 วงเงินงบประมาณ (บาท):</label>
-                            <input type="number" id="govFormAmountInput" value="38500" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                            <label style="font-size:11px; font-weight:600; display:block; margin-bottom:3px;">วงเงินงบประมาณ (บาท)</label>
+                            <input type="number" id="govFormAmountInput" value="38500" style="width:100%; padding:7px 8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
                         </div>
                     </div>
 
                     <div style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:11px; color:#475569;">💡 ระบบสร้างร่างบันทึกข้อความราชการตามแบบฟอร์มมาตรฐานงานพัสดุโรงเรียน พร้อมนำไปพิมพ์เสนอผู้อำนวยการโรงเรียนได้ทันที</span>
-                        <button type="button" id="btnGenGovDocNow" class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
-                            ✨ สร้างร่างหนังสือราชการ
+                        <span style="font-size:11px; color:#64748b;">ร่างบันทึกข้อความราชการตามแบบฟอร์มมาตรฐานงานพัสดุสถานศึกษา</span>
+                        <button type="button" id="btnGenGovDocNow" class="btn btn-primary btn-sm">
+                            สร้างร่างเอกสาร
                         </button>
                     </div>
 
-                    <div id="govDocPreviewBox" style="background:#ffffff; border:1px solid #94a3b8; border-radius:8px; padding:16px; font-family:'Sarabun',sans-serif; font-size:13px; line-height:1.7; color:#0f172a; max-height:250px; overflow-y:auto; white-space:pre-line;">
-                        <!-- Populated by JS -->
+                    <div id="govDocPreviewBox" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:16px; font-family:'Sarabun',sans-serif; font-size:13px; line-height:1.7; color:#0f172a; max-height:240px; overflow-y:auto; white-space:pre-line;">
                     </div>
 
                     <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
-                        <button type="button" id="btnCopyGovDoc" class="btn btn-secondary btn-sm" style="border-color:#2563eb; color:#2563eb;">
-                            📋 คัดลอกข้อความราชการ
+                        <button type="button" id="btnCopyGovDoc" class="btn btn-secondary btn-sm">
+                            คัดลอกข้อความ
                         </button>
-                        <button type="button" id="btnDownloadGovDoc" class="btn btn-primary btn-sm" style="background:#059669; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
-                            📥 ดาวน์โหลดเอกสารราชการ (.txt)
+                        <button type="button" id="btnDownloadGovDoc" class="btn btn-primary btn-sm">
+                            ดาวน์โหลดเอกสาร (.txt)
                         </button>
                     </div>
                 </div>
 
                 <!-- TAB 4: 9-STEP COMPLIANCE CHECKLIST & ANNUAL AUDIT -->
-                <div id="proc-audit" class="proc-tab-panel" style="display:none; max-height:430px; overflow-y:auto;">
-                    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px; margin-bottom:12px;">
-                        <strong style="color:#1e40af; font-size:13px;">✅ Checklist ตรวจสอบความถูกต้องครบถ้วนของกระบวนการจัดซื้อจัดจ้างในสถานศึกษา (ป้องกันข้อทักท้วง สตง.)</strong>
-                        <p style="font-size:11px; color:#475569; margin:2px 0 0 0;">ครูผู้รับผิดชอบงานพัสดุสามารถติ๊กตรวจสอบเอกสารแต่ละขั้นตอนให้ครบถ้วนตามระเบียบกระทรวงการคลัง พ.ศ. 2560</p>
+                <div id="proc-audit" class="proc-tab-panel" style="display:none; max-height:420px; overflow-y:auto;">
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px; margin-bottom:12px;">
+                        <strong style="color:#0f172a; font-size:13px;">รายการตรวจสอบความครบถ้วนของเอกสารจัดซื้อจัดจ้างในสถานศึกษา</strong>
+                        <p style="font-size:11px; color:#64748b; margin:2px 0 0 0;">ตามระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</p>
                     </div>
 
-                    <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
-                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
-                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 1:</b> ตรวจสอบโครงการและวงเงินใน <b>แผนปฏิบัติการประจำปีของโรงเรียน</b> และแผนการจัดซื้อจัดจ้างประจำปี (มาตรา 11)</span>
+                    <div style="display:flex; flex-direction:column; gap:6px; font-size:12px;">
+                        <label style="display:flex; align-items:center; gap:8px; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 1:</b> ตรวจสอบโครงการและวงเงินในแผนปฏิบัติการประจำปีของโรงเรียน (มาตรา 11)</span>
                         </label>
-                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
-                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 2:</b> กำหนด <b>รายละเอียดคุณลักษณะเฉพาะของพัสดุ (สเปค) และราคากลาง</b> ของวัสดุ/ครุภัณฑ์ศิลปะ (ข้อ 21)</span>
+                        <label style="display:flex; align-items:center; gap:8px; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 2:</b> กำหนดรายละเอียดคุณลักษณะเฉพาะของพัสดุและราคากลาง (ข้อ 21)</span>
                         </label>
-                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
-                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 3:</b> จัดทำ <b>บันทึกข้อความรายงานขอซื้อขอจ้าง</b> ตามรายการในข้อ 22 เสนอผู้อำนวยการโรงเรียนให้ความเห็นชอบ</span>
+                        <label style="display:flex; align-items:center; gap:8px; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 3:</b> จัดทำบันทึกข้อความรายงานขอซื้อขอจ้างเสนอผู้อำนวยการโรงเรียน (ข้อ 22)</span>
                         </label>
-                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
-                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 4:</b> ดำเนินการสืบราคาและเจรจาตกลงราคากับผู้ประกอบการที่มีอาชีพขายหรือรับจ้างนั้นโดยตรง (วิธีเฉพาะเจาะจง ข้อ 78-79)</span>
+                        <label style="display:flex; align-items:center; gap:8px; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 4:</b> สืบราคาและเจรจาตกลงราคากับผู้ประกอบการ (วิธีเฉพาะเจาะจง ข้อ 78-79)</span>
                         </label>
-                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
-                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 5:</b> จัดทำ <b>ใบสั่งซื้อ / ใบสั่งจ้าง</b> หรือสัญญาซื้อขาย และประกาศผู้ชนะการเสนอราคาในระบบ e-GP</span>
+                        <label style="display:flex; align-items:center; gap:8px; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 5:</b> จัดทำใบสั่งซื้อ/ใบสั่งจ้าง และประกาศผู้ชนะการเสนอราคาในระบบ e-GP</span>
                         </label>
-                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
-                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 6:</b> ผู้ขายส่งมอบพัสดุ พร้อมใบส่งของ/ใบกำกับภาษี และ <b>คณะกรรมการตรวจรับพัสดุ</b> ตรวจนับความถูกต้องครบถ้วน (ข้อ 175)</span>
+                        <label style="display:flex; align-items:center; gap:8px; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 6:</b> ผู้ขายส่งมอบพัสดุ และคณะกรรมการตรวจรับพัสดุทำการตรวจนับ (ข้อ 175)</span>
                         </label>
-                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
-                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 7:</b> ลงบัญชีวัสดุ หรือขึ้น <b>ทะเบียนคุมทรัพย์สิน (ครุภัณฑ์)</b> พร้อมกำหนดรหัสพัสดุและสถานที่จัดเก็บ (ข้อ 203)</span>
+                        <label style="display:flex; align-items:center; gap:8px; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 7:</b> ลงบัญชีวัสดุ หรือขึ้นทะเบียนคุมทรัพย์สินพร้อมกำหนดรหัสพัสดุ (ข้อ 203)</span>
                         </label>
-                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
-                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 8:</b> เบิกจ่ายเงินให้แก่ผู้ขาย และหักภาษี ณ ที่จ่าย 1% (กรณีนิติบุคคลตั้งแต่ 500 บาท หรือบุคคลธรรมดาตั้งแต่ 10,000 บาทขึ้นไป)</span>
+                        <label style="display:flex; align-items:center; gap:8px; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 8:</b> เบิกจ่ายเงินให้แก่ผู้ขาย และคำนวณภาษีหัก ณ ที่จ่ายตามเกณฑ์สรรพากร</span>
                         </label>
-                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
-                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 9:</b> แต่งตั้งผู้รับผิดชอบ <b>ตรวจสอบพัสดุประจำปี</b> ก่อนสิ้นเดือนกันยายน และตรวจนับจริงภายใน 30 วันทำการ (ข้อ 213)</span>
+                        <label style="display:flex; align-items:center; gap:8px; background:#ffffff; padding:8px 12px; border-radius:6px; border:1px solid #e2e8f0; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 9:</b> แต่งตั้งผู้รับผิดชอบตรวจสอบพัสดุประจำปีภายใน 30 วันทำการนับแต่วันทำการแรกของเดือนตุลาคม (ข้อ 213)</span>
                         </label>
                     </div>
                 </div>
@@ -987,50 +908,35 @@
         </div>
 
         <!-- ==============================================================
-             MODAL 9: CURRICULUM & PROCUREMENT COMPLIANCE AUDIT MODAL
+             MODAL 9: CURRICULUM & PROCUREMENT COMPLIANCE MODAL
              ============================================================== -->
         <div id="verifyModal" class="modal-overlay hidden">
-            <div class="modal-content card-glass" style="max-width: 680px;">
+            <div class="modal-content card-glass" style="max-width: 640px;">
                 <div class="studio-header">
-                    <div class="live-indicator">
-                        <span class="shield-icon" style="color:#059669;">🛡️</span>
-                        <h2>มาตรฐานหลักสูตรแกนกลาง สพฐ. และระเบียบพัสดุโรงเรียน</h2>
-                    </div>
+                    <h2 style="font-size:16px; font-weight:600; margin:0;">ข้อมูลอ้างอิงหลักสูตรแกนกลาง สพฐ. และระเบียบพัสดุ</h2>
                     <button id="btnCloseVerifyModal" class="btn-close">&times;</button>
                 </div>
 
-                <div style="padding:16px; color:#334155; font-size:13px; line-height:1.6;">
-                    <div style="background:rgba(16, 185, 129, 0.1); border:1px solid #10b981; border-radius:8px; padding:12px; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:24px;">✅</span>
-                        <div>
-                            <strong style="color:#047857; font-size:14px;">รับรองมาตรฐานสื่อการสอนและระบบทะเบียนคุมพัสดุโรงเรียนมัธยมศึกษา</strong><br>
-                            <span style="font-size:11px; color:#065f46;">สอดคล้องกับตัวชี้วัดกลุ่มสาระการเรียนรู้ศิลปะ (สพฐ.) และระเบียบกระทรวงการคลังว่าด้วยการบริหารพัสดุภาครัฐ</span>
-                        </div>
-                    </div>
-
-                    <ul style="list-style:none; padding:0; margin:0 0 16px 0; display:flex; flex-direction:column; gap:10px;">
-                        <li style="background:#f8fafc; padding:10px; border-radius:6px; border-left:4px solid #2563eb;">
-                            <strong>🎨 มาตรฐาน ศ 1.1 และ ศ 1.2 (ทัศนศิลป์ ม.1 - ม.6):</strong><br>
-                            <span style="font-size:12px;">ครอบคลุมความเข้าใจเรื่องทัศนธาตุทั้ง 7 (จุด เส้น รูปร่าง รูปทรง น้ำหนัก สี บริเวณว่าง พื้นผิว) การวิเคราะห์งานศิลปะ และการสร้างสรรค์ผลงาน</span>
+                <div style="color:#334155; font-size:12.5px; line-height:1.6;">
+                    <ul style="list-style:none; padding:0; margin:0 0 16px 0; display:flex; flex-direction:column; gap:8px;">
+                        <li style="background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0;">
+                            <strong>มาตรฐาน ศ 1.1 และ ศ 1.2 (กลุ่มสาระการเรียนรู้ศิลปะ ม.1 - ม.6)</strong><br>
+                            <span>ครอบคลุมเนื้อหาทัศนธาตุทั้ง 7 (จุด เส้น รูปร่าง รูปทรง น้ำหนัก สี บริเวณว่าง พื้นผิว) การวิเคราะห์งานศิลปะ และการสร้างสรรค์ผลงาน</span>
                         </li>
-                        <li style="background:#f8fafc; padding:10px; border-radius:6px; border-left:4px solid #d97706;">
-                            <strong>📦 ระบบทะเบียนคุมทรัพย์สินและพัสดุโรงเรียน:</strong><br>
-                            <span style="font-size:12px;">รองรับการกำหนดรหัสครุภัณฑ์ ตรวจสอบยอดคงเหลือ การเบิก-จ่ายวัสดุสิ้นเปลือง และการส่งออกไฟล์ CSV สำหรับงานพัสดุประจำปีงบประมาณ</span>
-                        </li>
-                        <li style="background:#f8fafc; padding:10px; border-radius:6px; border-left:4px solid #7c3aed;">
-                            <strong>🤖 ระบบ AI ช่วยสอนและประเมินผลตามสภาพจริง (Authentic Assessment):</strong><br>
-                            <span style="font-size:12px;">ช่วยครูสร้างแผนการสอน Active Learning 5 ขั้นตอน เกณฑ์ Rubric และตรวจให้คะแนนผลงานนักเรียนพร้อมพิกัด GPS จริง</span>
+                        <li style="background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0;">
+                            <strong>พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</strong><br>
+                            <span>รองรับการลงทะเบียนคุมทรัพย์สิน การเบิก-ยืม และการคำนวณระเบียบพัสดุตามระเบียบกระทรวงการคลัง พ.ศ. 2560</span>
                         </li>
                     </ul>
 
-                    <div style="text-align:center; padding-top:10px; border-top:1px solid #e2e8f0;">
-                        <button id="btnConfirmVerify" class="btn btn-primary" style="background:#059669; color:#fff; border:none; padding:8px 24px; border-radius:8px; font-weight:700; cursor:pointer;">รับทราบข้อมูลมาตรฐาน</button>
+                    <div style="text-align:right; padding-top:10px; border-top:1px solid #e2e8f0;">
+                        <button id="btnConfirmVerify" class="btn btn-primary btn-sm">ปิดหน้าต่าง</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=21"></script>
+    <script src="app.js?v=22"></script>
 </body>
 </html>

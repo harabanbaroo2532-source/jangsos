@@ -43,200 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const citizenReportModal = document.getElementById('citizenReportModal');
     const verifyModal = document.getElementById('verifyModal');
 
-    // 3. Initial Data Fallback (Works offline & online)
-    const defaultSubmissions = [
-        {
-            id: 'art-101',
-            title: '🎨 ผลงานวาดภาพระบายสี: ทัศนธาตุและแสงเงาธรรมชาติ',
-            studentName: 'ด.ช. นภัสกร ศิลปะเจริญ (ม.1/2 เลขที่ 8)',
-            grade: 'ม.1',
-            category: 'art-work',
-            status: 'graded',
-            score: '19/20 (เกรด 4 ดีเยี่ยม)',
-            lat: 13.7563,
-            lng: 100.5018,
-            locationName: 'อาคารศิลปะ ห้องปฏิบัติการทัศนศิลป์ 1',
-            time: new Date(Date.now() - 3600000 * 2).toISOString(),
-            description: 'ฝึกการใช้เส้นและน้ำหนักแสงเงา 7 ทัศนธาตุ วาดทิวทัศน์รอบบริเวณโรงเรียนด้วยสีน้ำ',
-            mediaUrl: 'assets/art_color_value.jpg',
-            mediaType: 'photo',
-            viewers: 14
-        },
-        {
-            id: 'art-102',
-            title: '✏️ โครงงานเส้นสร้างสรรค์อารมณ์ (Line Element Art)',
-            studentName: 'น.ส. พิมพ์ชนก รักศิลป์ (ม.4/1 เลขที่ 15)',
-            grade: 'ม.4',
-            category: 'field-project',
-            status: 'pending',
-            score: 'รอครูตรวจให้คะแนน',
-            lat: 13.7548,
-            lng: 100.4998,
-            locationName: 'ลานกิจกรรมหน้าเสาธง / สวนหย่อมโรงเรียน',
-            time: new Date(Date.now() - 1800000).toISOString(),
-            description: 'สเก็ตช์ภาพโครงสร้างสถาปัตยกรรมและต้นไม้ใหญ่ด้วยเส้นตรงแนวตั้งและเส้นโค้งพริ้วไหว',
-            mediaUrl: 'assets/art_point_line.jpg',
-            mediaType: 'photo',
-            viewers: 9
-        },
-        {
-            id: 'asset-pin-103',
-            title: '📦 จุดตรวจเช็คครุภัณฑ์: ขาตั้งวาดรูปไม้บีช & ชุดสีอะคริลิก',
-            studentName: 'ครูผู้ดูแลพัสดุหมวดศิลปะ (ครูกิตติพงศ์)',
-            grade: 'งานพัสดุ',
-            category: 'asset-check',
-            status: 'verified',
-            score: 'พัสดุครบถ้วนสมบูรณ์ (26/30 ตัว)',
-            lat: 13.7578,
-            lng: 100.5032,
-            locationName: 'ห้องเก็บพัสดุกลุ่มสาระการเรียนรู้ศิลปะ ชั้น 2',
-            time: new Date(Date.now() - 900000).toISOString(),
-            description: 'ตรวจนับพัสดุประจำภาคเรียน: ขาตั้งวาดเฟรมผ้าใบพร้อมใช้งานสำหรับนักเรียน ม.ปลาย',
-            mediaUrl: 'assets/art_workshop.jpg',
-            mediaType: 'photo',
-            viewers: 6
-        }
-    ];
-
-    const defaultInventory = [
-        {
-            id: 'INV-ART-001',
-            code: 'ครุภัณฑ์-ศป-69-001',
-            name: 'ขาตั้งวาดภาพไม้บีชปรับระดับ (Studio Easel)',
-            category: 'ครุภัณฑ์ศิลปะ',
-            room: 'ห้องปฏิบัติการทัศนศิลป์ 1 (ชั้น 2)',
-            totalQty: 30,
-            availableQty: 26,
-            borrowedQty: 4,
-            unit: 'ตัว',
-            pricePerUnit: 1450,
-            status: 'พร้อมใช้งาน',
-            borrower: 'นักเรียน ม.5/1 (ยืมจัดนิทรรศการ 4 ตัว)',
-            lat: 13.7566,
-            lng: 100.5022
-        },
-        {
-            id: 'INV-ART-002',
-            code: 'วัสดุ-ศป-69-014',
-            name: 'ชุดสีน้ำและสีอะคริลิกเกรดสตูดิโอ (Acrylic & Watercolor)',
-            category: 'วัสดุสิ้นเปลืองศิลปะ',
-            room: 'ตู้เก็บวัสดุห้องศิลปะ 2',
-            totalQty: 50,
-            availableQty: 18,
-            borrowedQty: 32,
-            unit: 'กล่อง',
-            pricePerUnit: 380,
-            status: 'พร้อมเบิกจ่าย',
-            borrower: 'ใช้ในคาบเรียน ม.1 - ม.3',
-            lat: 13.7580,
-            lng: 100.5035
-        },
-        {
-            id: 'INV-SCH-003',
-            code: 'ครุภัณฑ์-อด-69-008',
-            name: 'เครื่องโปรเจคเตอร์เลเซอร์ความละเอียดสูง (Smart Projector)',
-            category: 'ครุภัณฑ์โสตทัศนูปกรณ์',
-            room: 'ห้องเรียนรวมศิลปะ (อาคาร 1 ชั้น 2)',
-            totalQty: 10,
-            availableQty: 9,
-            borrowedQty: 1,
-            unit: 'เครื่อง',
-            pricePerUnit: 24500,
-            status: 'พร้อมใช้งาน',
-            borrower: 'ครูกลุ่มสาระศิลปะ (ห้อง 204)',
-            lat: 13.7552,
-            lng: 100.5008
-        },
-        {
-            id: 'INV-ART-004',
-            code: 'ครุภัณฑ์-ดน-69-005',
-            name: 'ชุดเครื่องดนตรีไทย-สากล (ซอด้วง, ขิม, กีตาร์โปร่ง)',
-            category: 'ครุภัณฑ์ดนตรี-นาฏศิลป์',
-            room: 'ห้องปฏิบัติการดนตรี (อาคารศิลปะ ชั้น 1)',
-            totalQty: 20,
-            availableQty: 18,
-            borrowedQty: 2,
-            unit: 'ชิ้น',
-            pricePerUnit: 4200,
-            status: 'ซ่อมบำรุง 2 ชิ้น',
-            borrower: 'ชมรมดนตรีโรงเรียน',
-            lat: 13.7570,
-            lng: 100.4988
-        },
-        {
-            id: 'INV-ART-005',
-            code: 'วัสดุ-ศป-69-022',
-            name: 'กระดาษร้อยปอนด์ A2 / เฟรมผ้าใบแคนวาส (Canvas 40x60cm)',
-            category: 'วัสดุสิ้นเปลืองศิลปะ',
-            room: 'ห้องพัสดุหมวดศิลปะ',
-            totalQty: 120,
-            availableQty: 85,
-            borrowedQty: 35,
-            unit: 'แผ่น/เฟรม',
-            pricePerUnit: 120,
-            status: 'พร้อมใช้งาน',
-            borrower: 'เบิกจ่ายโครงงานปลายภาค ม.6',
-            lat: 13.7568,
-            lng: 100.5025
-        }
-    ];
-
-    const defaultQrRoster = [
-        {
-            studentId: '69101',
-            name: 'ด.ช. นภัสกร ศิลปะเจริญ',
-            classRoom: 'ม.1/1',
-            scanTime: '08:32:15',
-            status: 'มาเรียน',
-            homeworkStatus: 'ส่งงานแล้ว (19/20)',
-            submissionId: 'art-101'
-        },
-        {
-            studentId: '69102',
-            name: 'ด.ญ. กัญญาณัฐ วาดฝัน',
-            classRoom: 'ม.1/1',
-            scanTime: '08:33:04',
-            status: 'มาเรียน',
-            homeworkStatus: 'ส่งงานแล้ว (20/20)',
-            submissionId: 'art-101'
-        },
-        {
-            studentId: '69103',
-            name: 'ด.ช. ธีรภัทร รักศิลป์',
-            classRoom: 'ม.1/1',
-            scanTime: '08:34:20',
-            status: 'มาเรียน',
-            homeworkStatus: 'ส่งงานแล้ว (18/20)',
-            submissionId: 'art-102'
-        },
-        {
-            studentId: '69104',
-            name: 'ด.ญ. พิมพ์ชนก แสงสี',
-            classRoom: 'ม.1/1',
-            scanTime: '08:35:10',
-            status: 'มาเรียน',
-            homeworkStatus: 'ส่งงานแล้ว (รอตรวจ)',
-            submissionId: 'art-102'
-        },
-        {
-            studentId: '69105',
-            name: 'ด.ช. ศุภกร ลายเส้น',
-            classRoom: 'ม.1/1',
-            scanTime: '08:36:45',
-            status: 'มาสาย',
-            homeworkStatus: 'กำลังทำใบงาน',
-            submissionId: null
-        },
-        {
-            studentId: '69106',
-            name: 'ด.ญ. ชนิกานต์ ทัศนธาตุ',
-            classRoom: 'ม.1/1',
-            scanTime: '08:31:50',
-            status: 'มาเรียน',
-            homeworkStatus: 'ส่งงานแล้ว (20/20)',
-            submissionId: 'art-101'
-        }
-    ];
+    // 3. Initial State (Zero Sample Data - Clean Minimal Start)
+    const defaultSubmissions = [];
+    const defaultInventory = [];
+    const defaultQrRoster = [];
 
     activeSubmissions = [...defaultSubmissions];
     schoolAssets = [...defaultInventory];
@@ -251,9 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check if student opened URL via QR Code scan (?action=checkin or ?action=homework)
         const params = new URLSearchParams(window.location.search);
         if (params.get('action') === 'homework') {
-            setTimeout(() => openCitizenReportModal(), 500);
+            setTimeout(() => openCitizenReportModal(), 300);
         } else if (params.get('action') === 'checkin') {
-            setTimeout(() => simulateStudentQrScan(), 500);
+            setTimeout(() => {
+                document.getElementById('stdIdInput')?.focus();
+            }, 300);
         }
     }
 
@@ -273,13 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (qrModeBadge) {
             if (currentQrMode === 'attend') {
-                qrModeBadge.textContent = '📲 สแกน QR เช็คชื่อเข้าเรียนสด';
-                qrModeBadge.style.background = '#dbeafe';
-                qrModeBadge.style.color = '#1d4ed8';
+                qrModeBadge.textContent = 'สแกนเช็คชื่อเข้าเรียน';
+                qrModeBadge.style.background = '#f1f5f9';
+                qrModeBadge.style.color = '#334155';
             } else {
-                qrModeBadge.textContent = '🎨 สแกน QR ส่งผลงานศิลปะ/การบ้าน';
-                qrModeBadge.style.background = '#fce7f3';
-                qrModeBadge.style.color = '#be185d';
+                qrModeBadge.textContent = 'สแกนส่งงาน / การบ้าน';
+                qrModeBadge.style.background = '#f1f5f9';
+                qrModeBadge.style.color = '#0f172a';
             }
         }
 
@@ -290,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const qrDataUrl = `${baseOrigin}/?action=${actionType}&pin=${encodeURIComponent(currentSessionPin)}&class=${encodeURIComponent(classVal)}`;
 
         if (qrImg) {
-            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(qrDataUrl)}`;
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrDataUrl)}`;
         }
     }
 
@@ -302,29 +114,35 @@ document.addEventListener('DOMContentLoaded', () => {
         let presentCount = 0;
         let submittedCount = 0;
 
+        if (qrAttendanceList.length === 0) {
+            const emptyTr = document.createElement('tr');
+            emptyTr.innerHTML = `<td colspan="6" style="padding:36px 16px; text-align:center; color:#94a3b8; font-size:12.5px;">ยังไม่มีรายชื่อนักเรียนเช็คชื่อในคาบเรียนนี้</td>`;
+            tbody.appendChild(emptyTr);
+        }
+
         qrAttendanceList.forEach((st, index) => {
             if (st.status === 'มาเรียน' || st.status === 'มาสาย') presentCount++;
             if (st.homeworkStatus && st.homeworkStatus.includes('ส่งงานแล้ว')) submittedCount++;
 
             const statusBadge = st.status === 'มาเรียน'
-                ? `<span style="background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:12px; font-weight:700; font-size:11px;">✅ มาเรียน</span>`
+                ? `<span style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0; padding:2px 8px; border-radius:4px; font-weight:500; font-size:11px;">มาเรียน</span>`
                 : st.status === 'มาสาย'
-                ? `<span style="background:#fef3c7; color:#b45309; padding:2px 8px; border-radius:12px; font-weight:700; font-size:11px;">⏰ มาสาย</span>`
-                : `<span style="background:#f1f5f9; color:#475569; padding:2px 8px; border-radius:12px; font-weight:700; font-size:11px;">📝 ${st.status}</span>`;
+                ? `<span style="background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:2px 8px; border-radius:4px; font-weight:500; font-size:11px;">มาสาย</span>`
+                : `<span style="background:#f8fafc; color:#475569; border:1px solid #e2e8f0; padding:2px 8px; border-radius:4px; font-weight:500; font-size:11px;">${st.status}</span>`;
 
-            const hwColor = st.homeworkStatus.includes('ส่งงานแล้ว') ? '#be185d' : '#64748b';
+            const hwColor = st.homeworkStatus.includes('ส่งงานแล้ว') ? '#0f172a' : '#64748b';
 
             const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid #e2e8f0';
+            tr.style.borderBottom = '1px solid #f1f5f9';
             tr.innerHTML = `
-                <td style="padding:8px 10px; font-family:monospace; font-weight:700; color:#1e40af;">${st.studentId}</td>
-                <td style="padding:8px 10px; font-weight:700; color:#0f172a;">${st.name} <span style="font-size:10px; color:#64748b;">(${st.classRoom})</span></td>
-                <td style="padding:8px 10px; font-family:monospace; color:#475569;">📲 ${st.scanTime}</td>
+                <td style="padding:8px 10px; font-family:monospace; font-weight:600; color:#334155;">${st.studentId}</td>
+                <td style="padding:8px 10px; font-weight:500; color:#0f172a;">${st.name} <span style="font-size:11px; color:#64748b;">(${st.classRoom})</span></td>
+                <td style="padding:8px 10px; font-family:monospace; color:#64748b;">${st.scanTime}</td>
                 <td style="padding:8px 10px;">${statusBadge}</td>
-                <td style="padding:8px 10px; font-weight:700; color:${hwColor};">${st.homeworkStatus}</td>
+                <td style="padding:8px 10px; font-weight:500; color:${hwColor};">${st.homeworkStatus}</td>
                 <td style="padding:8px 10px; text-align:center;">
-                    <button type="button" class="btn-view-student-work" data-idx="${index}" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">
-                        🎨 ดูงาน/ให้คะแนน
+                    <button type="button" class="btn-view-student-work" data-idx="${index}" style="background:#ffffff; color:#334155; border:1px solid #cbd5e1; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:500; cursor:pointer;">
+                        ดูข้อมูล
                     </button>
                 </td>
             `;
@@ -337,13 +155,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (presentEl) presentEl.textContent = `มาเรียน: ${presentCount} คน`;
         if (submittedEl) submittedEl.textContent = `ส่งงานแล้ว: ${submittedCount} คน`;
-        if (tacAttendEl) tacAttendEl.textContent = `${presentCount} คน (100%)`;
+        if (tacAttendEl) tacAttendEl.textContent = `${presentCount} คน`;
 
         tbody.querySelectorAll('.btn-view-student-work').forEach(btn => {
             btn.addEventListener('click', () => {
                 const idx = Number(btn.dataset.idx);
                 const st = qrAttendanceList[idx];
-                const foundWork = activeSubmissions.find(s => s.id === st.submissionId) || activeSubmissions[0];
+                const foundWork = activeSubmissions.find(s => s.id === st.submissionId);
                 if (foundWork) {
                     openStreamViewer(foundWork);
                 } else {
@@ -353,54 +171,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function simulateStudentQrScan() {
-        const sampleNames = [
-            'ด.ช. กิตติกวิน วาดศิลป์',
-            'ด.ญ. ณัฐณิชา สีน้ำ',
-            'ด.ช. ปัณณวิชญ์ เส้นสร้างสรรค์',
-            'ด.ญ. วรัญญา ทัศนศิลป์',
-            'นาย ธนภัทร ศิลปกรรม'
-        ];
-        const randomName = sampleNames[Math.floor(Math.random() * sampleNames.length)];
-        const randomId = String(69100 + qrAttendanceList.length + 1);
-        const classVal = document.getElementById('qrClassSelect')?.value || 'ม.1/1';
-        const nowTime = new Date().toLocaleTimeString('th-TH');
-
-        if (currentQrMode === 'homework') {
-            const nameInput = document.getElementById('reportNameInput');
-            const gradeInput = document.getElementById('reportGradeInput');
-            if (nameInput) nameInput.value = `${randomName} (รหัส ${randomId})`;
-            if (gradeInput) gradeInput.value = classVal;
-            openCitizenReportModal();
-            speakThaiText(`นักเรียน ${randomName} สแกนคิวอาร์โค้ดเพื่อส่งผลงานศิลปะค่ะ`);
-        } else {
-            qrAttendanceList.unshift({
-                studentId: randomId,
-                name: randomName,
-                classRoom: classVal,
-                scanTime: nowTime,
-                status: 'มาเรียน',
-                homeworkStatus: 'ส่งงานแล้ว (ผ่าน QR)',
-                submissionId: 'art-101'
-            });
-            renderQrAttendanceTable();
-            speakThaiText(`เช็คชื่อสำเร็จ ${randomName} รหัส ${randomId} เข้าเรียนเรียบร้อยแล้วค่ะ`);
-        }
-    }
-
-    // 6. Render Student Art Submissions & Asset Pins (Left Feed + Map Markers)
+    // 6. Render Student Art Submissions & Asset Records
     let currentFilter = 'all';
 
     function getCategoryMeta(cat) {
         switch (cat) {
             case 'art-work':
-                return { emoji: '🎨', label: 'งานทัศนศิลป์', color: '#db2777', bg: '#fdf2f8' };
+                return { label: 'งานทัศนศิลป์', color: '#334155', bg: '#f8fafc' };
             case 'field-project':
-                return { emoji: '🌳', label: 'ศิลปะภาคสนาม', color: '#059669', bg: '#ecfdf5' };
+                return { label: 'โครงงานศิลปะ', color: '#475569', bg: '#f8fafc' };
             case 'asset-check':
-                return { emoji: '📦', label: 'ตรวจพัสดุโรงเรียน', color: '#d97706', bg: '#fffbeb' };
+                return { label: 'ตรวจพัสดุ', color: '#64748b', bg: '#f8fafc' };
             default:
-                return { emoji: '🎨', label: 'ผลงานนักเรียน', color: '#2563eb', bg: '#eff6ff' };
+                return { label: 'ผลงานนักเรียน', color: '#334155', bg: '#f8fafc' };
         }
     }
 
@@ -416,34 +199,35 @@ document.addEventListener('DOMContentLoaded', () => {
         if (activeAlertCount) activeAlertCount.textContent = `${filtered.length} รายการ`;
         if (tacAlertsCount) tacAlertsCount.textContent = activeSubmissions.length;
 
+        if (filtered.length === 0) {
+            incidentsList.innerHTML = `<div style="padding:36px 16px; text-align:center; color:#94a3b8; font-size:12.5px; border:1px dashed #e2e8f0; border-radius:8px;">ยังไม่มีรายการส่งงาน</div>`;
+            return;
+        }
+
         filtered.forEach(item => {
             const meta = getCategoryMeta(item.category);
             const card = document.createElement('div');
             card.className = 'incident-card card-glass';
-            card.style.cssText = `padding:12px; border-left:4px solid ${meta.color}; cursor:pointer; transition:all 0.2s ease; background:#ffffff; border-radius:10px; box-shadow:0 2px 8px rgba(15,23,42,0.04);`;
+            card.style.cssText = `padding:10px 12px; border:1px solid #e2e8f0; cursor:pointer; background:#ffffff; border-radius:8px;`;
 
             const mediaBadge = item.mediaType === 'video'
-                ? `<span style="background:#7c3aed; color:#fff; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:700;">🎬 วิดีโอสั้น</span>`
-                : `<span style="background:${meta.color}; color:#fff; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:700;">${meta.emoji} ${meta.label}</span>`;
+                ? `<span style="background:#f1f5f9; color:#334155; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:600;">วิดีโอ</span>`
+                : `<span style="background:#f1f5f9; color:#334155; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:600;">${meta.label}</span>`;
 
             const thumbHtml = item.mediaUrl && item.mediaType === 'photo'
-                ? `<img src="${item.mediaUrl}" alt="thumb" style="width:58px; height:58px; object-fit:cover; border-radius:8px; border:1px solid #cbd5e1; flex-shrink:0;">`
-                : `<div style="width:58px; height:58px; border-radius:8px; background:${meta.bg}; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0;">${meta.emoji}</div>`;
+                ? `<img src="${item.mediaUrl}" alt="thumb" style="width:48px; height:48px; object-fit:cover; border-radius:6px; border:1px solid #e2e8f0; flex-shrink:0;">`
+                : `<div style="width:48px; height:48px; border-radius:6px; background:#f8fafc; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:#64748b; flex-shrink:0;">รูปงาน</div>`;
 
             card.innerHTML = `
                 <div style="display:flex; gap:10px; align-items:flex-start;">
                     ${thumbHtml}
                     <div style="flex:1; min-width:0;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; gap:4px; margin-bottom:4px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:4px; margin-bottom:3px;">
                             ${mediaBadge}
-                            <span style="font-size:10px; font-weight:700; color:#059669; background:#ecfdf5; padding:2px 6px; border-radius:4px; border:1px solid #a7f3d0;">${item.score || 'รอตรวจ'}</span>
+                            <span style="font-size:10px; font-weight:500; color:#475569; background:#f8fafc; padding:1px 6px; border-radius:4px; border:1px solid #e2e8f0;">${item.score || 'รอตรวจ'}</span>
                         </div>
-                        <h4 style="font-size:13px; font-weight:800; color:#0f172a; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</h4>
-                        <p style="font-size:11px; color:#475569; margin-bottom:4px;">👤 ${item.studentName || item.reporter || 'นักเรียน'} • <b>${item.grade || 'ม.1'}</b></p>
-                        <div style="font-size:10px; color:#64748b; display:flex; justify-content:space-between;">
-                            <span>📲 ส่งผ่าน QR: ${item.locationName || item.address || 'ห้องเรียนศิลปะ'}</span>
-                            <span style="color:#2563eb; font-weight:700;">คลิกดูรูป/ให้คะแนน &rarr;</span>
-                        </div>
+                        <h4 style="font-size:12.5px; font-weight:600; color:#0f172a; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</h4>
+                        <p style="font-size:11px; color:#64748b; margin-bottom:2px;">${item.studentName || item.reporter || 'นักเรียน'} • ${item.grade || 'ม.1'}</p>
                     </div>
                 </div>
             `;
@@ -466,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 7. Render School Inventory & Art Department Assets (Modal + Map Markers)
+    // 7. Render School Inventory & Art Department Assets
     function renderInventoryTable() {
         const tbody = document.getElementById('inventoryTableBody');
         if (!tbody) return;
@@ -476,32 +260,38 @@ document.addEventListener('DOMContentLoaded', () => {
         let totalBorrowed = 0;
         let totalValue = 0;
 
+        if (schoolAssets.length === 0) {
+            const emptyRow = document.createElement('tr');
+            emptyRow.innerHTML = `<td colspan="6" style="padding:32px 16px; text-align:center; color:#94a3b8; font-size:12.5px;">ยังไม่มีรายการพัสดุในทะเบียน (สามารถเพิ่มรายการใหม่ได้จากฟอร์มด้านบน)</td>`;
+            tbody.appendChild(emptyRow);
+        }
+
         schoolAssets.forEach((asset, idx) => {
             totalAvail += Number(asset.availableQty || 0);
             totalBorrowed += Number(asset.borrowedQty || 0);
             totalValue += Number(asset.totalQty || 0) * Number(asset.pricePerUnit || 0);
 
             const tr = document.createElement('tr');
-            tr.style.borderBottom = '1px solid #e2e8f0';
-            const badgeColor = asset.availableQty <= 5 ? '#dc2626' : '#059669';
+            tr.style.borderBottom = '1px solid #f1f5f9';
+            const badgeColor = asset.availableQty <= 5 ? '#dc2626' : '#0f172a';
 
             tr.innerHTML = `
-                <td style="padding:10px; font-family:monospace; font-weight:700; color:#1e40af;">${asset.code}</td>
+                <td style="padding:10px; font-family:monospace; font-weight:600; color:#334155;">${asset.code}</td>
                 <td style="padding:10px;">
-                    <div style="font-weight:700; color:#0f172a;">${asset.name}</div>
-                    <div style="font-size:10px; color:#64748b;">หมวด: ${asset.category} • ราคา ฿${Number(asset.pricePerUnit).toLocaleString()}/${asset.unit || 'ชิ้น'}</div>
+                    <div style="font-weight:600; color:#0f172a;">${asset.name}</div>
+                    <div style="font-size:11px; color:#64748b;">หมวด: ${asset.category} • ฿${Number(asset.pricePerUnit).toLocaleString()}/${asset.unit || 'ชิ้น'}</div>
                 </td>
-                <td style="padding:10px; color:#334155;">📍 ${asset.room}</td>
+                <td style="padding:10px; color:#475569;">${asset.room}</td>
                 <td style="padding:10px; text-align:center;">
-                    <span style="font-weight:800; font-size:14px; color:${badgeColor};">${asset.availableQty}</span> / ${asset.totalQty} ${asset.unit || 'ชิ้น'}
+                    <span style="font-weight:600; font-size:13px; color:${badgeColor};">${asset.availableQty}</span> / ${asset.totalQty} ${asset.unit || 'ชิ้น'}
                 </td>
                 <td style="padding:10px;">
-                    <span style="font-size:11px; color:#475569;">${asset.borrower || asset.status}</span>
+                    <span style="font-size:11px; color:#64748b;">${asset.borrower || asset.status}</span>
                 </td>
                 <td style="padding:10px; text-align:center;">
                     <div style="display:flex; gap:4px; justify-content:center;">
-                        <button type="button" class="btn-borrow-item" data-idx="${idx}" style="background:#d97706; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:700;">เบิก/ยืม (-1)</button>
-                        <button type="button" class="btn-return-item" data-idx="${idx}" style="background:#059669; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:700;">รับคืน (+1)</button>
+                        <button type="button" class="btn-borrow-item" data-idx="${idx}" style="background:#ffffff; color:#334155; border:1px solid #cbd5e1; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:500;">เบิก/ยืม (-1)</button>
+                        <button type="button" class="btn-return-item" data-idx="${idx}" style="background:#0f172a; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:500;">รับคืน (+1)</button>
                     </div>
                 </td>
             `;
@@ -519,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (invBorrowedCount) invBorrowedCount.textContent = `${totalBorrowed} ชิ้น`;
         if (invTotalValue) invTotalValue.textContent = `฿${totalValue.toLocaleString()}`;
         if (tacAssetCount) tacAssetCount.textContent = schoolAssets.length;
-        if (tacBudgetVal) tacBudgetVal.textContent = `฿${Math.round(totalValue / 1000)}K`;
+        if (tacBudgetVal) tacBudgetVal.textContent = `฿${totalValue.toLocaleString()}`;
 
         // Bind Borrow / Return Click Events
         tbody.querySelectorAll('.btn-borrow-item').forEach(btn => {
@@ -1344,9 +1134,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 b.style.background = '#f8fafc';
                 b.style.color = '#334155';
             });
-            btn.style.border = '2px solid #059669';
-            btn.style.background = '#ecfdf5';
-            btn.style.color = '#065f46';
+            btn.style.border = '1px solid #0f172a';
+            btn.style.background = '#0f172a';
+            btn.style.color = '#ffffff';
 
             const targetId = btn.dataset.tab;
             document.querySelectorAll('.proc-tab-panel').forEach(p => {
@@ -1599,10 +1389,6 @@ document.addEventListener('DOMContentLoaded', () => {
         a.click();
     });
 
-    document.getElementById('btnQuickCheckAttendance')?.addEventListener('click', () => {
-        simulateStudentQrScan();
-    });
-
     // QR Code Hub Event Listeners
     const btnModeQrAttend = document.getElementById('btnModeQrAttend');
     const btnModeQrHomework = document.getElementById('btnModeQrHomework');
@@ -1610,20 +1396,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnModeQrAttend && btnModeQrHomework) {
         btnModeQrAttend.addEventListener('click', () => {
             currentQrMode = 'attend';
-            btnModeQrAttend.style.background = '#2563eb';
-            btnModeQrAttend.style.color = '#fff';
-            btnModeQrHomework.style.background = 'transparent';
-            btnModeQrHomework.style.color = '#db2777';
+            btnModeQrAttend.className = 'btn btn-primary btn-sm';
+            btnModeQrHomework.className = 'btn btn-secondary btn-sm';
             updateQrCodeDisplay();
         });
 
         btnModeQrHomework.addEventListener('click', () => {
             currentQrMode = 'homework';
-            btnModeQrHomework.style.background = '#db2777';
-            btnModeQrHomework.style.color = '#fff';
-            btnModeQrAttend.style.background = 'transparent';
-            btnModeQrAttend.style.color = '#2563eb';
-            btnModeQrAttend.style.border = '1px solid #2563eb';
+            btnModeQrHomework.className = 'btn btn-primary btn-sm';
+            btnModeQrAttend.className = 'btn btn-secondary btn-sm';
             updateQrCodeDisplay();
         });
     }
@@ -1635,11 +1416,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const randNum = Math.floor(1000 + Math.random() * 9000);
         currentSessionPin = `ART-${randNum}`;
         updateQrCodeDisplay();
-        speakThaiText(`สร้างรหัส QR Code ใหม่ประจำคาบเรียน รหัส ${currentSessionPin} เรียบร้อยแล้วค่ะ`);
     });
 
-    document.getElementById('btnSimulateStudentScan')?.addEventListener('click', () => {
-        simulateStudentQrScan();
+    document.getElementById('btnClearRoster')?.addEventListener('click', () => {
+        qrAttendanceList = [];
+        renderQrAttendanceTable();
     });
 
     document.getElementById('btnOpenDirectSubmitModal')?.addEventListener('click', () => {
@@ -1659,8 +1440,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (manualCheckinForm) {
         manualCheckinForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const stdId = document.getElementById('stdIdInput')?.value.trim() || '69199';
-            const stdName = document.getElementById('stdNameInput')?.value.trim() || 'นักเรียน ม.1';
+            const stdId = document.getElementById('stdIdInput')?.value.trim() || '-';
+            const stdName = document.getElementById('stdNameInput')?.value.trim() || '-';
             const stdStatus = document.getElementById('stdStatusInput')?.value || 'มาเรียน';
             const classVal = document.getElementById('qrClassSelect')?.value || 'ม.1/1';
 
@@ -1670,12 +1451,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 classRoom: classVal,
                 scanTime: new Date().toLocaleTimeString('th-TH'),
                 status: stdStatus,
-                homeworkStatus: 'ส่งงานแล้ว (รอตรวจ)',
-                submissionId: 'art-101'
+                homeworkStatus: 'ยังไม่ส่งงาน',
+                submissionId: null
             });
             renderQrAttendanceTable();
             manualCheckinForm.reset();
-            speakThaiText(`บันทึกเช็คชื่อ ${stdName} สถานะ ${stdStatus} เรียบร้อยแล้วค่ะ`);
         });
     }
 
