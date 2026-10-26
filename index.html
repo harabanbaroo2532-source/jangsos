@@ -59,6 +59,9 @@
                 <button id="btnOpenAiGenerator" class="btn btn-primary" style="background: linear-gradient(135deg, #7c3aed, #2563eb); color:#fff; font-weight:700;">
                     <span class="icon">🤖</span> AI สร้างแผนการสอน/ข้อสอบ
                 </button>
+                <button id="btnOpenProcurementModal" class="btn btn-primary" style="background: linear-gradient(135deg, #059669, #0d9488); color:#fff; font-weight:700;">
+                    <span class="icon">⚖️</span> ระบบจัดซื้อจัดจ้าง & กฎหมายพัสดุ
+                </button>
                 <button id="btnOpenInventoryModal" class="btn btn-secondary" style="border-color: rgba(217, 119, 6, 0.6); color: #d97706; font-weight:700;">
                     <span class="icon">📦</span> ทะเบียนพัสดุโรงเรียน
                 </button>
@@ -129,13 +132,18 @@
                         </div>
                     </button>
 
-                    <!-- Action Buttons: Pin Student Art / Pin Asset Check -->
+                    <!-- Action Buttons: Pin Student Art / Procurement Law -->
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top: 10px;">
                         <button id="btnReportIncident" class="btn btn-primary" style="padding: 10px 8px; background: linear-gradient(135deg, #db2777, #9333ea); border: none; font-weight: 700; font-size: 12px; border-radius: 10px; color:#fff; cursor:pointer;">
                             📌 ปักหมุดส่งงานศิลปะ / พัสดุ
                         </button>
-                        <button id="btnQuickCheckAttendance" class="btn btn-secondary" style="padding: 10px 8px; border-color: #2563eb; color: #2563eb; font-weight: 700; font-size: 12px; border-radius: 10px; cursor:pointer;">
-                            📋 เช็คชื่อนักเรียนเข้าเรียน
+                        <button id="btnQuickOpenProcurement" class="btn btn-primary" style="padding: 10px 8px; background: linear-gradient(135deg, #059669, #0d9488); border: none; font-weight: 700; font-size: 12px; border-radius: 10px; color:#fff; cursor:pointer;">
+                            ⚖️ จัดซื้อจัดจ้าง & กฎหมายพัสดุ
+                        </button>
+                    </div>
+                    <div style="margin-top:6px;">
+                        <button id="btnQuickCheckAttendance" class="btn btn-secondary" style="width:100%; padding: 8px; border-color: #2563eb; color: #2563eb; font-weight: 700; font-size: 12px; border-radius: 8px; cursor:pointer;">
+                            📋 เช็คชื่อนักเรียนเข้าเรียน (ม.1 - ม.6)
                         </button>
                     </div>
                 </div>
@@ -253,6 +261,7 @@
                             <option value="quiz">✍️ ข้อสอบปรนัย 4 ตัวเลือก พร้อมเฉลยและคำอธิบาย</option>
                             <option value="worksheet">🎨 ใบงานปฏิบัติการศิลปะ + เกณฑ์การให้คะแนน (Rubric)</option>
                             <option value="material-list">📦 ใบเบิกวัสดุ-อุปกรณ์ศิลปะประจำคาบเรียน</option>
+                            <option value="procurement-law-quiz">⚖️ ข้อสอบและสรุปกฎหมายจัดซื้อจัดจ้าง พ.ร.บ. พัสดุ 2560</option>
                         </select>
                     </div>
                 </div>
@@ -654,7 +663,229 @@
         </div>
 
         <!-- ==============================================================
-             MODAL 8: CURRICULUM & PROCUREMENT COMPLIANCE AUDIT MODAL
+             MODAL 8: SCHOOL PROCUREMENT & LEGAL COMPLIANCE SYSTEM (e-GP & พ.ร.บ. พัสดุ 2560)
+             ============================================================== -->
+        <div id="procurementModal" class="modal-overlay hidden">
+            <div class="modal-content card-glass" style="max-width: 940px; width: 96%;">
+                <div class="studio-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:12px;">
+                    <div class="live-indicator" style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:26px;">⚖️</span>
+                        <div>
+                            <h2 style="font-size:18px; color:#0f172a; margin:0;">ระบบจัดซื้อจัดจ้างภาครัฐในสถานศึกษา & กฎหมายระเบียบพัสดุ (e-GP School Compliance)</h2>
+                            <p style="font-size:12px; color:#64748b; margin:0;">อ้างอิง พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 • ระเบียบกระทรวงการคลัง พ.ศ. 2560 • หนังสือเวียน ว119</p>
+                        </div>
+                    </div>
+                    <button id="btnCloseProcurementModal" class="btn-close" style="font-size:24px; background:none; border:none; cursor:pointer;">&times;</button>
+                </div>
+
+                <!-- Navigation Tabs inside Procurement Modal -->
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; margin-bottom:14px;">
+                    <button type="button" class="proc-tab-btn active" data-tab="proc-laws" style="padding:10px; border:2px solid #059669; background:#ecfdf5; color:#065f46; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">
+                        📚 1. กฎหมาย & ระเบียบข้อบังคับ
+                    </button>
+                    <button type="button" class="proc-tab-btn" data-tab="proc-calc" style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">
+                        🧮 2. คำนวณวิธีจัดซื้อ & ค่าปรับ
+                    </button>
+                    <button type="button" class="proc-tab-btn" data-tab="proc-docgen" style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">
+                        📄 3. ออกเอกสารจัดซื้ออัตโนมัติ
+                    </button>
+                    <button type="button" class="proc-tab-btn" data-tab="proc-audit" style="padding:10px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; border-radius:8px; font-size:12px; font-weight:800; cursor:pointer;">
+                        📋 4. ขั้นตอนตรวจสอบพัสดุประจำปี
+                    </button>
+                </div>
+
+                <!-- TAB 1: LAWS & REGULATIONS KNOWLEDGE BASE -->
+                <div id="proc-laws" class="proc-tab-panel" style="display:block; max-height:430px; overflow-y:auto; padding-right:4px;">
+                    <div style="display:flex; gap:8px; margin-bottom:12px;">
+                        <input type="text" id="lawSearchInput" placeholder="🔍 ค้นหาข้อกฎหมาย เช่น มาตรา 55, วงเงิน 500,000, ว119, คณะกรรมการตรวจรับ, ค่าปรับ, ครุภัณฑ์ต่ำกว่าเกณฑ์..." style="flex:1; padding:8px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:12px;">
+                        <button type="button" id="btnSpeakLawSummary" class="btn btn-secondary btn-sm" style="border-color:#059669; color:#059669; font-weight:700;">
+                            🔊 AI อธิบายกฎหมายพัสดุ
+                        </button>
+                    </div>
+
+                    <div id="lawCardsList" style="display:flex; flex-direction:column; gap:10px; font-size:12.5px; line-height:1.6;">
+                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #059669; padding:12px; border-radius:8px;">
+                            <div style="font-weight:800; color:#065f46; font-size:14px;">⚖️ 1. พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 (มาตรา 55 และ มาตรา 56)</div>
+                            <div style="color:#334155; margin-top:4px;">
+                                • <b>มาตรา 55 (3 วิธีการจัดซื้อจัดจ้างหลัก):</b><br>
+                                &nbsp;&nbsp;1) <b>วิธีประกาศเชิญชวนทั่วไป (e-Market / e-Bidding / สอบราคา):</b> ใช้กับวงเงินเกิน 500,000 บาท โดยเชิญชวนผู้ประกอบการทั่วไปที่มีคุณสมบัติตรงตามเงื่อนไขเข้ายื่นข้อเสนอ<br>
+                                &nbsp;&nbsp;2) <b>วิธีคัดเลือก:</b> เชิญชวนเฉพาะผู้ประกอบการที่มีคุณสมบัติตรงตามเงื่อนไขไม่น้อยกว่า 3 ราย (เช่น กรณีมีข้อจำกัดทางเทคนิค หรือเป็นงานศิลปกรรมเฉพาะทาง)<br>
+                                &nbsp;&nbsp;3) <b>วิธีเฉพาะเจาะจง (มาตรา 56 วรรคหนึ่ง (2)(ข)):</b> การจัดซื้อจัดจ้างพัสดุทั่วไปที่มีวงเงินครั้งหนึ่ง <b>ไม่เกิน 500,000 บาท</b> (ซึ่งโรงเรียนมัธยมศึกษาใช้บ่อยที่สุดในการซื้อวัสดุการสอนและครุภัณฑ์หมวดศิลปะ/วิชาการ)
+                            </div>
+                        </div>
+
+                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #2563eb; padding:12px; border-radius:8px;">
+                            <div style="font-weight:800; color:#1e40af; font-size:14px;">📜 2. ระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</div>
+                            <div style="color:#334155; margin-top:4px;">
+                                • <b>ข้อ 21 (การจัดทำร่างขอบเขตงาน TOR / รายละเอียดคุณลักษณะเฉพาะ):</b> ก่อนซื้อต้องแต่งตั้งคณะกรรมการหรือมอบหมายเจ้าหน้าที่กำหนดคุณลักษณะเฉพาะของพัสดุและราคากลาง<br>
+                                • <b>ข้อ 22 (การจัดทำรายงานขอซื้อขอจ้าง):</b> เจ้าหน้าที่พัสดุต้องจัดทำรายงานขอซื้อขอจ้างเสนอหัวหน้าหน่วยงานของรัฐ (ผู้อำนวยการโรงเรียน) เห็นชอบก่อนดำเนินการ<br>
+                                • <b>ข้อ 79 (กรณีวงเงินเล็กน้อยไม่เกิน 100,000 บาท):</b> กรณีจำเป็นเร่งด่วนหรือวงเงินไม่เกิน 100,000 บาท เจ้าหน้าที่พัสดุสามารถเจรจาตกลงราคากับผู้ขายโดยตรง แล้วทำรายงานขออนุมัติพร้อมหลักฐานใบเสร็จ/ใบส่งของ โดยตั้ง <b>ผู้ตรวจรับพัสดุ 1 คน</b> ได้<br>
+                                • <b>ข้อ 162 (การกำหนดอัตราค่าปรับกรณีส่งมอบล่าช้า):</b><br>
+                                &nbsp;&nbsp;- <b>งานซื้อครุภัณฑ์/วัสดุการสอน:</b> คิดค่าปรับเป็นรายวันในอัตราร้อยละ <b>0.20 (0.2%)</b> ของราคาสิ่งของที่ยังไม่ได้รับมอบ<br>
+                                &nbsp;&nbsp;- <b>งานจ้างทำของ/จ้างบริการ:</b> คิดค่าปรับเป็นรายวันในอัตราร้อยละ <b>0.10 (0.1%)</b> ของวงเงินค่าจ้าง (แต่ต้องไม่ต่ำกว่าวันละ 100 บาท)
+                            </div>
+                        </div>
+
+                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #d97706; padding:12px; border-radius:8px;">
+                            <div style="font-weight:800; color:#b45309; font-size:14px;">📑 3. หนังสือเวียนกรมบัญชีกลาง ด่วนที่สุด ที่ กค (กวจ) 0405.2/ว 119 (แนวทางปฏิบัติค่าใช้จ่ายในการบริหารงาน)</div>
+                            <div style="color:#334155; margin-top:4px;">
+                                • <b>วงเงินไม่เกิน 10,000 บาท (อนุโลมไม่ต้องทำข้อตกลงเป็นหนังสือ):</b> การจัดซื้อวัสดุสำนักงาน วัสดุการศึกษา หรือค่าใช้จ่ายในการจัดกิจกรรมนักเรียนที่วงเงินไม่เกิน 10,000 บาท สามารถดำเนินการจัดซื้อไปก่อนแล้วนำหลักฐานใบเสร็จรับเงิน/บิลเงินสดที่ถูกต้องมาเบิกจ่าย โดยให้มีผู้ตรวจรับ 1 คนลงนามตรวจรับในหลักฐานการจ่ายได้ทันที
+                            </div>
+                        </div>
+
+                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #7c3aed; padding:12px; border-radius:8px;">
+                            <div style="font-weight:800; color:#6d28d9; font-size:14px;">🏷️ 4. เกณฑ์การจำแนกประเภททรัพย์สิน: "วัสดุ" vs "ครุภัณฑ์" (หลักการจำแนกประเภทรายจ่ายตามงบประมาณ)</div>
+                            <div style="color:#334155; margin-top:4px;">
+                                • <b>วัสดุ (Consumables):</b> สิ่งของที่มีลักษณะใช้แล้วสิ้นเปลือง เสื่อมสภาพเร็ว หรือมีอายุการใช้งานไม่ยืนยาว เช่น สีน้ำ สีอะคริลิก กระดาษร้อยปอนด์ พู่กัน ดินสอ EE (ลงบัญชีวัสดุใช้ไป)<br>
+                                • <b>ครุภัณฑ์ต่ำกว่าเกณฑ์ (Low-Value Assets):</b> สิ่งของคงทนถาวรที่มีอายุการใช้งานเกิน 1 ปี และมีราคาต่อหน่วย <b>ต่ำกว่า 10,000 บาท</b> (เช่น ขาตั้งวาดภาพไม้บีชราคา 1,450 บาท, กีตาร์โปร่งราคา 4,200 บาท) <i>*ต้องลงทะเบียนคุมทรัพย์สินและติดรหัสพัสดุเพื่อตรวจสอบประจำปี แต่ไม่ต้องคำนวณค่าเสื่อมราคาในระบบ GFMIS*</i><br>
+                                • <b>ครุภัณฑ์ตามเกณฑ์ (Capital Assets):</b> สิ่งของคงทนถาวรที่มีอายุการใช้งานเกิน 1 ปี และมีราคาต่อหน่วย <b>ตั้งแต่ 10,000 บาทขึ้นไป</b> (เช่น เครื่องโปรเจคเตอร์ราคา 24,500 บาท) <i>*ต้องออกรหัสครุภัณฑ์ คำนวณค่าเสื่อมราคาประจำปี และตั้งกรรมการตรวจสอบพัสดุประจำปีตามระเบียบข้อ 213*</i>
+                            </div>
+                        </div>
+
+                        <div class="law-item-card" style="background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #db2777; padding:12px; border-radius:8px;">
+                            <div style="font-weight:800; color:#be185d; font-size:14px;">🏫 5. คำสั่ง สพฐ. เรื่องการมอบอำนาจเกี่ยวกับการจัดซื้อจัดจ้างและการบริหารพัสดุให้ผู้อำนวยการสถานศึกษา</div>
+                            <div style="color:#334155; margin-top:4px;">
+                                • ผู้อำนวยการโรงเรียนได้รับมอบอำนาจจากเลขาธิการ กพฐ. ให้มีอำนาจสั่งซื้อสั่งจ้างพัสดุในวงเงินงบประมาณและเงินนอกงบประมาณ (เงินอุดหนุนรายหัว / เงินเรียนฟรี 15 ปี / เงินรายได้สถานศึกษา)<br>
+                                • <b>ระเบียบข้อ 203 - 219 (การควบคุม การยืม และการจำหน่ายพัสดุ):</b> การยืมพัสดุไปใช้ในราชการต้องทำ <b>"ใบยืมพัสดุ"</b> และส่งคืนภายในกำหนด หากชำรุดเสื่อมสภาพต้องตั้งคณะกรรมการสอบหาข้อเท็จจริงและขออนุมัติจำหน่ายพัสดุออกจากบัญชี
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: SMART PROCUREMENT METHOD & LATE PENALTY CALCULATOR -->
+                <div id="proc-calc" class="proc-tab-panel" style="display:none; max-height:430px; overflow-y:auto;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+                        <!-- Left Box: Procurement Threshold Analyzer -->
+                        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:14px;">
+                            <h4 style="color:#0f172a; margin-bottom:10px; font-size:14px;">🧮 วิเคราะห์วิธีการจัดซื้อจัดจ้างตามวงเงินงบประมาณ (มาตรา 55-56)</h4>
+                            <div style="margin-bottom:10px;">
+                                <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">💰 ระบุวงเงินงบประมาณที่ต้องการจัดซื้อ/จัดจ้าง (บาท):</label>
+                                <input type="number" id="calcBudgetInput" value="45000" min="100" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; font-weight:700; color:#1e40af;">
+                            </div>
+                            <div style="margin-bottom:10px;">
+                                <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">📦 ประเภทพัสดุที่ต้องการจัดหา:</label>
+                                <select id="calcTypeSelect" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                                    <option value="buy">งานซื้อวัสดุการสอน / ครุภัณฑ์การศึกษา (อัตราค่าปรับ 0.20%/วัน)</option>
+                                    <option value="hire">งานจ้างทำของ / จ้างซ่อมแซมครุภัณฑ์ (อัตราค่าปรับ 0.10%/วัน)</option>
+                                </select>
+                            </div>
+                            <button type="button" id="btnRunProcCalc" class="btn btn-primary" style="width:100%; background:#059669; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer;">
+                                🔍 วิเคราะห์ขั้นตอนตามระเบียบพัสดุ
+                            </button>
+
+                            <div id="calcMethodResult" style="margin-top:12px; background:#ffffff; border:1px solid #a7f3d0; border-radius:8px; padding:12px; font-size:12px; line-height:1.6;">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Right Box: Late Delivery Fine Calculator (ข้อ 162) -->
+                        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:14px;">
+                            <h4 style="color:#0f172a; margin-bottom:10px; font-size:14px;">⏱️ คำนวณค่าปรับกรณีผู้ขายส่งมอบพัสดุล่าช้า (ระเบียบฯ ข้อ 162)</h4>
+                            <div style="margin-bottom:10px;">
+                                <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">💵 มูลค่าสิ่งของที่ส่งมอบล่าช้าตามใบสั่งซื้อ/สัญญา (บาท):</label>
+                                <input type="number" id="fineAmountInput" value="45000" min="100" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                            </div>
+                            <div style="margin-bottom:10px;">
+                                <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">📅 จำนวนวันที่ส่งมอบเกินกำหนด (วัน):</label>
+                                <input type="number" id="fineDaysInput" value="5" min="1" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:13px;">
+                            </div>
+                            <button type="button" id="btnRunFineCalc" class="btn btn-primary" style="width:100%; background:#d97706; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer;">
+                                ⚖️ คำนวณค่าปรับตามระเบียบข้อ 162
+                            </button>
+
+                            <div id="calcFineResult" style="margin-top:12px; background:#ffffff; border:1px solid #fde68a; border-radius:8px; padding:12px; font-size:12px; line-height:1.6;">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: OFFICIAL GOVERNMENT PROCUREMENT DOCUMENT GENERATOR -->
+                <div id="proc-docgen" class="proc-tab-panel" style="display:none; max-height:430px; overflow-y:auto;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-bottom:10px;">
+                        <div>
+                            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:3px;">📄 เลือกแบบฟอร์มราชการ:</label>
+                            <select id="govFormTypeSelect" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                                <option value="memo-buy">1. บันทึกข้อความรายงานขอซื้อขอจ้าง (ระเบียบฯ ข้อ 22)</option>
+                                <option value="appoint-comm">2. คำสั่งแต่งตั้งผู้ตรวจรับพัสดุ / คณะกรรมการตรวจรับ</option>
+                                <option value="inspect-cert">3. ใบตรวจรับพัสดุ (ระเบียบฯ ข้อ 175)</option>
+                                <option value="borrow-form">4. ใบยืมพัสดุใช้ในราชการโรงเรียน (ระเบียบฯ ข้อ 207)</option>
+                                <option value="annual-audit">5. รายงานผลการตรวจสอบพัสดุประจำปี (ระเบียบฯ ข้อ 213)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:3px;">📦 โครงการ / รายการพัสดุที่จัดซื้อ:</label>
+                            <input type="text" id="govFormProjectInput" value="โครงการจัดซื้อวัสดุและครุภัณฑ์ฝึกปฏิบัติการทัศนศิลป์ ภาคเรียนที่ 2" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:700; display:block; margin-bottom:3px;">💰 วงเงินงบประมาณ (บาท):</label>
+                            <input type="number" id="govFormAmountInput" value="38500" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:11px; color:#475569;">💡 ระบบสร้างร่างบันทึกข้อความราชการตามแบบฟอร์มมาตรฐานงานพัสดุโรงเรียน พร้อมนำไปพิมพ์เสนอผู้อำนวยการโรงเรียนได้ทันที</span>
+                        <button type="button" id="btnGenGovDocNow" class="btn btn-primary btn-sm" style="background:#2563eb; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
+                            ✨ สร้างร่างหนังสือราชการ
+                        </button>
+                    </div>
+
+                    <div id="govDocPreviewBox" style="background:#ffffff; border:1px solid #94a3b8; border-radius:8px; padding:16px; font-family:'Sarabun',sans-serif; font-size:13px; line-height:1.7; color:#0f172a; max-height:250px; overflow-y:auto; white-space:pre-line;">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+                        <button type="button" id="btnCopyGovDoc" class="btn btn-secondary btn-sm" style="border-color:#2563eb; color:#2563eb;">
+                            📋 คัดลอกข้อความราชการ
+                        </button>
+                        <button type="button" id="btnDownloadGovDoc" class="btn btn-primary btn-sm" style="background:#059669; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer;">
+                            📥 ดาวน์โหลดเอกสารราชการ (.txt)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 4: 9-STEP COMPLIANCE CHECKLIST & ANNUAL AUDIT -->
+                <div id="proc-audit" class="proc-tab-panel" style="display:none; max-height:430px; overflow-y:auto;">
+                    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px; margin-bottom:12px;">
+                        <strong style="color:#1e40af; font-size:13px;">✅ Checklist ตรวจสอบความถูกต้องครบถ้วนของกระบวนการจัดซื้อจัดจ้างในสถานศึกษา (ป้องกันข้อทักท้วง สตง.)</strong>
+                        <p style="font-size:11px; color:#475569; margin:2px 0 0 0;">ครูผู้รับผิดชอบงานพัสดุสามารถติ๊กตรวจสอบเอกสารแต่ละขั้นตอนให้ครบถ้วนตามระเบียบกระทรวงการคลัง พ.ศ. 2560</p>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 1:</b> ตรวจสอบโครงการและวงเงินใน <b>แผนปฏิบัติการประจำปีของโรงเรียน</b> และแผนการจัดซื้อจัดจ้างประจำปี (มาตรา 11)</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 2:</b> กำหนด <b>รายละเอียดคุณลักษณะเฉพาะของพัสดุ (สเปค) และราคากลาง</b> ของวัสดุ/ครุภัณฑ์ศิลปะ (ข้อ 21)</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 3:</b> จัดทำ <b>บันทึกข้อความรายงานขอซื้อขอจ้าง</b> ตามรายการในข้อ 22 เสนอผู้อำนวยการโรงเรียนให้ความเห็นชอบ</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 4:</b> ดำเนินการสืบราคาและเจรจาตกลงราคากับผู้ประกอบการที่มีอาชีพขายหรือรับจ้างนั้นโดยตรง (วิธีเฉพาะเจาะจง ข้อ 78-79)</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 5:</b> จัดทำ <b>ใบสั่งซื้อ / ใบสั่งจ้าง</b> หรือสัญญาซื้อขาย และประกาศผู้ชนะการเสนอราคาในระบบ e-GP</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 6:</b> ผู้ขายส่งมอบพัสดุ พร้อมใบส่งของ/ใบกำกับภาษี และ <b>คณะกรรมการตรวจรับพัสดุ</b> ตรวจนับความถูกต้องครบถ้วน (ข้อ 175)</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 7:</b> ลงบัญชีวัสดุ หรือขึ้น <b>ทะเบียนคุมทรัพย์สิน (ครุภัณฑ์)</b> พร้อมกำหนดรหัสพัสดุและสถานที่จัดเก็บ (ข้อ 203)</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 8:</b> เบิกจ่ายเงินให้แก่ผู้ขาย และหักภาษี ณ ที่จ่าย 1% (กรณีนิติบุคคลตั้งแต่ 500 บาท หรือบุคคลธรรมดาตั้งแต่ 10,000 บาทขึ้นไป)</span>
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1; cursor:pointer;">
+                            <input type="checkbox" checked> <span><b>ขั้นตอนที่ 9:</b> แต่งตั้งผู้รับผิดชอบ <b>ตรวจสอบพัสดุประจำปี</b> ก่อนสิ้นเดือนกันยายน และตรวจนับจริงภายใน 30 วันทำการ (ข้อ 213)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================================
+             MODAL 9: CURRICULUM & PROCUREMENT COMPLIANCE AUDIT MODAL
              ============================================================== -->
         <div id="verifyModal" class="modal-overlay hidden">
             <div class="modal-content card-glass" style="max-width: 680px;">
@@ -700,6 +931,6 @@
 
     <!-- Leaflet JS Library -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="app.js?v=19"></script>
+    <script src="app.js?v=20"></script>
 </body>
 </html>

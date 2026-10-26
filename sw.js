@@ -3,7 +3,7 @@
  * Handles offline caching, asset prefetching, and PWA cross-device support.
  */
 
-const CACHE_NAME = 'educraft-ai-v19';
+const CACHE_NAME = 'educraft-ai-v20';
 
 self.addEventListener('fetch', (event) => {
     event.respondWith(

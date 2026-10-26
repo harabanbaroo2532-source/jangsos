@@ -617,6 +617,47 @@ document.addEventListener('DOMContentLoaded', () => {
                     </tr>
                 </table>
             `;
+        } else if (docType === 'procurement-law-quiz') {
+            html = `
+                <div style="border-bottom:2px solid #059669; padding-bottom:8px; margin-bottom:12px;">
+                    <h3 style="color:#065f46; margin:0;">⚖️ ชุดข้อสอบและสรุปสาระสำคัญ พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560</h3>
+                    <p style="margin:4px 0 0 0; font-size:12px; color:#475569;">สำหรับครูผู้รับผิดชอบงานพัสดุโรงเรียน และการสอบเลื่อนวิทยฐานะ/ความรู้ความสามารถทั่วไป</p>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+                        <b>ข้อที่ 1:</b> ตาม พ.ร.บ. การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา 55 การจัดซื้อจัดจ้างมีกี่วิธี อะไรบ้าง?<br>
+                        ก. 2 วิธี ได้แก่ วิธีตกลงราคา และวิธีสอบราคา<br>
+                        ข. 3 วิธี ได้แก่ 1) วิธีประกาศเชิญชวนทั่วไป 2) วิธีคัดเลือก และ 3) วิธีเฉพาะเจาะจง<br>
+                        ค. 4 วิธี ได้แก่ วิธีตกลงราคา วิธีสอบราคา วิธีประกวดราคา และวิธีพิเศษ<br>
+                        ง. 5 วิธี ตามที่ผู้อำนวยการโรงเรียนกำหนด<br>
+                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ข. 3 วิธี (ประกาศเชิญชวนทั่วไป, คัดเลือก, และเฉพาะเจาะจง ตามมาตรา 55)</span>
+                    </div>
+                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+                        <b>ข้อที่ 2:</b> การจัดซื้อวัสดุหรือครุภัณฑ์ทางการศึกษาโดย "วิธีเฉพาะเจาะจง" ตามมาตรา 56 วรรคหนึ่ง (2)(ข) กำหนดวงเงินไว้ไม่เกินเท่าใด?<br>
+                        ก. ไม่เกิน 100,000 บาท<br>
+                        ข. ไม่เกิน 300,000 บาท<br>
+                        ค. ไม่เกิน 500,000 บาท<br>
+                        ง. ไม่เกิน 1,000,000 บาท<br>
+                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ค. ไม่เกิน 500,000 บาท (กฎกระทรวงกำหนดวงเงินการจัดซื้อจัดจ้างพัสดุโดยวิธีเฉพาะเจาะจง พ.ศ. 2560)</span>
+                    </div>
+                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+                        <b>ข้อที่ 3:</b> ตามระเบียบกระทรวงการคลังฯ พ.ศ. 2560 ข้อ 162 กรณีผู้ขายส่งมอบ "ครุภัณฑ์หรือวัสดุการสอน" ล่าช้ากว่ากำหนด ต้องคิดค่าปรับเป็นรายวันในอัตราใด?<br>
+                        ก. ร้อยละ 0.01 ต่อวัน<br>
+                        ข. ร้อยละ 0.10 ต่อวัน<br>
+                        ค. ร้อยละ 0.20 ต่อวัน ของราคาสิ่งของที่ยังไม่ได้รับมอบ<br>
+                        ง. วันละ 500 บาทคงที่<br>
+                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ค. ร้อยละ 0.20 (0.2%) ต่อวัน ของราคาสิ่งของที่ยังไม่ได้รับมอบ (ส่วนงานจ้างทำของคิดร้อยละ 0.10 ต่อวัน แต่ไม่ต่ำกว่าวันละ 100 บาท)</span>
+                    </div>
+                    <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+                        <b>ข้อที่ 4:</b> ตามระเบียบกระทรวงการคลังฯ ข้อ 213 การตรวจสอบพัสดุประจำปีของสถานศึกษา ต้องเริ่มดำเนินการเมื่อใดและให้แล้วเสร็จภายในกี่วันทำการ?<br>
+                        ก. เริ่มวันทำการแรกของเดือนมกราคม ให้แล้วเสร็จภายใน 15 วันทำการ<br>
+                        ข. เริ่มวันทำการแรกของเดือนตุลาคม ให้แล้วเสร็จภายใน 30 วันทำการ<br>
+                        ค. เริ่มวันสุดท้ายของเดือนกันยายน ให้แล้วเสร็จภายใน 60 วันทำการ<br>
+                        ง. ตรวจเมื่อใดก็ได้ตามที่ครูพัสดุสะดวก<br>
+                        <span style="color:#059669; font-weight:700;">✅ เฉลย: ข. แต่งตั้งผู้รับผิดชอบก่อนสิ้นเดือนกันยายน และเริ่มตรวจนับตั้งแต่วันทำการแรกของเดือนตุลาคม ให้แล้วเสร็จภายใน 30 วันทำการ</span>
+                    </div>
+                </div>
+            `;
         } else {
             html = `
                 <div style="border-bottom:2px solid #d97706; padding-bottom:8px; margin-bottom:12px;">
@@ -1162,6 +1203,292 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnVerifyDataSources')?.addEventListener('click', () => verifyModal.classList.remove('hidden'));
     document.getElementById('btnCloseVerifyModal')?.addEventListener('click', () => verifyModal.classList.add('hidden'));
     document.getElementById('btnConfirmVerify')?.addEventListener('click', () => verifyModal.classList.add('hidden'));
+
+    // ==============================================================
+    // 16.5 SCHOOL PROCUREMENT & LEGAL COMPLIANCE ENGINE (e-GP & พ.ร.บ. 2560)
+    // ==============================================================
+    const procurementModal = document.getElementById('procurementModal');
+
+    document.getElementById('btnOpenProcurementModal')?.addEventListener('click', () => {
+        procurementModal?.classList.remove('hidden');
+        runProcurementThresholdAnalysis();
+        runLatePenaltyCalculation();
+        generateOfficialGovProcurementDoc();
+    });
+
+    document.getElementById('btnQuickOpenProcurement')?.addEventListener('click', () => {
+        procurementModal?.classList.remove('hidden');
+        runProcurementThresholdAnalysis();
+        runLatePenaltyCalculation();
+        generateOfficialGovProcurementDoc();
+    });
+
+    document.getElementById('btnCloseProcurementModal')?.addEventListener('click', () => {
+        procurementModal?.classList.add('hidden');
+    });
+
+    // Tab Switching inside Procurement Modal
+    document.querySelectorAll('.proc-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.proc-tab-btn').forEach(b => {
+                b.style.border = '1px solid #cbd5e1';
+                b.style.background = '#f8fafc';
+                b.style.color = '#334155';
+            });
+            btn.style.border = '2px solid #059669';
+            btn.style.background = '#ecfdf5';
+            btn.style.color = '#065f46';
+
+            const targetId = btn.dataset.tab;
+            document.querySelectorAll('.proc-tab-panel').forEach(p => {
+                p.style.display = p.id === targetId ? 'block' : 'none';
+            });
+        });
+    });
+
+    // Law Search Filter
+    const lawSearchInput = document.getElementById('lawSearchInput');
+    if (lawSearchInput) {
+        lawSearchInput.addEventListener('input', () => {
+            const q = lawSearchInput.value.trim().toLowerCase();
+            document.querySelectorAll('.law-item-card').forEach(card => {
+                const text = card.innerText.toLowerCase();
+                card.style.display = (!q || text.includes(q)) ? 'block' : 'none';
+            });
+        });
+    }
+
+    document.getElementById('btnSpeakLawSummary')?.addEventListener('click', () => {
+        speakThaiText('สรุปหลักการจัดซื้อจัดจ้างในสถานศึกษา ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 กรณีวงเงินไม่เกิน 500,000 บาท สามารถใช้วิธีเฉพาะเจาะจงได้ กรณีวงเงินไม่เกิน 100,000 บาท อนุโลมตามระเบียบข้อ 79 วรรคสอง ตั้งผู้ตรวจรับพัสดุ 1 คนได้ และกรณีวงเงินไม่เกิน 10,000 บาท ตามหนังสือเวียน ว 119 สามารถจัดซื้อและนำใบเสร็จรับเงินมาเบิกจ่ายได้ทันทีค่ะ');
+    });
+
+    // Procurement Threshold & Method Analyzer (มาตรา 55-56, ข้อ 79, ว119)
+    function runProcurementThresholdAnalysis() {
+        const budget = Number(document.getElementById('calcBudgetInput')?.value || 45000);
+        const type = document.getElementById('calcTypeSelect')?.value || 'buy';
+        const resBox = document.getElementById('calcMethodResult');
+        if (!resBox) return;
+
+        let methodTitle = '';
+        let legalRef = '';
+        let committeeRule = '';
+        let contractRule = '';
+        let taxRule = '';
+
+        if (budget <= 10000) {
+            methodTitle = '✅ วิธีเฉพาะเจาะจง (เข้าข่ายอนุโลมตามหนังสือเวียน ด่วนที่สุด ที่ กค (กวจ) 0405.2/ว 119)';
+            legalRef = 'พ.ร.บ. มาตรา 56 วรรคหนึ่ง (2)(ข) + ระเบียบฯ ข้อ 79 วรรคสอง + หนังสือเวียน ว119';
+            committeeRule = '👤 แต่งตั้ง <b>ผู้ตรวจรับพัสดุ 1 คน</b> (หรือให้ผู้รับผิดชอบลงนามตรวจรับในหลักฐานการจ่าย)';
+            contractRule = '📄 อนุโลมไม่ต้องทำข้อตกลงเป็นหนังสือไว้ต่อกัน ใช้ <b>ใบเสร็จรับเงิน/บิลเงินสดที่ถูกต้อง</b> ประกอบการเบิกจ่ายได้';
+        } else if (budget <= 100000) {
+            methodTitle = '✅ วิธีเฉพาะเจาะจง (วงเงินเล็กน้อยไม่เกิน 100,000 บาท ตามระเบียบฯ ข้อ 79 วรรคสอง)';
+            legalRef = 'พ.ร.บ. มาตรา 56 วรรคหนึ่ง (2)(ข) + ระเบียบกระทรวงการคลังฯ ข้อ 22 และ ข้อ 79';
+            committeeRule = '👤 แต่งตั้ง <b>ผู้ตรวจรับพัสดุ 1 คน</b> หรือ คณะกรรมการตรวจรับพัสดุ 3 คนก็ได้';
+            contractRule = '📄 จัดทำรายงานขอซื้อขอจ้าง + <b>ใบสั่งซื้อ/ใบสั่งจ้าง</b> และลงระบบ e-GP ตามขั้นตอน';
+        } else if (budget <= 500000) {
+            methodTitle = '✅ วิธีเฉพาะเจาะจง (วงเงินเกิน 100,000 บาท แต่ไม่เกิน 500,000 บาท)';
+            legalRef = 'พ.ร.บ. มาตรา 56 วรรคหนึ่ง (2)(ข) + ระเบียบกระทรวงการคลังฯ ข้อ 22, ข้อ 78 และ ข้อ 79 วรรคหนึ่ง';
+            committeeRule = '👥 ต้องแต่งตั้ง <b>คณะกรรมการตรวจรับพัสดุ ไม่น้อยกว่า 3 คน</b> (ประธาน 1 คน และกรรมการอย่างน้อย 2 คน)';
+            contractRule = '📄 ต้องจัดทำรายงานขอซื้อขอจ้าง, เชิญผู้ประกอบการยื่นเสนอราคา, จัดทำ <b>ใบสั่งซื้อ/ใบสั่งจ้าง หรือสัญญาซื้อขาย</b> ในระบบ e-GP';
+        } else {
+            methodTitle = '📢 วิธีประกาศเชิญชวนทั่วไป (e-Market / e-Bidding) หรือ วิธีคัดเลือก (วงเงินเกิน 500,000 บาท)';
+            legalRef = 'พ.ร.บ. มาตรา 55 (1) หรือ (2) + ระเบียบกระทรวงการคลังฯ ข้อ 29 - 73';
+            committeeRule = '👥 ต้องแต่งตั้ง <b>คณะกรรมการพิจารณาผลการประกวดราคาอิเล็กทรอนิกส์ (3 คน)</b> และ <b>คณะกรรมการตรวจรับพัสดุ (3 คน)</b>';
+            contractRule = '📄 ต้องจัดทำร่างขอบเขตงาน (TOR), ประกาศราคากลางในระบบ e-GP, ทำสัญญาตามแบบ กวพ. และวางหลักประกันสัญญา 5% ของวงเงิน';
+        }
+
+        if (budget >= 500) {
+            const wht = (budget * 0.01).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            taxRule = `💰 <b>การหักภาษี ณ ที่จ่าย 1%:</b> กรณีซื้อจากนิติบุคคล (บริษัท/ห้างหุ้นส่วน) ต้องหักภาษี ณ ที่จ่าย 1% (ประมาณ <b>${wht} บาท</b>) กรณีบุคคลธรรมดาหักเมื่อยอดตั้งแต่ 10,000 บาทขึ้นไป`;
+        } else {
+            taxRule = '💰 <b>การหักภาษี ณ ที่จ่าย:</b> วงเงินต่ำกว่า 500 บาท ได้รับยกเว้นไม่ต้องหักภาษี ณ ที่จ่าย';
+        }
+
+        const fineRateText = type === 'buy' ? 'ร้อยละ 0.20 ต่อวัน (ระเบียบฯ ข้อ 162)' : 'ร้อยละ 0.10 ต่อวัน แต่ไม่ต่ำกว่าวันละ 100 บาท';
+
+        resBox.innerHTML = `
+            <div style="font-weight:800; color:#047857; font-size:13px; margin-bottom:6px;">${methodTitle}</div>
+            <div><b>📚 ข้อกฎหมายอ้างอิง:</b> ${legalRef}</div>
+            <div><b>👥 การตั้งกรรมการตรวจรับ:</b> ${committeeRule}</div>
+            <div><b>📑 รูปแบบสัญญา/หลักฐาน:</b> ${contractRule}</div>
+            <div><b>⚖️ อัตราค่าปรับตามสัญญา:</b> ${fineRateText}</div>
+            <div style="margin-top:4px; color:#1e40af;">${taxRule}</div>
+        `;
+    }
+
+    document.getElementById('btnRunProcCalc')?.addEventListener('click', runProcurementThresholdAnalysis);
+
+    // Late Delivery Penalty Calculator (ระเบียบกระทรวงการคลังฯ ข้อ 162)
+    function runLatePenaltyCalculation() {
+        const amount = Number(document.getElementById('fineAmountInput')?.value || 45000);
+        const days = Number(document.getElementById('fineDaysInput')?.value || 5);
+        const type = document.getElementById('calcTypeSelect')?.value || 'buy';
+        const resBox = document.getElementById('calcFineResult');
+        if (!resBox) return;
+
+        let dailyFine = 0;
+        let rateDesc = '';
+        if (type === 'buy') {
+            dailyFine = amount * 0.002; // 0.20% per day
+            rateDesc = 'งานซื้อพัสดุ/ครุภัณฑ์ อัตราร้อยละ 0.20 (0.2%) ต่อวัน ของราคาสิ่งของที่ยังไม่ได้รับมอบ';
+        } else {
+            dailyFine = Math.max(100, amount * 0.001); // 0.10% per day, min 100 THB
+            rateDesc = 'งานจ้างทำของ/ซ่อมแซม อัตราร้อยละ 0.10 (0.1%) ต่อวัน (แต่ไม่ต่ำกว่าวันละ 100 บาท)';
+        }
+
+        const totalFine = dailyFine * days;
+        const maxTenPercent = amount * 0.10;
+        const warningOver10 = totalFine > maxTenPercent
+            ? `<div style="margin-top:6px; color:#dc2626; font-weight:700;">⚠️ แจ้งเตือนข้อกฎหมาย (มาตรา 103): ค่าปรับเกินร้อยละ 10 ของวงเงิน (${maxTenPercent.toLocaleString()} บาท) โรงเรียนมีสิทธิบอกเลิกสัญญาได้ เว้นแต่ผู้ขายยินยอมเสียค่าปรับโดยไม่มีเงื่อนไข</div>`
+            : `<div style="margin-top:6px; color:#059669; font-weight:700;">✅ ค่าปรับยังไม่เกินร้อยละ 10 ของวงเงินสัญญา (เพดาน 10% คือ ${maxTenPercent.toLocaleString()} บาท)</div>`;
+
+        resBox.innerHTML = `
+            <div><b>📐 สูตรคำนวณตามระเบียบฯ ข้อ 162:</b> ${rateDesc}</div>
+            <div style="margin-top:4px;">• <b>ค่าปรับต่อวัน:</b> <span style="color:#b45309; font-weight:800;">${dailyFine.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท/วัน</span></div>
+            <div>• <b>จำนวนวันที่ส่งมอบล่าช้า:</b> ${days} วัน</div>
+            <div style="font-size:14px; font-weight:900; color:#dc2626; margin-top:4px;">💵 รวมค่าปรับทั้งสิ้น: ${totalFine.toLocaleString('th-TH', { minimumFractionDigits: 2 })} บาท</div>
+            ${warningOver10}
+        `;
+    }
+
+    document.getElementById('btnRunFineCalc')?.addEventListener('click', runLatePenaltyCalculation);
+
+    // Official Government Procurement Document Generator
+    function generateOfficialGovProcurementDoc() {
+        const formType = document.getElementById('govFormTypeSelect')?.value || 'memo-buy';
+        const project = document.getElementById('govFormProjectInput')?.value || 'โครงการจัดซื้อวัสดุและครุภัณฑ์ฝึกปฏิบัติการทัศนศิลป์';
+        const amount = Number(document.getElementById('govFormAmountInput')?.value || 38500);
+        const box = document.getElementById('govDocPreviewBox');
+        if (!box) return;
+
+        const todayStr = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+        const amountStr = amount.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+        const inspectRole = amount <= 100000 ? 'ผู้ตรวจรับพัสดุ จำนวน 1 ท่าน' : 'คณะกรรมการตรวจรับพัสดุ จำนวน 3 ท่าน';
+
+        let docText = '';
+
+        if (formType === 'memo-buy') {
+            docText = `บันทึกข้อความ
+ส่วนราชการ: กลุ่มสาระการเรียนรู้ศิลปะ และงานพัสดุ โรงเรียนมัธยมศึกษา
+ที่ ศธ 04225/พส.${Math.floor(100 + Math.random() * 900)}          วันที่ ${todayStr}
+เรื่อง รายงานขอซื้อพัสดุตาม ${project} โดยวิธีเฉพาะเจาะจง
+
+เรียน ผู้อำนวยการโรงเรียน
+
+1. เรื่องเดิม
+ด้วยกลุ่มสาระการเรียนรู้ศิลปะ ได้รับอนุมัติแผนปฏิบัติการประจำปีการศึกษา เพื่อดำเนินการจัดหาพัสดุและสื่อการเรียนการสอนใน "${project}" สำหรับใช้จัดการเรียนการสอนนักเรียนระดับชั้นมัธยมศึกษาปีที่ 1 - 6 ตามมาตรฐานการเรียนรู้ ศ 1.1 และ ศ 1.2 นั้น
+
+2. ข้อเท็จจริงและข้อกฎหมาย
+งานพัสดุได้ตรวจสอบแล้ว การจัดซื้อครั้งนี้มีวงเงินงบประมาณรวมทั้งสิ้น ${amountStr} บาท ซึ่งไม่เกินวงเงิน 500,000 บาท จึงเห็นควรดำเนินการจัดซื้อโดย "วิธีเฉพาะเจาะจง" ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา 55 (3) และมาตรา 56 วรรคหนึ่ง (2) (ข) ประกอบระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 ข้อ 22 และข้อ 79 โดยมีรายละเอียดดังนี้:
+  (1) เหตุผลความจำเป็น: เพื่อใช้เป็นสื่อและอุปกรณ์ฝึกปฏิบัติทักษะทัศนศิลป์ของนักเรียน
+  (2) รายละเอียดของพัสดุ: ชุดสีอะคริลิก กระดาษร้อยปอนด์ พู่กัน และขาตั้งวาดภาพไม้บีช ตามคุณลักษณะเฉพาะที่แนบ
+  (3) ราคากลางและวงเงินที่จะซื้อ: เป็นเงินทั้งสิ้น ${amountStr} บาท (รวมภาษีมูลค่าเพิ่มแล้ว)
+  (4) กำหนดเวลาที่ต้องการใช้พัสดุ: ส่งมอบภายใน 7 วันทำการ นับถัดจากวันลงนามในใบสั่งซื้อ
+  (5) ข้อเสนอในการแต่งตั้งผู้ตรวจรับพัสดุ: เห็นควรแต่งตั้ง ${inspectRole} ตามระเบียบฯ ข้อ 22 (7)
+
+3. ข้อเสนอเพื่อพิจารณา
+จึงเรียนมาเพื่อโปรดพิจารณา
+  1) ให้ความเห็นชอบรายงานขอซื้อพัสดุตามระเบียบกระทรวงการคลังฯ ข้อ 22
+  2) ลงนามในคำสั่งแต่งตั้ง ${inspectRole} เพื่อดำเนินการตรวจรับพัสดุตามระเบียบต่อไป
+
+(ลงชื่อ)....................................................... เจ้าหน้าที่พัสดุ / ครูผู้รับผิดชอบโครงการ
+(ลงชื่อ)....................................................... หัวหน้าเจ้าหน้าที่พัสดุ
+[ ] เห็นชอบ / อนุมัติตามเสนอ
+(ลงชื่อ)....................................................... ผู้อำนวยการโรงเรียน`;
+        } else if (formType === 'appoint-comm') {
+            docText = `คำสั่งโรงเรียนมัธยมศึกษา
+ที่ พส.${Math.floor(100 + Math.random() * 900)}/2569
+เรื่อง แต่งตั้งคณะกรรมการตรวจรับพัสดุ / ผู้ตรวจรับพัสดุ สำหรับการจัดซื้อโดยวิธีเฉพาะเจาะจง
+
+อาศัยอำนาจตามความในระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 ข้อ 22 (7) และข้อ 175 จึงแต่งตั้งผู้มีรายนามต่อไปนี้เป็นผู้ตรวจรับพัสดุใน "${project}" วงเงิน ${amountStr} บาท ดังนี้:
+
+1. หัวหน้ากลุ่มสาระการเรียนรู้ศิลปะ                ประธานกรรมการ / ผู้ตรวจรับพัสดุ
+2. ครูผู้สอนวิชาทัศนศิลป์                          กรรมการตรวจรับพัสดุ
+3. ครูผู้รับผิดชอบงานพัสดุหมวดศิลปะ              กรรมการและเลขานุการ
+
+ให้ผู้ที่ได้รับการแต่งตั้งปฏิบัติหน้าที่ตรวจรับพัสดุให้เป็นไปตามระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 ข้อ 175 อย่างเคร่งครัด
+
+สั่ง ณ วันที่ ${todayStr}
+
+(ลงชื่อ).......................................................
+ผู้อำนวยการโรงเรียน`;
+        } else if (formType === 'inspect-cert') {
+            docText = `ใบตรวจรับพัสดุ
+ตามระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 ข้อ 175
+เขียนที่ ห้องปฏิบัติการศิลปะ / งานพัสดุโรงเรียน
+วันที่ ${todayStr}
+
+ตามที่โรงเรียนได้ตกลงซื้อพัสดุใน "${project}" โดยวิธีเฉพาะเจาะจง เป็นจำนวนเงินทั้งสิ้น ${amountStr} บาท นั้น
+
+บัดนี้ คณะกรรมการตรวจรับพัสดุ / ผู้ตรวจรับพัสดุ ได้ทำการตรวจรับพัสดุดังกล่าว ณ สถานที่ส่งมอบของโรงเรียนแล้ว ปรากฏว่า:
+  [✓] ผู้ขายได้ส่งมอบพัสดุครบถ้วนถูกต้องตามรายการและคุณลักษณะเฉพาะทุกประการ
+  [✓] ส่งมอบภายในกำหนดเวลาตามใบสั่งซื้อ (ไม่มีค่าปรับตามระเบียบฯ ข้อ 162)
+  [✓] ได้ส่งมอบพัสดุให้แก่เจ้าหน้าที่พัสดุเพื่อลงบัญชีวัสดุ / ทะเบียนคุมทรัพย์สินเรียบร้อยแล้ว
+
+จึงพร้อมกันลงลายมือชื่อไว้เป็นหลักฐานเพื่อประกอบการเบิกจ่ายเงินต่อไป
+
+(ลงชื่อ)....................................................... ประธานกรรมการ / ผู้ตรวจรับพัสดุ
+(ลงชื่อ)....................................................... กรรมการตรวจรับพัสดุ
+(ลงชื่อ)....................................................... เจ้าหน้าที่พัสดุผู้รับมอบเข้าคลัง`;
+        } else if (formType === 'borrow-form') {
+            docText = `ใบยืมพัสดุใช้ในราชการโรงเรียน
+(ตามระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 ข้อ 207 - 209)
+วันที่ ${todayStr}
+
+ข้าพเจ้า: ครูผู้สอนกลุ่มสาระการเรียนรู้ศิลปะ          ตำแหน่ง: ครูชำนาญการ
+มีความประสงค์ขอยืมครุภัณฑ์ของโรงเรียนเพื่อใช้ในราชการ: กิจกรรมการเรียนการสอนและนิทรรศการ "${project}"
+รายการครุภัณฑ์ที่ขอยืม:
+  1. ขาตั้งวาดภาพไม้บีชปรับระดับ (รหัส ครุภัณฑ์-ศป-69-001) จำนวน 10 ตัว
+  2. เครื่องโปรเจคเตอร์เลเซอร์ (รหัส ครุภัณฑ์-อด-69-008) จำนวน 1 เครื่อง
+
+ทั้งนี้ ข้าพเจ้าจะดูแลรักษาพัสดุที่ยืมให้อยู่ในสภาพเรียบร้อย และจะนำส่งคืนงานพัสดุภายในวันที่.................................... หากเกิดการชำรุดเสียหายหรือสูญหายโดยมิใช่การใช้งานตามปกติ ข้าพเจ้ายินดีรับผิดชอบชดใช้ตามระเบียบกระทรวงการคลังฯ ข้อ 209 ทุกประการ
+
+(ลงชื่อ)....................................................... ผู้ยืมพัสดุ
+(ลงชื่อ)....................................................... หัวหน้างานพัสดุ / ผู้จ่ายพัสดุ
+(ลงชื่อ)....................................................... ผู้อำนวยการโรงเรียน (ผู้อนุมัติการยืม)`;
+        } else {
+            docText = `บันทึกข้อความ
+ส่วนราชการ: คณะกรรมการตรวจสอบพัสดุประจำปี โรงเรียนมัธยมศึกษา
+วันที่ ${todayStr}
+เรื่อง รายงานผลการตรวจสอบพัสดุประจำปีงบประมาณ (ตามระเบียบกระทรวงการคลังฯ ข้อ 213 - 214)
+
+เรียน ผู้อำนวยการโรงเรียน
+
+ตามคำสั่งโรงเรียน เรื่อง แต่งตั้งผู้รับผิดชอบตรวจสอบพัสดุประจำปี เพื่อให้ดำเนินการตรวจนับวัสดุคงเหลือและครุภัณฑ์ของโรงเรียน (รวมถึงครุภัณฑ์กลุ่มสาระการเรียนรู้ศิลปะ โสตทัศนูปกรณ์ และอาคารสถานที่) ตั้งแต่วันทำการแรกของเดือนตุลาคม ให้แล้วเสร็จภายใน 30 วันทำการ นั้น
+
+บัดนี้ คณะกรรมการตรวจสอบพัสดุประจำปีได้ดำเนินการตรวจนับพัสดุจริงเทียบกับทะเบียนคุมทรัพย์สินเสร็จสิ้นแล้ว สรุปผลดังนี้:
+  1. การตรวจนับวัสดุคงเหลือและครุภัณฑ์ทั้งหมดตรงตามทะเบียนคุมทรัพย์สินของโรงเรียน
+  2. ครุภัณฑ์ที่มีสภาพสมบูรณ์พร้อมใช้งาน จำนวน 98% ของรายการทั้งหมด
+  3. ครุภัณฑ์ที่ชำรุดเสื่อมสภาพตามอายุการใช้งาน จำนวน 2 รายการ (เห็นควรดำเนินการซ่อมบำรุง หรือตั้งกรรมการจำหน่ายพัสดุตามระเบียบฯ ข้อ 215 ต่อไป)
+
+จึงเรียนมาเพื่อโปรดทราบและพิจารณาดำเนินการตามระเบียบต่อไป
+
+(ลงชื่อ)....................................................... ประธานกรรมการตรวจสอบพัสดุประจำปี
+(ลงชื่อ)....................................................... กรรมการตรวจสอบพัสดุประจำปี`;
+        }
+
+        box.textContent = docText;
+    }
+
+    document.getElementById('btnGenGovDocNow')?.addEventListener('click', generateOfficialGovProcurementDoc);
+    document.getElementById('govFormTypeSelect')?.addEventListener('change', generateOfficialGovProcurementDoc);
+
+    document.getElementById('btnCopyGovDoc')?.addEventListener('click', () => {
+        const text = document.getElementById('govDocPreviewBox')?.textContent || '';
+        navigator.clipboard.writeText(text).then(() => {
+            alert('📋 คัดลอกร่างหนังสือราชการงานพัสดุลงคลิปบอร์ดเรียบร้อยแล้ว!');
+        });
+    });
+
+    document.getElementById('btnDownloadGovDoc')?.addEventListener('click', () => {
+        const text = document.getElementById('govDocPreviewBox')?.textContent || '';
+        const blob = new Blob(['\uFEFF' + text], { type: 'text/plain;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `หนังสือราชการงานพัสดุโรงเรียน_${new Date().toISOString().slice(0, 10)}.txt`;
+        a.click();
+    });
 
     document.getElementById('btnQuickCheckAttendance')?.addEventListener('click', () => {
         const countEl = document.getElementById('tacAttendanceCount');
